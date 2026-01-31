@@ -1,0 +1,30 @@
+
+.preview {
+    width: 100%;
+}
+
+.video-background {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.video-background .video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    z-index: -1;
+}
+
+.video-background .overlay {
+    position: relative;
+    z-index: 1;
+    color: white;
+    text-align: center;
+    padding-top: 15vh;
+}

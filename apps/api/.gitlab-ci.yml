@@ -1,0 +1,112 @@
+stages:
+    - security
+    - test
+    - build
+    - deploy
+
+include:
+    - template: Jobs/Secret-Detection.gitlab-ci.yml
+    - template: Jobs/SAST.gitlab-ci.yml
+
+secret_detection:
+    stage: security
+
+sast:
+    stage: security
+
+test:
+    image: node:20.16.0
+    stage: test
+    script:
+        - echo "Executando todos os testes..."
+        - apt-get update
+        - apt-get install -y curl wget gnupg ca-certificates libssl-dev libcurl4-openssl-dev
+        - npm install
+        - npm test
+
+build_image_master:
+    image: docker:latest
+    services:
+        - docker:dind
+    variables:
+        DOCKER_HOST: "tcp://docker:2375/"
+    stage: build
+    script:
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        - ENV_GITLAB="$(env | sort | grep -e '^CHAT_CHANNEL=' -e '^CHAT_INPUT=' -e '^CHAT_USER_ID=' -e '^CI_COMMIT_AUTHOR=' -e '^CI_COMMIT_BEFORE_SHA=' -e '^CI_COMMIT_BRANCH=' -e '^CI_COMMIT_DESCRIPTION=' -e '^CI_COMMIT_MESSAGE=' -e '^CI_COMMIT_REF_NAME=' -e '^CI_COMMIT_REF_PROTECTED=' -e '^CI_COMMIT_REF_SLUG=' -e '^CI_COMMIT_SHA=' -e '^CI_COMMIT_SHORT_SHA=' -e '^CI_COMMIT_TAG=' -e '^CI_COMMIT_TAG_MESSAGE=' -e '^CI_COMMIT_TIMESTAMP=' -e '^CI_COMMIT_TITLE=' -e '^CI_DEBUG_TRACE=' -e '^CI_DEBUG_SERVICES=' -e '^CI_DEFAULT_BRANCH=' -e '^CI_DEPLOY_FREEZE=' -e '^CI_DEPLOY_USER=' -e '^CI_ENVIRONMENT_NAME=' -e '^CI_ENVIRONMENT_SLUG=' -e '^CI_ENVIRONMENT_URL=' -e '^CI_ENVIRONMENT_ACTION=' -e '^CI_ENVIRONMENT_TIER=' -e '^CI_GITLAB_FIPS_MODE=' -e '^CI_HAS_OPEN_REQUIREMENTS=' -e '^CI_JOB_ID=' -e '^CI_JOB_IMAGE=' -e '^CI_JOB_MANUAL=' -e '^CI_JOB_NAME=' -e '^CI_JOB_NAME_SLUG=' -e '^CI_JOB_STAGE=' -e '^CI_JOB_STATUS=' -e '^CI_JOB_TIMEOUT=' -e '^CI_JOB_TOKEN=' -e '^CI_JOB_URL=' -e '^CI_JOB_STARTED_AT=' -e '^CI_KUBERNETES_ACTIVE=' -e '^CI_NODE_INDEX=' -e '^CI_OPEN_MERGE_REQUESTS=' -e '^CI_PIPELINE_ID=' -e '^CI_PIPELINE_IID=' -e '^CI_PIPELINE_SOURCE=' -e '^CI_PIPELINE_TRIGGERED=' -e '^CI_PIPELINE_URL=' -e '^CI_PIPELINE_CREATED_AT=' -e '^CI_PIPELINE_NAME=' -e '^CI_PIPELINE_SCHEDULE_DESCRIPTION=' -e '^CI_PROJECT_ID=' -e '^CI_PROJECT_NAME=' -e '^CI_PROJECT_NAMESPACE=' -e '^CI_PROJECT_NAMESPACE_ID=' -e '^CI_PROJECT_PATH=' -e '^CI_PROJECT_ROOT_NAMESPACE=' -e '^CI_PROJECT_TITLE=' -e '^CI_PROJECT_DESCRIPTION=' -e '^CI_PROJECT_URL=' -e '^CI_PROJECT_VISIBILITY=' -e '^CI_PROJECT_CLASSIFICATION_LABEL=' -e '^CI_REGISTRY=' -e '^CI_REGISTRY_IMAGE=' -e '^CI_REGISTRY_USER=' -e '^CI_RELEASE_DESCRIPTION=' -e '^CI_REPOSITORY_URL=' -e '^CI_SHARED_ENVIRONMENT=' -e '^CI_TRIGGER_SHORT_TOKEN=' -e '^GITLAB_CI=' -e '^GITLAB_USER_EMAIL=' -e '^GITLAB_USER_ID=' -e '^GITLAB_USER_LOGIN=' -e '^GITLAB_USER_NAME=' -e '^CI_MERGE_REQUEST_APPROVED=' -e '^CI_MERGE_REQUEST_ASSIGNEES=' -e '^CI_MERGE_REQUEST_DIFF_BASE_SHA=' -e '^CI_MERGE_REQUEST_DIFF_ID=' -e '^CI_MERGE_REQUEST_EVENT_TYPE=' -e '^CI_MERGE_REQUEST_DESCRIPTION=' -e '^CI_MERGE_REQUEST_DESCRIPTION_IS_TRUNCATED=' -e '^CI_MERGE_REQUEST_ID=' -e '^CI_MERGE_REQUEST_IID=' -e '^CI_MERGE_REQUEST_LABELS=' -e '^CI_MERGE_REQUEST_MILESTONE=' -e '^CI_MERGE_REQUEST_PROJECT_ID=' -e '^CI_MERGE_REQUEST_PROJECT_PATH=' -e '^CI_MERGE_REQUEST_PROJECT_URL=' -e '^CI_MERGE_REQUEST_REF_PATH=' -e '^CI_MERGE_REQUEST_SOURCE_BRANCH_NAME=' -e '^CI_MERGE_REQUEST_SOURCE_BRANCH_PROTECTED=' -e '^CI_MERGE_REQUEST_SOURCE_BRANCH_SHA=' -e '^CI_MERGE_REQUEST_SOURCE_PROJECT_ID=' -e '^CI_MERGE_REQUEST_SOURCE_PROJECT_PATH=' -e '^CI_MERGE_REQUEST_SOURCE_PROJECT_URL=' -e '^CI_MERGE_REQUEST_SQUASH_ON_MERGE=' -e '^CI_MERGE_REQUEST_TARGET_BRANCH_NAME=' -e '^CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED=' -e '^CI_MERGE_REQUEST_TARGET_BRANCH_SHA=' -e '^CI_MERGE_REQUEST_TITLE=' -e '^CI_EXTERNAL_PULL_REQUEST_IID=' -e '^CI_EXTERNAL_PULL_REQUEST_SOURCE_REPOSITORY=' -e '^CI_EXTERNAL_PULL_REQUEST_TARGET_REPOSITORY=' -e '^CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_NAME=' -e '^CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_SHA=' -e '^CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME=' -e '^CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_SHA=')"
+        - docker build --build-arg ENV_GITLAB="$ENV_GITLAB" -t ${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID} -t ${CI_REGISTRY_IMAGE}:latest .
+        - docker image push ${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID}
+        - docker image push ${CI_REGISTRY_IMAGE}:latest
+    only:
+        - master
+
+build_image:
+    image: docker:latest
+    services:
+        - docker:dind
+    variables:
+        DOCKER_HOST: "tcp://docker:2375/"
+    stage: build
+    script:
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        - ENV_GITLAB="$(env | sort | grep -e '^CHAT_CHANNEL=' -e '^CHAT_INPUT=' -e '^CHAT_USER_ID=' -e '^CI_COMMIT_AUTHOR=' -e '^CI_COMMIT_BEFORE_SHA=' -e '^CI_COMMIT_BRANCH=' -e '^CI_COMMIT_DESCRIPTION=' -e '^CI_COMMIT_MESSAGE=' -e '^CI_COMMIT_REF_NAME=' -e '^CI_COMMIT_REF_PROTECTED=' -e '^CI_COMMIT_REF_SLUG=' -e '^CI_COMMIT_SHA=' -e '^CI_COMMIT_SHORT_SHA=' -e '^CI_COMMIT_TAG=' -e '^CI_COMMIT_TAG_MESSAGE=' -e '^CI_COMMIT_TIMESTAMP=' -e '^CI_COMMIT_TITLE=' -e '^CI_DEBUG_TRACE=' -e '^CI_DEBUG_SERVICES=' -e '^CI_DEFAULT_BRANCH=' -e '^CI_DEPLOY_FREEZE=' -e '^CI_DEPLOY_USER=' -e '^CI_ENVIRONMENT_NAME=' -e '^CI_ENVIRONMENT_SLUG=' -e '^CI_ENVIRONMENT_URL=' -e '^CI_ENVIRONMENT_ACTION=' -e '^CI_ENVIRONMENT_TIER=' -e '^CI_GITLAB_FIPS_MODE=' -e '^CI_HAS_OPEN_REQUIREMENTS=' -e '^CI_JOB_ID=' -e '^CI_JOB_IMAGE=' -e '^CI_JOB_MANUAL=' -e '^CI_JOB_NAME=' -e '^CI_JOB_NAME_SLUG=' -e '^CI_JOB_STAGE=' -e '^CI_JOB_STATUS=' -e '^CI_JOB_TIMEOUT=' -e '^CI_JOB_TOKEN=' -e '^CI_JOB_URL=' -e '^CI_JOB_STARTED_AT=' -e '^CI_KUBERNETES_ACTIVE=' -e '^CI_NODE_INDEX=' -e '^CI_OPEN_MERGE_REQUESTS=' -e '^CI_PIPELINE_ID=' -e '^CI_PIPELINE_IID=' -e '^CI_PIPELINE_SOURCE=' -e '^CI_PIPELINE_TRIGGERED=' -e '^CI_PIPELINE_URL=' -e '^CI_PIPELINE_CREATED_AT=' -e '^CI_PIPELINE_NAME=' -e '^CI_PIPELINE_SCHEDULE_DESCRIPTION=' -e '^CI_PROJECT_ID=' -e '^CI_PROJECT_NAME=' -e '^CI_PROJECT_NAMESPACE=' -e '^CI_PROJECT_NAMESPACE_ID=' -e '^CI_PROJECT_PATH=' -e '^CI_PROJECT_ROOT_NAMESPACE=' -e '^CI_PROJECT_TITLE=' -e '^CI_PROJECT_DESCRIPTION=' -e '^CI_PROJECT_URL=' -e '^CI_PROJECT_VISIBILITY=' -e '^CI_PROJECT_CLASSIFICATION_LABEL=' -e '^CI_REGISTRY=' -e '^CI_REGISTRY_IMAGE=' -e '^CI_REGISTRY_USER=' -e '^CI_RELEASE_DESCRIPTION=' -e '^CI_REPOSITORY_URL=' -e '^CI_SHARED_ENVIRONMENT=' -e '^CI_TRIGGER_SHORT_TOKEN=' -e '^GITLAB_CI=' -e '^GITLAB_USER_EMAIL=' -e '^GITLAB_USER_ID=' -e '^GITLAB_USER_LOGIN=' -e '^GITLAB_USER_NAME=' -e '^CI_MERGE_REQUEST_APPROVED=' -e '^CI_MERGE_REQUEST_ASSIGNEES=' -e '^CI_MERGE_REQUEST_DIFF_BASE_SHA=' -e '^CI_MERGE_REQUEST_DIFF_ID=' -e '^CI_MERGE_REQUEST_EVENT_TYPE=' -e '^CI_MERGE_REQUEST_DESCRIPTION=' -e '^CI_MERGE_REQUEST_DESCRIPTION_IS_TRUNCATED=' -e '^CI_MERGE_REQUEST_ID=' -e '^CI_MERGE_REQUEST_IID=' -e '^CI_MERGE_REQUEST_LABELS=' -e '^CI_MERGE_REQUEST_MILESTONE=' -e '^CI_MERGE_REQUEST_PROJECT_ID=' -e '^CI_MERGE_REQUEST_PROJECT_PATH=' -e '^CI_MERGE_REQUEST_PROJECT_URL=' -e '^CI_MERGE_REQUEST_REF_PATH=' -e '^CI_MERGE_REQUEST_SOURCE_BRANCH_NAME=' -e '^CI_MERGE_REQUEST_SOURCE_BRANCH_PROTECTED=' -e '^CI_MERGE_REQUEST_SOURCE_BRANCH_SHA=' -e '^CI_MERGE_REQUEST_SOURCE_PROJECT_ID=' -e '^CI_MERGE_REQUEST_SOURCE_PROJECT_PATH=' -e '^CI_MERGE_REQUEST_SOURCE_PROJECT_URL=' -e '^CI_MERGE_REQUEST_SQUASH_ON_MERGE=' -e '^CI_MERGE_REQUEST_TARGET_BRANCH_NAME=' -e '^CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED=' -e '^CI_MERGE_REQUEST_TARGET_BRANCH_SHA=' -e '^CI_MERGE_REQUEST_TITLE=' -e '^CI_EXTERNAL_PULL_REQUEST_IID=' -e '^CI_EXTERNAL_PULL_REQUEST_SOURCE_REPOSITORY=' -e '^CI_EXTERNAL_PULL_REQUEST_TARGET_REPOSITORY=' -e '^CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_NAME=' -e '^CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_SHA=' -e '^CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME=' -e '^CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_SHA=')"
+        - docker build --build-arg ENV_GITLAB="$ENV_GITLAB" -t ${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID} -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG} .
+        - docker image push ${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID}
+        - docker image push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
+    except:
+        - master
+
+deploy_dev:
+    image:
+        name: alpine/kubectl:latest
+        entrypoint: [""]
+    stage: deploy
+    environment:
+        name: dev
+    script:
+        - echo "Deploying with tag ${CI_PIPELINE_ID}"
+        - kubectl config use-context cicplataforma/infra_automation:k8s-agent-dev --insecure-skip-tls-verify=true
+        - kubectl set image statefulset/core core=${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID} --namespace default
+    when: manual
+
+deploy_tst2:
+    image:
+        name: alpine/kubectl:latest
+        entrypoint: [""]
+    stage: deploy
+    environment:
+        name: tst2
+    script:
+        - echo "Deploying with tag ${CI_PIPELINE_ID}"
+        - kubectl config use-context cicplataforma/infra_automation:k8s-agent-tst2 --insecure-skip-tls-verify=true
+        - kubectl set image statefulset/core core=${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID} --namespace default
+    when: manual
+
+deploy_qa:
+    image:
+        name: alpine/kubectl:latest
+        entrypoint: [""]
+    stage: deploy
+    environment:
+        name: qa
+    script:
+        - echo "Deploying with tag ${CI_PIPELINE_ID}"
+        - kubectl config use-context cicplataforma/infra_automation:k8s-agent-qa --insecure-skip-tls-verify=true
+        - kubectl set image statefulset/core core=${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID} --namespace default
+    when: manual
+
+# deploy_prod2:
+#     image:
+#         name: alpine/kubectl:latest
+#         entrypoint: [""]
+#     stage: deploy
+#     environment:
+#         name: prod2
+#     script:
+#         - echo "Deploying with tag ${CI_PIPELINE_ID}"
+#         - kubectl config use-context cicplataforma/infra_automation:k8s-agent-prod2 --insecure-skip-tls-verify=true
+#         - kubectl set image statefulset/core core=${CI_REGISTRY_IMAGE}:${CI_PIPELINE_ID} --namespace default
+#     when: manual
+#     only:
+#         refs:
+#             - master

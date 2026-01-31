@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "commonjs",
+        "lib": ["es2020", "dom"],
+        "skipLibCheck": true,
+        "outDir": "./build",
+        "baseUrl": "./src",
+        "resolveJsonModule": true,
+        "moduleResolution": "node",
+        "paths": {
+            "#apis/*": ["apis/*"],
+            "#config/*": ["config/*"],
+            "#const/*": ["const/*"],
+            "#controllers/*": ["controllers/*"],
+            "#crud/*": ["crud/*"],
+            "#daos/*": ["daos/*"],
+            "#exceptions/*": ["exceptions/*"],
+            "#interactors/*": ["interactors/*"],
+            "#middleware/*": ["middleware/*"],
+            "#migrations/*": ["migrations/*"],
+            "#models/*": ["entities/models/*"],
+            "#producers/*": ["producers/*"],
+            "#routes/*": ["routes/*"],
+            "#schemas/*": ["entities/schemas/*"],
+            "#indexes/*": ["entities/indexes/*"],
+            "#runners/*": ["entities/runners/*"],
+            "#entities/*": ["entities/*"],
+            "#types/*": ["types/*"],
+            "#utils/*": ["utils/*"],
+            "#validators/*": ["validators/*"],
+            "#mongoose_bootstrap": ["mongoose_bootstrap"],
+            "#properties": ["properties"],
+            "#db/*": ["db/*"]
+        },
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "include": ["tests", "type_tests"],
+    "exclude": ["node_modules"]
+}
