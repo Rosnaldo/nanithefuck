@@ -16,14 +16,11 @@ export function ScheduleSection() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm mb-4">
-                <Clock className="w-4 h-4" />
-                <span>Cronograma</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Programação do Evento</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-                Confira tudo que preparamos para você aproveitar ao máximo o fim de semana.
-            </p>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm mb-4">
+                    <Clock className="w-4 h-4" />
+                    <span>Cronograma</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">Programação do Evento</h2>
             </div>
 
             {/* Schedule Grid */}

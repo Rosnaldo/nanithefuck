@@ -53,12 +53,8 @@ function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4 text-balance">
-                Galeria de
-                <span className="text-primary"> momentos</span>
+                Galeria
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Fotos e vídeos dos nossos eventos anteriores.
-            </p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">

@@ -1,93 +1,60 @@
 import { useEffect, useRef } from "react"
-import { Users, MapPin, Calendar, Utensils, Waves, Beer } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Users, MapPin, Calendar } from "lucide-react"
 
 export function HeroSection() {
-    const videoRef = useRef<HTMLVideoElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
-    useEffect(() => {
-        if (videoRef.current) {
-        videoRef.current.play()
-        }
-    }, [])
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play()
+    }
+  }, [])
 
-    return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <video
-            ref={videoRef}
-            className="absolute inset-0 w-full h-full object-cover"
-            loop
-            muted
-            playsInline
-            autoPlay
-            poster="/pool-party-churrasco-summer-friends-anime-style.jpg"
-        >
-            <source
-            src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-            type="video/mp4"
-            />
-        </video>
+  return (
+    <section className="relative min-h-screen flex items-end overflow-hidden">
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
+        loop
+        muted
+        playsInline
+        autoPlay
+        poster="/pool-party-churrasco-summer-friends-anime-style.jpg"
+      >
+        <source
+          src="https://assets.mixkit.co/videos/40105/40105-720.mp4"
+          type="video/mp4"
+        />
+      </video>
 
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+      {/* Subtle overlay - only at bottom 20% for readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/95" />
 
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 md:pt-32 md:pb-24">
-            <div className="text-center space-y-8">
+      {/* Content - occupying bottom 20% */}
+      <div className="relative z-10 w-full h-[30vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="text-center space-y-4">
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+            Chacara Weekend <span className="text-primary">Edition Summer</span>
+          </h1>
 
-            {/* Main title */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
-                Chácara Weekend
-                <span className="text-primary block mt-2">Edition Summer</span>
-            </h1>
-
-            {/* Event info */}
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2 bg-background/30 backdrop-blur-sm px-4 py-2 rounded-full">
-                <Calendar className="w-5 h-5 text-primary" />
-                <span>18-19 Janeiro 2026</span>
-                </div>
-                <div className="flex items-center gap-2 bg-background/30 backdrop-blur-sm px-4 py-2 rounded-full">
-                <MapPin className="w-5 h-5 text-accent" />
-                <span>Chácara Vista Verde, SP</span>
-                </div>
-                <div className="flex items-center gap-2 bg-background/30 backdrop-blur-sm px-4 py-2 rounded-full">
-                <Users className="w-5 h-5 text-primary" />
-                <span>50-80 pessoas</span>
-                </div>
+          {/* Event info tags */}
+          <div className="flex flex-wrap justify-center gap-2 text-sm">
+            <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <Calendar className="w-4 h-4 text-primary" />
+              <span>18-19 Jan 2026</span>
             </div>
-
-            {/* What's included */}
-            <div className="flex flex-wrap justify-center gap-4">
-                <div className="flex items-center gap-2 text-foreground">
-                <Waves className="w-5 h-5 text-accent" />
-                <span>Piscina</span>
-                </div>
-                <div className="flex items-center gap-2 text-foreground">
-                <Utensils className="w-5 h-5 text-primary" />
-                <span>Churrasco Premium</span>
-                </div>
-                <div className="flex items-center gap-2 text-foreground">
-                <Beer className="w-5 h-5 text-accent" />
-                <span>Open Bar</span>
-                </div>
+            <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <MapPin className="w-4 h-4 text-accent" />
+              <span>Chacara Vista Verde, SP</span>
             </div>
-
-            {/* CTA */}
-            <div className="pt-4">
-                <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-lg px-12 py-6 text-primary-foreground"
-                onClick={() => document.getElementById("tickets")?.scrollIntoView({ behavior: "smooth" })}
-                >
-                Garantir meu Ticket
-                </Button>
+            <div className="flex items-center gap-2 bg-background/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <Users className="w-4 h-4 text-primary" />
+              <span>50-80 pessoas</span>
             </div>
-            </div>
+          </div>
         </div>
-
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
-        </section>
-    )
+      </div>
+    </section>
+  )
 }
