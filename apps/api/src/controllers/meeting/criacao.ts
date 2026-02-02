@@ -14,10 +14,7 @@ import { mapArray } from '#utils/mapper/array';
 
 type ICriacao = IMeetingController['ICriacao'];
 
-type Mapped = Omit<ICriacao, 'start' | 'finish'> & {
-    start: string;
-    finish: string;
-}
+type Mapped = ICriacao
 
 interface Props {
     mapped: Mapped;
@@ -56,10 +53,8 @@ export class Criacao {
     public readonly makeZodSchema = () => {
         const picked = this.utils.zodSchema.pick({
             name: true,
-            start: true,
-            finish: true,
-            description: true,
-            participants: true,
+            days: true,
+            participantIds: true,
         });
 
         const schema = z.object({
@@ -72,18 +67,14 @@ export class Criacao {
     public readonly mapper = (body: Request['body']): Mapped => {
         const {
             name,
-            start,
-            finish,
+            days,
             participantIds,
-            description,
         } = body;
 
         return {
             name: mapString(name),
-            start: mapString(start),
-            finish: mapString(finish),
+            days,
             participantIds: mapArray<string>(participantIds),
-            description: mapString(description),
         };
     };
 

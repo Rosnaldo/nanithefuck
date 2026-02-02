@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import type { DeleteResult, FilterQuery, ProjectionType, QueryOptions, SaveOptions } from 'mongoose';
+import type { DeleteResult, FilterQuery, InsertManyResult, ProjectionType, QueryOptions, SaveOptions } from 'mongoose';
 
 import { GetIndexes } from './types';
 import { IUser } from '#schemas/user/types';
@@ -21,6 +21,12 @@ export const UserFactoryDao = (model: IUser['IModel']) => ({
 
     inserir: async (data: Partial<IUser['IParams']>, options: SaveOptions = {}): Promise<IUser['IDocument']> =>
         await new model(data).save(options),
+
+    inserirBatch: async (docs: Array<Partial<IUser['IParams']>>, options: SaveOptions = {}): Promise<InsertManyResult<IUser['IDocument']>> =>
+        await model.insertMany(docs, {
+            ordered: false,        // continue inserting even if one fails (e.g., duplicate key)
+            rawResult: true,       // returns MongoDB driver result in addition to docs
+        }),
 
     find: async (
         query: FilterQuery<IUser>,

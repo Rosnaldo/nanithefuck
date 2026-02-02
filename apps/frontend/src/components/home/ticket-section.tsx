@@ -59,13 +59,13 @@ const eventDays = [
         id: "saturday",
         day: "Sábado",
         date: "18 de Janeiro",
-        includes: ["Acesso das 12h às 22h", "Churrasco completo", "Open bar", "Piscina", "Música ao vivo"],
+        includes: ["Acesso das 7h às 23h"],
     },
     {
         id: "sunday",
         day: "Domingo",
         date: "19 de Janeiro",
-        includes: ["Acesso das 11h às 20h", "Brunch especial", "Open bar", "Piscina", "DJ Set"],
+        includes: ["Acesso das 7h às 17h"],
     },
 ]
 

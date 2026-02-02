@@ -7,7 +7,6 @@ import { IMeetingController } from './params';
 import { Either, successData } from '#utils/either';
 import { validateParse, ValidateParseResult } from '#utils/zod/validate_parse';
 import { BadRequestException } from '#exceptions/bad_request';
-import { MeetingUtils } from '#schemas/meeting/utils';
 import { makeObjectIdSchema } from '#utils/zod/valid_objectid_schema';
 import { mapString } from '#utils/mapper/string';
 
@@ -20,11 +19,9 @@ interface Props {
 export class Delete {
     public static readonly classId = Symbol.for('Controller > Meeting > Delete');
     private readonly crud: MeetingCrud;
-    private readonly utils: MeetingUtils;
 
     private constructor() {
         this.crud = new MeetingCrud();
-        this.utils = new MeetingUtils();
     }
 
     static construir(classId: symbol): Delete {

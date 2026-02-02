@@ -7,6 +7,7 @@ import NotFound from "./page/not-found";
 import { ProtectedRoute } from "./protected-route";
 import LoginPage from "./page/login";
 import { AuthProvider } from "./providers/auth-provider";
+import ProfilePage from "./page/profile";
 
 export default function App() {
     const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ export default function App() {
                     <Route path="/login" element={<LoginPage />} />
 
                     <Route element={<ProtectedRoute />}>
+                        <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/main" element={<HomePage />} />
                     </Route>
 

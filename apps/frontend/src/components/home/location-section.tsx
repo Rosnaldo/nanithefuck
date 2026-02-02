@@ -1,4 +1,4 @@
-import { MapPin, Navigation, Car, Clock } from "lucide-react"
+import { MapPin, Navigation } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function LocationSection() {
@@ -56,62 +56,7 @@ export function LocationSection() {
                 </div>
                 </div>
 
-                {/* Travel info */}
-                <div className="p-6 rounded-xl bg-card/50 border border-border">
-                <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-accent/10">
-                    <Car className="w-6 h-6 text-accent" />
-                    </div>
-                    <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">Como Chegar</h3>
-                    <ul className="text-muted-foreground space-y-2 text-sm">
-                        <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                        De carro: Acesso pela Rodovia Dom Pedro I, saída KM 132
-                        </li>
-                        <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                        Estacionamento gratuito no local
-                        </li>
-                        <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                        Uber/99: Informe o endereço completo ao motorista
-                        </li>
-                    </ul>
-                    </div>
-                </div>
-                </div>
-
-                {/* Time info */}
-                <div className="p-6 rounded-xl bg-card/50 border border-border">
-                <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-green-500/10">
-                    <Clock className="w-6 h-6 text-green-500" />
-                    </div>
-                    <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">Tempo Estimado</h3>
-                    <ul className="text-muted-foreground space-y-2 text-sm">
-                        <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                        De São Paulo (Centro): ~1h30 de carro
-                        </li>
-                        <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                        De Campinas (Centro): ~25 min de carro
-                        </li>
-                    </ul>
-                    </div>
-                </div>
-                </div>
             </div>
-            </div>
-
-            {/* Note */}
-            <div className="mt-8 p-4 rounded-xl bg-primary/5 border border-primary/20 text-center">
-            <p className="text-sm text-muted-foreground">
-                <span className="text-primary font-medium">Dica:</span> O endereço exato será enviado por WhatsApp para os
-                participantes confirmados 24h antes do evento.
-            </p>
             </div>
         </div>
         </section>

@@ -34,26 +34,12 @@ export function HeroSection() {
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 md:pt-32 md:pb-24">
             <div className="text-center space-y-8">
-            {/* Event badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm">
-                <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                <span className="text-sm text-primary font-medium">Evento Exclusivo - Vagas Limitadas</span>
-            </div>
 
             {/* Main title */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
                 Chácara Weekend
                 <span className="text-primary block mt-2">Edition Summer</span>
             </h1>
-
-            {/* Description */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Um fim de semana inesquecível na chácara com piscina, churrasco premium e open bar. Conheça pessoas
-                incríveis, amigos de amigos, em um ambiente exclusivo e descontraído.
-            </p>
 
             {/* Event info */}
             <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">

@@ -1,4 +1,4 @@
-import { Ticket, User, Settings, LogOut, Link } from "lucide-react"
+import { Ticket, User, LogOut, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { logout } from "@/api/keycloak"
 import { useAuth } from "@/providers/auth-provider"
+import { Link } from "react-router-dom"
 
 export function Header() {
     const { isAuthenticated } = useAuth();
@@ -18,14 +19,14 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
                 <div className="relative">
                 <Ticket className="w-8 h-8 text-primary animate-glow" />
                 </div>
                 <span className="text-xl font-bold tracking-tight">
                 Chácara<span className="text-primary">Meets</span>
                 </span>
-            </Link>
+            </div>
 
             <div className="flex items-center gap-4">
                 {isAuthenticated ? (
@@ -42,17 +43,19 @@ export function Header() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuItem className="flex items-center gap-2" asChild>
-                        <Link href="/perfil">
-                        <User className="w-4 h-4" />
-                        <span>Meu Perfil</span>
+                        <Link to="/main">
+                        <Home className="w-4 h-4" />
+                        <span>Evento</span>
                         </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem className="flex items-center gap-2" asChild>
-                        <Link href="/configuracoes">
-                        <Settings className="w-4 h-4" />
-                        <span>Configurações</span>
+                        <Link to="/profile">
+                            <User className="w-10 h-10" />
+                            <span>Meu Perfil</span>
                         </Link>
                     </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         className="flex items-center gap-2 text-destructive"
@@ -65,7 +68,7 @@ export function Header() {
                 </DropdownMenu>
                 ) : (
                 <Button size="sm" asChild>
-                    <Link href="/login">Entrar</Link>
+                    <Link to="/login">Entrar</Link>
                 </Button>
                 )}
             </div>

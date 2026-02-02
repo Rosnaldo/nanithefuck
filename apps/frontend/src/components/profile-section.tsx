@@ -1,16 +1,15 @@
 import type React from "react"
 
 import { useState, useRef, useCallback } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Ticket, User, Camera, Upload, X, ArrowLeft, Mail, Instagram } from "lucide-react"
+import { Link } from "react-router-dom"
+import { Ticket, User, Camera, Upload, X, ArrowLeft, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AnimeBackground } from "@/components/anime-background"
+import { toast } from "sonner"
 
-export default function PerfilPage() {
-    const router = useRouter()
+export default function ProfileSection() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [isDragging, setIsDragging] = useState(false)
@@ -29,11 +28,11 @@ export default function PerfilPage() {
         const newErrors: Record<string, string> = {}
 
         if (!formData.firstName.trim()) {
-        newErrors.firstName = "Nome e obrigatorio"
+            newErrors.firstName = "Nome e obrigatorio"
         }
 
         if (!formData.lastName.trim()) {
-        newErrors.lastName = "Sobrenome e obrigatorio"
+            newErrors.lastName = "Sobrenome e obrigatorio"
         }
 
         setErrors(newErrors)
@@ -44,37 +43,37 @@ export default function PerfilPage() {
         e.preventDefault()
 
         if (!validateForm()) {
-        //   showToast("error", "Erro no formulario", "Por favor, corrija os campos destacados.")
-        return
+            toast.error("formulario inválido")
+            return
         }
 
         setIsLoading(true)
 
         try {
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-        //   showToast("success", "Perfil atualizado!", "Suas informacoes foram salvas com sucesso.")
+            await new Promise((resolve) => setTimeout(resolve, 1500))
+            toast.success("Suas informacoes foram salvas com sucesso.")
         } catch (error) {
-        //   showToast("error", "Erro ao salvar", "Ocorreu um erro inesperado. Tente novamente.")
+            toast.error("Ocorreu um erro inesperado. Tente novamente.")
         } finally {
-        setIsLoading(false)
+            setIsLoading(false)
         }
     }
 
     const handleFileChange = (file: File) => {
         if (!file.type.startsWith("image/")) {
-        //   showToast("error", "Arquivo invalido", "Por favor, selecione uma imagem.")
-        return
+            toast.error("Por favor, selecione uma imagem.")
+            return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-        //   showToast("error", "Arquivo muito grande", "A imagem deve ter no maximo 5MB.")
-        return
+            toast.error("A imagem deve ter no maximo 5MB.")
+            return
         }
 
         const reader = new FileReader()
         reader.onloadend = () => {
         setAvatar(reader.result as string)
-        //   showToast("success", "Avatar atualizado!", "Sua nova foto foi carregada.")
+          toast.success("Sua nova foto foi carregada.")
         }
         reader.readAsDataURL(file)
     }
@@ -98,20 +97,20 @@ export default function PerfilPage() {
 
         const files = e.dataTransfer.files
         if (files && files.length > 0) {
-        handleFileChange(files[0])
+            handleFileChange(files[0])
         }
     }, [])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (files && files.length > 0) {
-        handleFileChange(files[0])
+            handleFileChange(files[0])
         }
     }
 
     const removeAvatar = () => {
         setAvatar("")
-        // showToast("info", "Avatar removido", "Sua foto foi removida.")
+        toast.info("Sua foto foi removida.")
     }
 
     return (
@@ -128,7 +127,7 @@ export default function PerfilPage() {
             <Button
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground"
-                onClick={() => router.back()}
+                // onClick={() => router.back()}
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
@@ -137,7 +136,7 @@ export default function PerfilPage() {
 
             {/* Logo */}
             <div className="flex flex-col items-center mb-8">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <Link to="/" className="flex items-center gap-2 mb-4">
                 <Ticket className="w-10 h-10 text-primary animate-glow" />
                 <span className="text-2xl font-bold tracking-tight">
                 Chacara<span className="text-primary">Meets</span>
@@ -194,8 +193,8 @@ export default function PerfilPage() {
                     <button
                         type="button"
                         onClick={(e) => {
-                        e.stopPropagation()
-                        removeAvatar()
+                            e.stopPropagation()
+                            removeAvatar()
                         }}
                         className="absolute -top-1 -right-1 w-8 h-8 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-destructive/80"
                     >
@@ -243,12 +242,12 @@ export default function PerfilPage() {
                 <div className="space-y-2">
                     <Label htmlFor="lastName">Sobrenome</Label>
                     <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Seu sobrenome"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className={`bg-background/50 ${errors.lastName ? "border-destructive" : ""}`}
+                        id="lastName"
+                        type="text"
+                        placeholder="Seu sobrenome"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        className={`bg-background/50 ${errors.lastName ? "border-destructive" : ""}`}
                     />
                     {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
                 </div>
@@ -260,50 +259,33 @@ export default function PerfilPage() {
                 <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    readOnly
-                    className="bg-background/30 pl-10 text-muted-foreground cursor-not-allowed"
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        readOnly
+                        className="bg-background/30 pl-10 text-muted-foreground cursor-not-allowed"
                     />
                 </div>
                 <p className="text-xs text-muted-foreground">O e-mail nao pode ser alterado</p>
                 </div>
 
-                {/* Instagram */}
-                <div className="space-y-2">
-                <Label htmlFor="instagram">Instagram</Label>
-                <div className="relative">
-                    <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                    id="instagram"
-                    type="text"
-                    placeholder="@seu.usuario"
-                    value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                    className="bg-background/50 pl-10"
-                    />
-                </div>
-                <p className="text-xs text-muted-foreground">Seu Instagram sera exibido na lista de convidados</p>
-                </div>
-
                 <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-                disabled={isLoading}
+                    type="submit"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                    disabled={isLoading}
                 >
-                {isLoading ? "Salvando..." : "Salvar Alteracoes"}
+                    {isLoading ? "Salvando..." : "Salvar Alteracoes"}
                 </Button>
             </form>
 
             {/* Links extras */}
             <div className="mt-6 pt-6 border-t border-border/50 space-y-3">
                 <Link
-                href="/alterar-senha"
-                className="flex items-center justify-between p-3 rounded-lg bg-background/30 hover:bg-background/50 transition-colors group"
+                    to="/alterar-senha"
+                    className="flex items-center justify-between p-3 rounded-lg bg-background/30 hover:bg-background/50 transition-colors group"
                 >
-                <span className="text-sm">Alterar senha</span>
-                <ArrowLeft className="w-4 h-4 rotate-180 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <span className="text-sm">Alterar senha</span>
+                    <ArrowLeft className="w-4 h-4 rotate-180 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </Link>
             </div>
             </div>

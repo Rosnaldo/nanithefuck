@@ -14,10 +14,7 @@ import { toUndefined } from '#utils/mapper/to_undefined';
 import { mapArray } from '#utils/mapper/array';
 
 type IEdit = IMeetingController['IEdit'];
-type Mapped = Omit<IEdit, 'start' | 'finish'> & {
-    start?: string;
-    finish?: string;
-}
+type Mapped = IEdit
 
 interface Props {
     mapped: Mapped;
@@ -44,9 +41,9 @@ export class Edit {
         try {
             const { mapped } = props;
             const params = this.transform(mapped);
-            const { _id, name, start, finish, description, participantIds } = params;
+            const { _id, name, days, participantIds } = params;
 
-            await this.crud.update(_id, { name, start, finish, description, participantIds });
+            await this.crud.update(_id, { name, days, participantIds });
             return successData('success');
         } catch (error: unknown) {
             return logError(error, '/meeting/edit');
@@ -57,10 +54,8 @@ export class Edit {
     public readonly makeZodSchema = () => {
         const partial = this.utils.zodSchema.pick({
             name: true,
-            start: true,
-            finish: true,
-            description: true,
-            participants: true,
+            days: true,
+            participantIds: true,
         }).partial();
 
         const schema = z.object({
@@ -75,19 +70,15 @@ export class Edit {
         const {
             _id,
             name,
-            start,
-            finish,
-            description,
+            days,
             participantIds,
         } = body;
 
         return {
             _id: mapString(_id),
             participantIds: mapArray(participantIds),
+            days,
             ...(name ? { name: toUndefined('name', name) } : {}),
-            ...(start ? { start: toUndefined('start', start) } : {}),
-            ...(finish ? { finish: toUndefined('finish', finish) } : {}),
-            ...(description ? { description: toUndefined('description', description) } : {}),
         };
     };
 

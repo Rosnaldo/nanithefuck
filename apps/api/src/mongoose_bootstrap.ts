@@ -1,5 +1,6 @@
 import { connectMain, getMainConnection } from "#db/singleton";
 import { LoadCollections } from "#entities/utils/load_collections";
+import { LoadModels } from "#entities/utils/load_models";
 import { LoadIndexes } from "#indexes/load_indexes";
 import Properties from "#properties";
 
@@ -11,6 +12,8 @@ export const mongooseBootstrap = async ({ testTransaction = false } = {}) => {
 
     const collections = new LoadCollections();
     await collections.synchronous(connection);
+    const models = new LoadModels();
+    models.synchronous();
 
     const loadIndexes = new LoadIndexes(connection);
     if (concistentEnvs.includes(Properties.nodeEnv)) {

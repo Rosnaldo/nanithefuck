@@ -1,10 +1,10 @@
-import { HeroSection } from "@/components/hero-section"
-import { FeaturesSection } from "@/components/features-section"
-import { GallerySection } from "@/components/gallery-section"
-import { TicketSection } from "@/components/ticket-section"
-import { ScheduleSection } from "@/components/schedule-section"
-import { GuestListSection } from "@/components/guest-list-section"
-import { LocationSection } from "@/components/location-section"
+import { HeroSection } from "@/components/home/hero-section"
+import { FeaturesSection } from "@/components/home/features-section"
+import { GallerySection } from "@/components/home/gallery-section"
+import { TicketSection } from "@/components/home/ticket-section"
+import { ScheduleSection } from "@/components/home/schedule-section"
+import { ParticipantListSection } from "@/components/home/participant-list-section"
+import { LocationSection } from "@/components/home/location-section"
 import { FooterSection } from "@/components/footer-section"
 import { Header } from "@/components/header"
 import { AnimeBackground } from "@/components/anime-background"
@@ -19,7 +19,7 @@ export default function HomePage() {
             <GallerySection />
             <ScheduleSection />
             <TicketSection />
-            <GuestListSection />
+            <ParticipantListSection />
             <LocationSection />
             <FooterSection />
         </main>

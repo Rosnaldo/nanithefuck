@@ -30,6 +30,7 @@
             "#utils/*": ["utils/*"],
             "#validators/*": ["validators/*"],
             "#mongoose_bootstrap": ["mongoose_bootstrap"],
+            "#populate": ["populate"],
             "#properties": ["properties"],
             "#db/*": ["db/*"]
         },

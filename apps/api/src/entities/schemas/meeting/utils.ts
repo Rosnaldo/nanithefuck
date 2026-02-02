@@ -10,9 +10,11 @@ import { makeDateSchema } from '#utils/zod/valid_date';
 export class MeetingUtils {
     public readonly zodSchema = z.object({
         name: makeSmallStringSchema('name'),
-        start: makeDateSchema('start'),
-        finish: makeDateSchema('finish'),
-        description: makeSmallStringSchema('description'),
+        days: z.array(z.object({
+            day: makeDateSchema('day'),
+            start: makeDateSchema('start'),
+            finish: makeDateSchema('finish'),
+        })),
         participantIds: z.array(makeObjectIdSchema('participantIds')),
     });
 

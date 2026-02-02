@@ -11,6 +11,15 @@ export default (app: Application) => {
             return res.status(200).send(either);
         }
     );
+    app.get(
+        '/api/meetings/by-name',
+        async (req, res) => {
+            const controller = new MeetingController();
+            const mapped = controller.byName!.mapper(req.query);
+            const either = await controller.byName!.get({ mapped });
+            return res.status(200).send(either);
+        }
+    );
     app.post(
         '/api/meetings/create',
         async (req, res) => {

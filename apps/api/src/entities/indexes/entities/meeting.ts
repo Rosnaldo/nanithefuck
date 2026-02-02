@@ -4,7 +4,7 @@ import { UniqueIndex } from '../unique_index';
 
 const indexes: Array<IndexDescription> = [
     {
-        key: { email: 1 },
+        key: { name: 1 },
         unique: true,
         name: UniqueIndex.Meeting.name.key
     },

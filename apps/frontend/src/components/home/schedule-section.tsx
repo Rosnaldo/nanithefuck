@@ -1,22 +1,13 @@
-import { Clock, Music, Utensils, Waves, Users, Sparkles } from "lucide-react"
+import { Clock, Users } from "lucide-react"
 
 const saturdaySchedule = [
-    { time: "12:00", title: "Abertura dos portões", description: "Chegada e boas-vindas", icon: Users },
-    { time: "12:30", title: "Início do Churrasco", description: "Carnes, acompanhamentos e saladas", icon: Utensils },
-    { time: "13:00", title: "Piscina liberada", description: "Mergulho e jogos aquáticos", icon: Waves },
-    { time: "15:00", title: "DJ Set - Tarde", description: "Música eletrônica e house", icon: Music },
-    { time: "18:00", title: "Golden Hour", description: "Fotos e momento especial do pôr do sol", icon: Sparkles },
-    { time: "19:00", title: "Música ao Vivo", description: "Banda cover de MPB e Pop", icon: Music },
-    { time: "22:00", title: "Encerramento", description: "Despedida e fotos finais", icon: Users },
+    { time: "7:00", title: "Abertura dos portões", description: "Chegada e boas-vindas", icon: Users },
+    { time: "23:00", title: "Encerramento", description: "Despedida e fotos finais", icon: Users },
 ]
 
 const sundaySchedule = [
-    { time: "11:00", title: "Abertura dos portões", description: "Chegada e boas-vindas", icon: Users },
-    { time: "11:30", title: "Brunch Especial", description: "Café da manhã completo e frutas", icon: Utensils },
-    { time: "13:00", title: "Piscina e Jogos", description: "Vôlei de piscina e atividades", icon: Waves },
-    { time: "15:00", title: "DJ Set Chill", description: "Música ambiente relaxante", icon: Music },
-    { time: "17:00", title: "Happy Hour", description: "Drinks especiais e petiscos", icon: Sparkles },
-    { time: "20:00", title: "Encerramento", description: "Despedida do fim de semana", icon: Users },
+    { time: "7:00", title: "Abertura dos portões", description: "Chegada e boas-vindas", icon: Users },
+    { time: "17:00", title: "Encerramento", description: "Despedida do fim de semana", icon: Users },
 ]
 
 export function ScheduleSection() {

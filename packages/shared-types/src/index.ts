@@ -30,17 +30,23 @@ export interface IUser {
 
 export interface IParticipant {
     _id: string;
+    meetingId: string;
+    meeting?: IMeeting;
     userId: string;
     user?: IUser;
     status: keyof typeof ParticipantStatus;
 }
 
+export interface IDay {
+    day: Date;
+    start: Date;
+    finish: Date;
+}
+
 export interface IMeeting {
     _id: string;
     name: string;
-    start: Date;
-    finish: Date;
-    description: string;
+    days: Array<IDay>
     participants: Array<IParticipant>;
     participantIds: string[];
 }

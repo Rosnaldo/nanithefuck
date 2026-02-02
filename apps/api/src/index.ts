@@ -13,6 +13,7 @@ export async function initializeServices(): Promise<void> {
 
     try {
         await mongooseBootstrap();
+
         app.use(cors());
         app.use(express.json());
 

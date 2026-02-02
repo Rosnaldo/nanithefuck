@@ -1,5 +1,9 @@
 import { IMeeting } from "#schemas/meeting/types";
 
+interface IByName {
+    name: string;
+}
+
 interface IPaginacao {
     page: number;
     pageSize: number;
@@ -7,10 +11,8 @@ interface IPaginacao {
 
 interface ICriacao {
     name: IMeeting['IParams']['name'];
-    start: IMeeting['IParams']['start'];
-    finish: IMeeting['IParams']['finish'];
+    days: IMeeting['IParams']['days'];
     participantIds: IMeeting['IParams']['participantIds'];
-    description: IMeeting['IParams']['description'];
 }
 
 interface IDelete {
@@ -20,14 +22,13 @@ interface IDelete {
 interface IEdit {
     _id: IMeeting['IParams']['_id'];
     name?: IMeeting['IParams']['name'];
-    start?: IMeeting['IParams']['start'];
-    finish?: IMeeting['IParams']['finish'];
+    days?: IMeeting['IParams']['days'];
     participantIds?: IMeeting['IParams']['participantIds'];
-    description?: IMeeting['IParams']['description'];
 }
 
 export interface IMeetingController {
     IPaginacao: IPaginacao;
+    IByName: IByName;
     ICriacao: ICriacao;
     IDelete: IDelete;
     IEdit: IEdit;
