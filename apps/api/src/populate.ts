@@ -110,36 +110,51 @@ const members: Omit<IUser['IParams'], '_id'>[] = [
   },
 ];
 
+const media = [
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg", h: 2, w: 2 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/pool-party-clip-1.jpg", h: 1, w: 1 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/anime-style-bbq-grill-meat-japanese-illustration.jpg", h: 1, w: 1 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/bbq-party-clip.jpg", h: 1, w: 1 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/anime-style-friends-talking-sunset-japanese.jpg", h: 1, w: 1 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/anime-style-cocktails-drinks-bar-japanese.jpg", h: 1, w: 1 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/dj-party-clip.jpg", h: 1, w: 1 },
+    { type: "image", url: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/meetings/ChacaraMeets/gallery/anime-style-night-party-lights-japanese.jpg", h: 2, w: 1 },
+]
+
+
 function randomStatus(): "confirmed" | "pending" {
   return Math.random() < 0.5 ? "confirmed" : "pending"
 }
 
 export const populate = async () => {
-    await getUserDao().inserirBatch(members);
-    const meeting = await getMeetingDao().inserir({
-        name: 'ChacaraMeets',
-        days: [
-            {
-                day: new Date(2026, 1, 1),
-                start: new Date(2026, 1, 1, 7, 0),
-                finish: new Date(2026, 1, 1, 23, 59),
-            },
-            {
-                day: new Date(2026, 2, 1),
-                start: new Date(2026, 2, 1, 7, 0),
-                finish: new Date(2026, 2, 1, 23, 59),
-            },
-        ]
-    })
 
-    const newMembers = await getUserDao().find({});
+    const meet = await getMeetingDao().findOne({ name: 'ChacaraMeets' })
+    await getMeetingDao().findOneAndUpdate(meet!._id.toString(), { gallery: media })
+    // await getUserDao().inserirBatch(members);
+    // const meeting = await getMeetingDao().inserir({
+    //     name: 'ChacaraMeets',
+    //     days: [
+    //         {
+    //             day: new Date(2026, 1, 1),
+    //             start: new Date(2026, 1, 1, 7, 0),
+    //             finish: new Date(2026, 1, 1, 23, 59),
+    //         },
+    //         {
+    //             day: new Date(2026, 2, 1),
+    //             start: new Date(2026, 2, 1, 7, 0),
+    //             finish: new Date(2026, 2, 1, 23, 59),
+    //         },
+    //     ]
+    // })
 
-    const ids = newMembers.map((m) => m.id)
-    const participants = ids.map(id => ({
-        meetingId: meeting.id,
-        userId: id,
-        status: randomStatus()
-    }))
+    // const newMembers = await getUserDao().find({});
 
-    await getParticipantModel().insertMany(participants);
+    // const ids = newMembers.map((m) => m.id)
+    // const participants = ids.map(id => ({
+    //     meetingId: meeting.id,
+    //     userId: id,
+    //     status: randomStatus()
+    // }))
+
+    // await getParticipantModel().insertMany(participants);
 }

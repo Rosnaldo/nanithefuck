@@ -1,16 +1,10 @@
 import { useState, useRef } from "react"
+import axios from 'axios';
 import { X, Play } from "lucide-react"
+import type { IMeeting, IPicture } from "@repo/shared-types";
+import { ApiError } from "@/error/apit";
+import { useQuery } from "@tanstack/react-query";
 
-const media = [
-    { type: "image", src: "/assets/anime-style-pool-party-friends-summer-japanese.jpg", span: "col-span-2 row-span-2" },
-    { type: "video", src: "/assets/pool-party-clip-1.jpg", span: "col-span-1 row-span-1" },
-    { type: "image", src: "/assets/anime-style-bbq-grill-meat-japanese-illustration.jpg", span: "col-span-1 row-span-1" },
-    { type: "video", src: "/assets/bbq-party-clip.jpg", span: "col-span-1 row-span-1" },
-    { type: "image", src: "/assets/anime-style-friends-talking-sunset-japanese.jpg", span: "col-span-1 row-span-1" },
-    { type: "image", src: "/assets/anime-style-cocktails-drinks-bar-japanese.jpg", span: "col-span-1 row-span-1" },
-    { type: "video", src: "/assets/dj-party-clip.jpg", span: "col-span-1 row-span-1" },
-    { type: "image", src: "/assets/anime-style-night-party-lights-japanese.jpg", span: "col-span-2 row-span-1" },
-]
 
 function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null)
@@ -45,8 +39,44 @@ function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) 
     )
     }
 
-    export function GallerySection() {
-    const [selectedMedia, setSelectedMedia] = useState<{ type: string; src: string } | null>(null)
+export function GallerySection() {
+    const [selectedMedia, setSelectedMedia] = useState<IPicture | null>(null)
+
+    async function fetchMeeting() {
+        try {
+            const res = await axios.get(
+                "http://localhost:5002/api/meetings/by-name/", {
+                    params: { name: 'ChacaraMeets' }
+                }
+            )
+            
+            if (res.data.isError) {
+                throw new ApiError(res.data.message || "api/meetings/by-name request failed");
+            }
+
+            const meeting = res.data as IMeeting;
+            return meeting;
+        } catch (error) {
+            console.log('fetchParticipants: error', error);
+            throw error;
+        }
+    }
+
+    const { data: meeting, isLoading: isLoading, isError, error } = useQuery<IMeeting, ApiError>({
+        queryKey: ['meeting-name'],
+        queryFn: fetchMeeting
+    });
+
+    function Loading() {
+        return <div>Loading...</div>;
+    }
+
+    function ErrorState({ error }: { error: Error }) {
+        return <div style={{ color: "red" }}>{error.message}</div>;
+    }
+
+    if (isLoading) return <Loading />;
+    if (isError) return <ErrorState error={error as Error} />;
 
     return (
         <section id="galeria" className="py-20 relative z-10">
@@ -58,14 +88,14 @@ function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) 
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
-            {media.map((item, index) => (
-                <div key={index} className={`${item.span} relative rounded-xl overflow-hidden group`}>
+            {meeting?.gallery.map((item, index) => (
+                <div key={index} className={`col-span-${item.h} row-span-${item.w} relative rounded-xl overflow-hidden group`}>
                 {item.type === "video" ? (
-                    <VideoThumbnail src={item.src} onClick={() => setSelectedMedia(item)} />
+                    <VideoThumbnail src={item.url} onClick={() => setSelectedMedia(item)} />
                 ) : (
                     <div className="w-full h-full cursor-pointer" onClick={() => setSelectedMedia(item)}>
                     <img
-                        src={item.src || "/placeholder.svg"}
+                        src={item.url || "/placeholder.svg"}
                         alt={`Galeria ${index + 1}`}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -95,7 +125,7 @@ function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) 
             </button>
             {selectedMedia.type === "video" ? (
                 <video
-                src={selectedMedia.src}
+                src={selectedMedia.url}
                 className="max-w-full max-h-[90vh] rounded-xl"
                 controls
                 autoPlay
@@ -103,7 +133,7 @@ function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) 
                 />
             ) : (
                 <img
-                src={selectedMedia.src || "/placeholder.svg"}
+                src={selectedMedia.url || "/placeholder.svg"}
                 alt="Imagem ampliada"
                 className="max-w-full max-h-[90vh] rounded-xl object-contain"
                 />

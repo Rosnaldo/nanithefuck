@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -5,6 +6,7 @@ import Properties from './properties';
 
 import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';
+import { populate } from '#populate';
 
 const app = express();
 
@@ -13,6 +15,7 @@ export async function initializeServices(): Promise<void> {
 
     try {
         await mongooseBootstrap();
+        // await populate();
 
         app.use(cors());
         app.use(express.json());

@@ -59,7 +59,7 @@ export default function ProfileSection() {
         }
     }
 
-    const handleFileChange = (file: File) => {
+    const handleFileChange = async (file: File) => {
         if (!file.type.startsWith("image/")) {
             toast.error("Por favor, selecione uma imagem.")
             return
@@ -70,12 +70,19 @@ export default function ProfileSection() {
             return
         }
 
-        const reader = new FileReader()
-        reader.onloadend = () => {
-        setAvatar(reader.result as string)
-          toast.success("Sua nova foto foi carregada.")
+        const formData = new FormData();
+        formData.append("image", file);
+        const res = await fetch("http://localhost:5002/api/upload-avatar", {
+            method: "POST",
+            body: formData,
+        });
+
+
+        if (!res.ok) {
+            throw new Error("Upload failed");
         }
-        reader.readAsDataURL(file)
+        const result = await res.json();
+        setAvatar(result.url);
     }
 
     const handleDragOver = useCallback((e: React.DragEvent) => {

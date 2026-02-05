@@ -43,10 +43,18 @@ export interface IDay {
     finish: Date;
 }
 
+export interface IPicture {
+    type: string;
+    url: string;
+    w: number;
+    h: number;
+}
+
 export interface IMeeting {
     _id: string;
     name: string;
-    days: Array<IDay>
+    days: Array<IDay>;
+    gallery: Array<IPicture>;
     participants: Array<IParticipant>;
     participantIds: string[];
 }
