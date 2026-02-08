@@ -2,15 +2,18 @@ import { type Application } from 'express';
 
 import { UserController } from '#controllers/user';
 import upload from '#utils/image/multer-upload';
-import { getUserMiddleware } from '#middleware/get_user';
+import { GetUser } from '#middleware/get_user';
 import { authorizeMiddleware } from '#middleware/authorize';
 import { UserRole } from '@repo/shared-types';
+import { keycloakApi } from '#apis/keycloak';
+import { GetKeycloakUser } from '#middleware/get_keycloak_user';
 
 export default (app: Application) => {
     app.get(
         '/api/users/list',
-        getUserMiddleware,
-        authorizeMiddleware([UserRole.admin, UserRole.member]),
+        GetKeycloakUser,
+        GetUser,
+        authorizeMiddleware([UserRole.admin]),
         async (req, res) => {
             const { user } = req;
             const controller = new UserController();
@@ -21,19 +24,19 @@ export default (app: Application) => {
     );
     app.get(
         '/api/users/by-email',
-        getUserMiddleware,
-        authorizeMiddleware([UserRole.admin, UserRole.member]),
+        GetKeycloakUser,
         async (req, res) => {
             const controller = new UserController();
-            const params = controller.byEmail!.mapper(req.query);
+            const params = controller.byEmail!.mapper({ ...req.query, userKc: req.userKc });
             const either = await controller.byEmail!.get({ params });
             return res.status(200).send(either);
         }
     );
     app.post(
         '/api/users/create',
-        getUserMiddleware,
-        authorizeMiddleware([UserRole.admin, UserRole.member]),
+        GetKeycloakUser,
+        GetUser,
+        authorizeMiddleware([UserRole.admin]),
         async (req, res) => {
             const controller = new UserController();
             const mapped = controller.criacao!.mapper(req.body);
@@ -43,29 +46,32 @@ export default (app: Application) => {
     );
     app.put(
         '/api/users/edit',
-        getUserMiddleware,
+        GetKeycloakUser,
+        GetUser,
         authorizeMiddleware([UserRole.admin, UserRole.member]),
         async (req, res) => {
             const controller = new UserController();
             const mapped = controller.edit!.mapper({ ...req.body });
-            const either = await controller.edit!.exec({ mapped, userSource: req.user });
+            const either = await controller.edit!.exec({ mapped, userSource: req.user, userKc: req.userKc });
             return res.status(200).send(either);
         }
     );
     app.delete(
         '/api/users/delete',
-        getUserMiddleware,
+        GetKeycloakUser,
+        GetUser,
         authorizeMiddleware([UserRole.admin, UserRole.member]),
         async (req, res) => {
             const controller = new UserController();
             const mapped = controller.delete!.mapper(req.query);
-            const either = await controller.delete!.exec({ mapped });
+            const either = await controller.delete!.exec({ mapped, userSource: req.user, userKc: req.userKc });
             return res.status(200).send(either);
         }
     );
     app.post(
         '/api/upload-avatar',
-        getUserMiddleware,
+        GetKeycloakUser,
+        GetUser,
         authorizeMiddleware([UserRole.admin, UserRole.member]),
         upload.single('image'),
         async (req, res) => {
@@ -80,7 +86,7 @@ export default (app: Application) => {
 
                 const userId = req.user._id;
                 const controller = new UserController();
-                const either = await controller.avatar!.exec({ userId, buffer: req.file.buffer, mimetype: req.file.mimetype });
+                const either = await controller.avatar!.exec({ userId, buffer: req.file.buffer, mimetype: req.file.mimetype, userSource: req.user });
                 return res.status(200).send(either);
             } catch (err) {
                 res.status(500).json({ error: 'Failed to upload image' });

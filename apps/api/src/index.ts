@@ -6,6 +6,7 @@ import Properties from './properties';
 
 import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';
+import { buildKcMain } from '#keycloak/singleton';
 // import { populate } from '#populate';
 
 const app = express();
@@ -14,6 +15,7 @@ export async function initializeServices(): Promise<void> {
     let isShuttingDown = false;
 
     try {
+        await buildKcMain();
         await mongooseBootstrap();
         // await populate();
 
@@ -24,7 +26,7 @@ export async function initializeServices(): Promise<void> {
         app.use(express.urlencoded({ extended: false }));
 
         app.get('/health', (req, res) => res.sendStatus(200));
-
+    
         const loadRoutes = new LoadRoutes(app);
         await loadRoutes.synchronous();
 

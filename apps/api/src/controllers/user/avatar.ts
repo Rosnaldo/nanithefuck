@@ -6,11 +6,14 @@ import { Either, successData } from '#utils/either';
 import { IUser } from '#schemas/user/types';
 import { compressToTargetSize } from '#utils/image/compress';
 import properties from '#properties';
+import { UserRole } from '@repo/shared-types';
+import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
 
 interface Props {
     buffer: Buffer;
     mimetype: string;
     userId: string;
+    userSource: IUser['IParams'];
 }
 
 const s3 = new S3Client({
@@ -63,7 +66,11 @@ export class Avatar {
 
     public readonly exec = async (props: Props): Promise<Either<IUser['IParams']>> => {
         try {
-            const { userId, buffer, mimetype } = props;
+            const { userId, buffer, mimetype, userSource } = props;
+
+            if (userSource.role !== UserRole.admin && userSource._id !== userId) {
+                throw new UnauthorizedRequestException('Usuario sem permissão')
+            }
 
             const compressed = await compressToTargetSize(
                 buffer,
@@ -76,8 +83,6 @@ export class Avatar {
                 body: compressed,
                 contentType: mimetype,
             });
-
-            console.log(url)
 
             const user = await this.crud.update(userId, { avatar: url })
             return successData(user);

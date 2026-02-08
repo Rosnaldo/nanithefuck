@@ -16,6 +16,7 @@ import { toUndefined } from '#utils/mapper/to_undefined';
 import { or } from '#utils/ports';
 import { UserRole } from '@repo/shared-types';
 import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
+import { getKcMain } from '#keycloak/singleton';
 
 type IEdit = IUserController['IEdit'];
 type Mapped = Omit<IEdit, 'role'> & {
@@ -25,6 +26,7 @@ type Mapped = Omit<IEdit, 'role'> & {
 interface Props {
     mapped: Mapped;
     userSource: IUser['IParams'];
+    userKc: IUserKc;
 }
 
 export class Edit {
@@ -46,7 +48,7 @@ export class Edit {
 
     public readonly exec = async (props: Props): Promise<Either<string>> => {
         try {
-            const { mapped, userSource } = props;
+            const { mapped, userSource, userKc } = props;
             const params = this.transform(mapped);
             const { _id, firstName, lastName, email, role } = params;
 
@@ -54,7 +56,20 @@ export class Edit {
                 throw new UnauthorizedRequestException('Usuario sem permissão')
             }
 
+            if (userSource.role !== UserRole.admin && userSource._id !== _id) {
+                throw new UnauthorizedRequestException('Usuario sem permissão')
+            }
+
             await this.crud.update(_id, { firstName, lastName, email, role });
+            const kcMain = getKcMain();
+            const client = await kcMain.getKcClientCredentials();
+            await client.users.update({
+                id: userKc.id,
+            }, {
+                firstName, 
+                lastName,
+            })
+
             return successData('success');
         } catch (error: unknown) {
             return logError(error, '/user/edit');

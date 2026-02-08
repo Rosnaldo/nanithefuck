@@ -10,6 +10,7 @@ import { BadRequestException } from '#exceptions/bad_request';
 import { IUser } from '#schemas/user/types';
 import { UserUtils } from '#schemas/user/utils';
 import { mapString } from '#utils/mapper/string';
+import { getKcMain } from '#keycloak/singleton';
 
 type ICriacao = IUserController['ICriacao'];
 
@@ -44,9 +45,17 @@ export class Criacao {
             const params = this.transform(mapped);
 
             const user = await this.crud.create(params);
+
+            const kcMain = getKcMain();
+            const client = await kcMain.getKcClientCredentials();
+            await client.users.create({
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            });
             return successData(user);
         } catch (error: unknown) {
-            return logError(error, '/user/create');
+            return logError(error, '/api/users/create');
         }
     };
 

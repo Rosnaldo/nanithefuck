@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import _ from 'lodash';
 
 import { IUser } from '#schemas/user/types';
 import { logError } from '#utils/log_error';
@@ -6,6 +7,9 @@ import { UserCrud } from '#crud/user';
 import { IUserController } from './params';
 import { Either, successData } from '#utils/either';
 import { mapString } from '#utils/mapper/string';
+import { getUserDao } from '#daos/singleton';
+import { UserUtils } from '#schemas/user/utils';
+import { UserRole } from '@repo/shared-types';
 
 type IByEmail = IUserController['IByEmail'];
 
@@ -16,9 +20,11 @@ interface Props {
 export class FindByEmail {
     public readonly classId = Symbol.for('Controller > User > FindByEmail');
     private readonly crud: UserCrud;
+    private readonly utils: UserUtils;
 
     private constructor() {
         this.crud = new UserCrud();
+        this.utils = new UserUtils();
     }
 
     static construir(classId: symbol): FindByEmail {
@@ -31,11 +37,20 @@ export class FindByEmail {
     public readonly get = async (props: Props): Promise<Either<IUser['IParams']>> => {
         try {
             const { params } = props;
-            const { email } = params;
+            const { email, firstName, lastName } = params;
             const query = { email };
-            const user = await this.crud.findOne(query);
+            const user = await getUserDao().findOne(query);
 
-            return successData(user);
+            if (_.isNil(user)) {
+                this.crud.create({
+                    email,
+                    firstName,
+                    lastName,
+                    role: UserRole.member,
+                })
+            }
+
+            return successData(this.utils.toObject(user!));
         } catch (error: unknown) {
             return logError(error, '/user/by-email');
         }
@@ -44,10 +59,14 @@ export class FindByEmail {
     public readonly mapper = (body: Request['body']): IByEmail => {
         const {
             email,
+            firstName,
+            lastName,
         } = body;
 
         return {
             email: mapString(email),
+            firstName: mapString(firstName),
+            lastName: mapString(lastName),
         };
     };
 }

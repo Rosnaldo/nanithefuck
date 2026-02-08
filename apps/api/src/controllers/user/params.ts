@@ -13,7 +13,9 @@ interface ICriacao {
 }
 
 interface IByEmail {
-    email?: IUser['IParams']['email'];
+    email: IUser['IParams']['email'];
+    firstName: IUser['IParams']['firstName'];
+    lastName: IUser['IParams']['lastName'];
 }
 
 interface IDelete {

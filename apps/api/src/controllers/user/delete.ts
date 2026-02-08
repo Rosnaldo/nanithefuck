@@ -11,11 +11,16 @@ import { IUser } from '#schemas/user/types';
 import { UserUtils } from '#schemas/user/utils';
 import { makeObjectIdSchema } from '#utils/zod/valid_objectid_schema';
 import { mapString } from '#utils/mapper/string';
+import { UserRole } from '@repo/shared-types';
+import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
+import { getKcMain } from '#keycloak/singleton';
 
 type IDelete = IUserController['IDelete'];
 
 interface Props {
     mapped: IDelete;
+    userSource: IUser['IParams'];
+    userKc: IUserKc;
 }
 
 export class Delete {
@@ -37,11 +42,19 @@ export class Delete {
 
     public readonly exec = async (props: Props): Promise<Either<string>> => {
         try {
-            const { mapped } = props;
+            const { mapped, userSource, userKc } = props;
             const params = this.transform(mapped);
             const { _id } = params;
 
+            if (userSource.role !== UserRole.admin && userSource._id !== _id) {
+                throw new UnauthorizedRequestException('Usuario sem permissão')
+            }
+            const user = await this.crud.findById(_id);
             await this.crud.delete(_id);
+
+            const kcMain = getKcMain();
+            const client = await kcMain.getKcClientCredentials();
+            await client.users.del({ id: userKc.id });
             return successData('success');
         } catch (error: unknown) {
             return logError(error, '/user/delete');
