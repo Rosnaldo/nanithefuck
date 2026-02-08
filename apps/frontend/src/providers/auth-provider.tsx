@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { keycloak } from '../api/keycloak';
 
+type User = { email: string; fullname: string };
+
 type AuthContextType = {
+    loggedUser: User;
     isAuthenticated: boolean;
-    token?: string;
     login: () => void;
     logout: () => void;
 };
@@ -11,11 +13,12 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const initialized = useRef(false); // 🔐 proteção
-  const [ready, setReady] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const initialized = useRef(false); // 🔐 proteção
+    const [ready, setReady] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loggedUser, setLoggedUser] = useState<User>({ email: '', fullname: '' });
 
-  useEffect(() => {
+    useEffect(() => {
         if (initialized.current) return; // ⛔ evita múltiplos init
         initialized.current = true;
 
@@ -28,8 +31,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             window.location.origin + "/silent-check-sso.html",
         })
         .then((auth) => {
+            const parsed = keycloak.tokenParsed;
+            const email = parsed?.email;
+            const fullname = parsed?.name;
+
             setIsAuthenticated(auth);
             setReady(true);
+            setLoggedUser({ email, fullname });
         })
         .catch(console.error);
 
@@ -44,28 +52,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 });
             });
         };
-  }, []);
+    }, []);
 
-  if (!ready) return <div>Loading session…</div>;
+    if (!ready) return <div>Loading session…</div>;
 
-  return (
-    <AuthContext.Provider
-        value={{
-            isAuthenticated,
-            token: keycloak.token,
-            login: () =>
-                keycloak.login({
-                    redirectUri: window.location.origin + "/main",
-                }),
-            logout: () =>
-                keycloak.logout({
-                    redirectUri: window.location.origin,
-                }),
-        }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider
+            value={{
+                isAuthenticated,
+                loggedUser,
+                login: () =>
+                    keycloak.login({
+                        redirectUri: window.location.origin + "/main",
+                    }),
+                logout: () =>
+                    keycloak.logout({
+                        redirectUri: window.location.origin,
+                    }),
+            }}
+        >
+        {children}
+        </AuthContext.Provider>
+    );
 }
 
 export const useAuth = () => useContext(AuthContext);

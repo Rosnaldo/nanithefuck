@@ -130,7 +130,13 @@ export const populate = async () => {
 
     const meet = await getMeetingDao().findOne({ name: 'ChacaraMeets' })
     await getMeetingDao().findOneAndUpdate(meet!._id.toString(), { gallery: media })
-    // await getUserDao().inserirBatch(members);
+    // await getUserDao().inserir({
+    //     firstName: "Andrey",
+    //     lastName: "Tsuzuki",
+    //     email: "andreytsuzuki@gmail.com",
+    //     avatar: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/avatars/young-brazilian-man-smiling.jpg",
+    //     role: 'admin',
+    // });
     // const meeting = await getMeetingDao().inserir({
     //     name: 'ChacaraMeets',
     //     days: [

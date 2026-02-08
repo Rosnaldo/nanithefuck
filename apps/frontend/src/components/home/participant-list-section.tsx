@@ -6,7 +6,7 @@ import { Users, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { ParticipantStatus, type IMeeting, type IParticipant } from "@repo/shared-types"
-import { ApiError } from "@/error/apit"
+import { ApiError } from "@/error/api"
 
 export function ParticipantListSection() {
     const [searchTerm, setSearchTerm] = useState("")

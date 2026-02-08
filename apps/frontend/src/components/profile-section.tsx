@@ -1,27 +1,58 @@
-import type React from "react"
-
 import { useState, useRef, useCallback } from "react"
-import { Link } from "react-router-dom"
-import { Ticket, User, Camera, Upload, X, ArrowLeft, Mail } from "lucide-react"
+import type React from "react"
+import { useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { User, Upload, Mail } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AnimeBackground } from "@/components/anime-background"
-import { toast } from "sonner"
+import { useAuth } from "@/providers/auth-provider"
+import { ApiError } from "@/error/api"
+import type { IUser } from "@repo/shared-types"
+import { apiBack } from "@/api/backend"
 
 export default function ProfileSection() {
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [isLoading, setIsLoading] = useState(false)
     const [isDragging, setIsDragging] = useState(false)
-    
+    const { loggedUser } = useAuth()
     const [formData, setFormData] = useState({
-        firstName: "Lucas",
-        lastName: "Silva",
-        email: "lucas.silva@email.com",
-        instagram: "@lucas.silva",
+        firstName: '',
+        lastName:'',
+        email: '',
     })
+
+    async function fetchUser() {
+        try {
+            const res = await apiBack.get(
+                "/api/users/by-email", {
+                    params: { email: loggedUser.email }
+                }
+            )
+            
+            if (res.data.isError) {
+                throw new ApiError(res.data.message || "api/users/by-email request failed");
+            }
+
+            const user = res.data as IUser;
+            setFormData({
+                firstName: user?.firstName || '',
+                lastName: user?.lastName || '',
+                email: user?.email || '',
+            })
+
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const { data: user, isLoading: isLoading, isError, error, refetch } = useQuery<IUser, ApiError>({
+        queryKey: ['user-by-email'],
+        queryFn: fetchUser
+    });
     
-    const [avatar, setAvatar] = useState<string>("/young-brazilian-man-smiling.jpg")
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     const validateForm = () => {
@@ -39,7 +70,7 @@ export default function ProfileSection() {
         return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if (!validateForm()) {
@@ -47,15 +78,24 @@ export default function ProfileSection() {
             return
         }
 
-        setIsLoading(true)
-
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1500))
-            toast.success("Suas informacoes foram salvas com sucesso.")
+            const res = await apiBack.put(
+                "/api/users/edit", {
+                    _id: user?._id,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                }
+            )
+    
+            if (res.data.isError) {
+                toast.error(res.data.message)
+            } else {
+                toast.success("Suas informacoes foram salvas com sucesso.")
+            }
         } catch (error) {
             toast.error("Ocorreu um erro inesperado. Tente novamente.")
         } finally {
-            setIsLoading(false)
+            await refetch();
         }
     }
 
@@ -72,17 +112,20 @@ export default function ProfileSection() {
 
         const formData = new FormData();
         formData.append("image", file);
-        const res = await fetch("http://localhost:5002/api/upload-avatar", {
-            method: "POST",
-            body: formData,
-        });
 
-
-        if (!res.ok) {
-            throw new Error("Upload failed");
+        try {
+            const res = await apiBack.post("/api/upload-avatar", formData);
+    
+            if (res.data.isError) {
+                toast.error(res.data.message)
+            } else {
+                toast.success("Avatar salvo com sucesso.")
+            }
+        } catch (error) {
+            toast.error("Ocorreu um erro inesperado. Tente novamente.")
+        } finally {
+            await refetch();
         }
-        const result = await res.json();
-        setAvatar(result.url);
     }
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -115,188 +158,135 @@ export default function ProfileSection() {
         }
     }
 
-    const removeAvatar = () => {
-        setAvatar("")
-        toast.info("Sua foto foi removida.")
+    function Loading() {
+        return <div>Loading...</div>;
     }
+
+    function ErrorState({ error }: { error: Error }) {
+        return <div style={{ color: "red" }}>{error.message}</div>;
+    }
+
+    if (isLoading) return <Loading />;
+    if (isError) return <ErrorState error={error as Error} />;
 
     return (
         <div className="min-h-screen max-h-screen overflow-y-auto relative py-8">
-        <AnimeBackground />
+            <AnimeBackground />
 
-        <div className="absolute inset-0 -z-10 fixed">
-            <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
-        </div>
-
-        <div className="w-full max-w-lg mx-auto px-4 relative z-10">
-            {/* Voltar */}
-            <div className="mb-6">
-            <Button
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground"
-                // onClick={() => router.back()}
-            >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar
-            </Button>
+            <div className="absolute inset-0 -z-10 fixed">
+                <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
             </div>
 
-            {/* Logo */}
-            <div className="flex flex-col items-center mb-8">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-                <Ticket className="w-10 h-10 text-primary animate-glow" />
-                <span className="text-2xl font-bold tracking-tight">
-                Chacara<span className="text-primary">Meets</span>
-                </span>
-            </Link>
-            <div className="flex items-center gap-2 mb-2">
-                <User className="w-6 h-6 text-accent" />
-                <h1 className="text-xl font-semibold">Meu Perfil</h1>
-            </div>
-            <p className="text-muted-foreground text-center">
-                Gerencie suas informacoes pessoais
-            </p>
-            </div>
+            <div className="w-full max-w-lg mx-auto px-4 relative z-10">
+                {/* Perfil Card */}
+                <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-8 shadow-2xl">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Avatar Upload */}
+                        <div className="flex flex-col items-center space-y-4">
+                        
+                        <div
+                            className={`relative group cursor-pointer ${isDragging ? "scale-105" : ""} transition-transform duration-200`}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <div
+                            className={`w-32 h-32 rounded-full border-4 ${
+                                isDragging 
+                                ? "border-accent border-dashed bg-accent/20" 
+                                : "border-border/50 group-hover:border-primary/50"
+                            } transition-all duration-300 overflow-hidden flex items-center justify-center bg-background/50`}
+                            >
+                            {user?.avatar ? (
+                                <img
+                                src={user.avatar || "/placeholder.svg"}
+                                alt="Avatar"
+                                className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <User className="w-16 h-16 text-muted-foreground" />
+                            )}
+                            </div>
+                        </div>
 
-            {/* Perfil Card */}
-            <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-8 shadow-2xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Avatar Upload */}
-                <div className="flex flex-col items-center space-y-4">
-                <Label className="text-center">Foto de Perfil</Label>
-                
-                <div
-                    className={`relative group cursor-pointer ${isDragging ? "scale-105" : ""} transition-transform duration-200`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                >
-                    <div
-                    className={`w-32 h-32 rounded-full border-4 ${
-                        isDragging 
-                        ? "border-accent border-dashed bg-accent/20" 
-                        : "border-border/50 group-hover:border-primary/50"
-                    } transition-all duration-300 overflow-hidden flex items-center justify-center bg-background/50`}
-                    >
-                    {avatar ? (
-                        <img
-                        src={avatar || "/placeholder.svg"}
-                        alt="Avatar"
-                        className="w-full h-full object-cover"
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleInputChange}
+                            className="hidden"
                         />
-                    ) : (
-                        <User className="w-16 h-16 text-muted-foreground" />
-                    )}
-                    </div>
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-white" />
-                    </div>
 
-                    {/* Remove button */}
-                    {avatar && (
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            removeAvatar()
-                        }}
-                        className="absolute -top-1 -right-1 w-8 h-8 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-destructive/80"
-                    >
-                        <X className="w-4 h-4" />
-                    </button>
-                    )}
+                        {/* Drop zone hint */}
+                        <div className={`flex items-center gap-2 text-sm ${isDragging ? "text-accent" : "text-muted-foreground"} transition-colors`}>
+                            <Upload className="w-4 h-4" />
+                            <span>Arraste uma imagem ou clique para selecionar</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">JPG, PNG ou GIF. Max 5MB.</p>
+                        </div>
+
+                        <div className="border-t border-border/50" />
+
+                        {/* Nome e Sobrenome */}
+                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="firstName">Nome</Label>
+                            <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input
+                                id="firstName"
+                                type="text"
+                                placeholder="Seu nome"
+                                value={formData.firstName}
+                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                className={`bg-background/50 pl-10 ${errors.firstName ? "border-destructive" : ""}`}
+                            />
+                            </div>
+                            {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="lastName">Sobrenome</Label>
+                            <Input
+                                id="lastName"
+                                type="text"
+                                placeholder="Seu sobrenome"
+                                value={formData.lastName}
+                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                className={`bg-background/50 ${errors.lastName ? "border-destructive" : ""}`}
+                            />
+                            {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
+                        </div>
+                        </div>
+
+                        {/* Email (read-only) */}
+                        <div className="space-y-2">
+                        <Label htmlFor="email">E-mail</Label>
+                        <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input
+                                id="email"
+                                type="email"
+                                value={user?.email}
+                                readOnly
+                                className="bg-background/30 pl-10 text-muted-foreground cursor-not-allowed"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">O e-mail nao pode ser alterado</p>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Salvando..." : "Salvar Alteracoes"}
+                        </Button>
+                    </form>
+
                 </div>
-
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleInputChange}
-                    className="hidden"
-                />
-
-                {/* Drop zone hint */}
-                <div className={`flex items-center gap-2 text-sm ${isDragging ? "text-accent" : "text-muted-foreground"} transition-colors`}>
-                    <Upload className="w-4 h-4" />
-                    <span>Arraste uma imagem ou clique para selecionar</span>
-                </div>
-                <p className="text-xs text-muted-foreground">JPG, PNG ou GIF. Max 5MB.</p>
-                </div>
-
-                <div className="border-t border-border/50" />
-
-                {/* Nome e Sobrenome */}
-                <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="firstName">Nome</Label>
-                    <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                        id="firstName"
-                        type="text"
-                        placeholder="Seu nome"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        className={`bg-background/50 pl-10 ${errors.firstName ? "border-destructive" : ""}`}
-                    />
-                    </div>
-                    {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="lastName">Sobrenome</Label>
-                    <Input
-                        id="lastName"
-                        type="text"
-                        placeholder="Seu sobrenome"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        className={`bg-background/50 ${errors.lastName ? "border-destructive" : ""}`}
-                    />
-                    {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
-                </div>
-                </div>
-
-                {/* Email (read-only) */}
-                <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
-                <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        readOnly
-                        className="bg-background/30 pl-10 text-muted-foreground cursor-not-allowed"
-                    />
-                </div>
-                <p className="text-xs text-muted-foreground">O e-mail nao pode ser alterado</p>
-                </div>
-
-                <Button
-                    type="submit"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-                    disabled={isLoading}
-                >
-                    {isLoading ? "Salvando..." : "Salvar Alteracoes"}
-                </Button>
-            </form>
-
-            {/* Links extras */}
-            <div className="mt-6 pt-6 border-t border-border/50 space-y-3">
-                <Link
-                    to="/alterar-senha"
-                    className="flex items-center justify-between p-3 rounded-lg bg-background/30 hover:bg-background/50 transition-colors group"
-                >
-                    <span className="text-sm">Alterar senha</span>
-                    <ArrowLeft className="w-4 h-4 rotate-180 text-muted-foreground group-hover:text-foreground transition-colors" />
-                </Link>
             </div>
-            </div>
-        </div>
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import z from 'zod';
+import _ from 'lodash';
 
 import { logError } from '#utils/log_error';
 import { UserCrud } from '#crud/user';
@@ -12,6 +13,8 @@ import { UserUtils } from '#schemas/user/utils';
 import { makeObjectIdSchema } from '#utils/zod/valid_objectid_schema';
 import { mapString } from '#utils/mapper/string';
 import { toUndefined } from '#utils/mapper/to_undefined';
+import { or } from '#utils/ports';
+import { UserRole } from '@repo/shared-types';
 
 type IEdit = IUserController['IEdit'];
 type Mapped = Omit<IEdit, 'role'> & {
@@ -20,6 +23,7 @@ type Mapped = Omit<IEdit, 'role'> & {
 
 interface Props {
     mapped: Mapped;
+    userSource: IUser['IParams'];
 }
 
 export class Edit {
@@ -41,14 +45,18 @@ export class Edit {
 
     public readonly exec = async (props: Props): Promise<Either<string>> => {
         try {
-            const { mapped } = props;
+            const { mapped, userSource } = props;
             const params = this.transform(mapped);
             const { _id, firstName, lastName, email, role } = params;
+
+            if (or(!_.isNil(email), !_.isNil(role)) && userSource.role !== UserRole.admin) {
+                throw new Error('Usuario sem permissão')
+            }
 
             await this.crud.update(_id, { firstName, lastName, email, role });
             return successData('success');
         } catch (error: unknown) {
-            return logError(error, '/user/Edit');
+            return logError(error, '/user/edit');
         }
     };
 

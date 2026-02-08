@@ -1,3 +1,4 @@
+import { Avatar } from './avatar';
 import { Criacao } from './criacao';
 import { Delete } from './delete';
 import { Edit } from './edit';
@@ -12,6 +13,7 @@ export class UserController {
     public readonly byEmail: FindByEmail;
     public readonly delete: Delete;
     public readonly edit: Edit;
+    public readonly avatar: Avatar;
 
     constructor() {
         this.criacao = Criacao.construir( this.classId);
@@ -19,5 +21,6 @@ export class UserController {
         this.byEmail = FindByEmail.construir(this.classId);
         this.delete = Delete.construir(this.classId);
         this.edit = Edit.construir(this.classId);
+        this.avatar = Avatar.construir(this.classId);
     }
 }

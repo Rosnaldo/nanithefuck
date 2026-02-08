@@ -6,7 +6,7 @@ import Properties from './properties';
 
 import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';
-import { populate } from '#populate';
+// import { populate } from '#populate';
 
 const app = express();
 

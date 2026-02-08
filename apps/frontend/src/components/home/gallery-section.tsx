@@ -2,7 +2,7 @@ import { useState, useRef } from "react"
 import axios from 'axios';
 import { X, Play } from "lucide-react"
 import type { IMeeting, IPicture } from "@repo/shared-types";
-import { ApiError } from "@/error/apit";
+import { ApiError } from "@/error/api";
 import { useQuery } from "@tanstack/react-query";
 
 
