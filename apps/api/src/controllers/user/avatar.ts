@@ -9,15 +9,16 @@ import properties from '#properties';
 
 interface Props {
     buffer: Buffer;
+    mimetype: string;
     userId: string;
 }
 
 const s3 = new S3Client({
-  region: properties.awsRegion,
-  credentials: {
-    accessKeyId: properties.awsAccessKeyId!,
-    secretAccessKey: properties.awsSecretAccessKey!,
-  },
+    region: properties.awsRegion,
+    credentials: {
+        accessKeyId: properties.awsAccessKeyId!,
+        secretAccessKey: properties.awsSecretAccessKey!,
+    },
 });
 
 type UploadParams = {
@@ -35,10 +36,10 @@ export async function uploadToS3({
 }: UploadParams): Promise<string> {
     await s3.send(
         new PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
+            Bucket: bucket,
+            Key: key,
+            Body: body,
+            ContentType: contentType,
         })
     );
 
@@ -62,7 +63,7 @@ export class Avatar {
 
     public readonly exec = async (props: Props): Promise<Either<IUser['IParams']>> => {
         try {
-            const { userId, buffer } = props;
+            const { userId, buffer, mimetype } = props;
 
             const compressed = await compressToTargetSize(
                 buffer,
@@ -73,8 +74,10 @@ export class Avatar {
                 bucket: properties.awsS3Bucket!,
                 key,
                 body: compressed,
-                contentType: "image/jpeg",
+                contentType: mimetype,
             });
+
+            console.log(url)
 
             const user = await this.crud.update(userId, { avatar: url })
             return successData(user);

@@ -10,9 +10,49 @@ import {
 import { logout } from "@/api/keycloak"
 import { useAuth } from "@/providers/auth-provider"
 import { Link } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+import type { IUser } from "@repo/shared-types"
+import { ApiError } from "@/error/api"
+import { apiBack } from "@/api/backend"
 
 export function Header() {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loggedUser } = useAuth();
+    async function fetchUser() {
+        try {
+            const res = await apiBack.get(
+                "/api/users/by-email", {
+                    params: { email: loggedUser.email }
+                }
+            )
+            
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
+
+            const user = res.data as IUser;
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const { data: user, isLoading: isLoading, isError, error } = useQuery<IUser, ApiError>({
+        queryKey: ['user-by-email'],
+        queryFn: fetchUser
+    });
+
+    function Loading() {
+        return <div>Loading...</div>;
+    }
+
+    function ErrorState({ error }: { error: Error }) {
+        return <div style={{ color: "red" }}>{error.message}</div>;
+    }
+
+    if (isLoading) return <Loading />;
+    if (isError) return <ErrorState error={error as Error} />;
+
+    const avatarUrl = `${user?.avatar}?v=${Date.now()}`;
 
     return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
@@ -34,11 +74,11 @@ export function Header() {
                     <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
                         <img
-                        src="/young-brazilian-man-smiling.jpg"
-                        alt="Avatar"
-                        className="w-8 h-8 rounded-full object-cover border-2 border-primary/50"
+                            src={avatarUrl}
+                            alt="Avatar"
+                            className="w-8 h-8 rounded-full object-cover border-2 border-primary/50"
                         />
-                        <span className="hidden sm:inline">Lucas Silva</span>
+                        <span className="hidden sm:inline">{user?.firstName} {user?.lastName}</span>
                     </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">

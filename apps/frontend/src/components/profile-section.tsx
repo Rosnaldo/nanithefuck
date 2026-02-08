@@ -32,7 +32,7 @@ export default function ProfileSection() {
             )
             
             if (res.data.isError) {
-                throw new ApiError(res.data.message || "api/users/by-email request failed");
+                throw new ApiError(res.data.message);
             }
 
             const user = res.data as IUser;
@@ -52,6 +52,8 @@ export default function ProfileSection() {
         queryKey: ['user-by-email'],
         queryFn: fetchUser
     });
+
+    console.log(user)
     
     const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -169,6 +171,8 @@ export default function ProfileSection() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
+    const avatarUrl = `${user?.avatar}?v=${Date.now()}`;
+
     return (
         <div className="min-h-screen max-h-screen overflow-y-auto relative py-8">
             <AnimeBackground />
@@ -192,17 +196,17 @@ export default function ProfileSection() {
                             onClick={() => fileInputRef.current?.click()}
                         >
                             <div
-                            className={`w-32 h-32 rounded-full border-4 ${
-                                isDragging 
-                                ? "border-accent border-dashed bg-accent/20" 
-                                : "border-border/50 group-hover:border-primary/50"
-                            } transition-all duration-300 overflow-hidden flex items-center justify-center bg-background/50`}
+                                className={`w-32 h-32 rounded-full border-4 ${
+                                    isDragging 
+                                    ? "border-accent border-dashed bg-accent/20" 
+                                    : "border-border/50 group-hover:border-primary/50"
+                                } transition-all duration-300 overflow-hidden flex items-center justify-center bg-background/50`}
                             >
                             {user?.avatar ? (
                                 <img
-                                src={user.avatar || "/placeholder.svg"}
-                                alt="Avatar"
-                                className="w-full h-full object-cover"
+                                    src={avatarUrl || "/placeholder.svg"}
+                                    alt="Avatar"
+                                    className="w-full h-full object-cover"
                                 />
                             ) : (
                                 <User className="w-16 h-16 text-muted-foreground" />

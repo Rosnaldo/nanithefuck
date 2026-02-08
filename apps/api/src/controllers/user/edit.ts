@@ -15,6 +15,7 @@ import { mapString } from '#utils/mapper/string';
 import { toUndefined } from '#utils/mapper/to_undefined';
 import { or } from '#utils/ports';
 import { UserRole } from '@repo/shared-types';
+import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
 
 type IEdit = IUserController['IEdit'];
 type Mapped = Omit<IEdit, 'role'> & {
@@ -50,7 +51,7 @@ export class Edit {
             const { _id, firstName, lastName, email, role } = params;
 
             if (or(!_.isNil(email), !_.isNil(role)) && userSource.role !== UserRole.admin) {
-                throw new Error('Usuario sem permissão')
+                throw new UnauthorizedRequestException('Usuario sem permissão')
             }
 
             await this.crud.update(_id, { firstName, lastName, email, role });

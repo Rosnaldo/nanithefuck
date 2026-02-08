@@ -47,7 +47,6 @@ export default (app: Application) => {
         authorizeMiddleware([UserRole.admin, UserRole.member]),
         async (req, res) => {
             const controller = new UserController();
-            console.log('rui', req.body)
             const mapped = controller.edit!.mapper({ ...req.body });
             const either = await controller.edit!.exec({ mapped, userSource: req.user });
             return res.status(200).send(either);
@@ -75,9 +74,13 @@ export default (app: Application) => {
                     return res.status(400).json({ error: 'Image is required' });
                 }
 
+                if (!req.file.mimetype.startsWith('image/')) {
+                    return res.status(400).json({ error: 'Invalid file type' });
+                }
+
                 const userId = req.user._id;
                 const controller = new UserController();
-                const either = await controller.avatar!.exec({ userId, buffer: req.file.buffer });
+                const either = await controller.avatar!.exec({ userId, buffer: req.file.buffer, mimetype: req.file.mimetype });
                 return res.status(200).send(either);
             } catch (err) {
                 res.status(500).json({ error: 'Failed to upload image' });
