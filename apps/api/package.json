@@ -1,10 +1,10 @@
 {
-  "name": "core_v2",
+  "name": "api",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "tsc && node build/index.js",
+    "start": "node build/index.js",
     "dev": "API_NODE_ENV=local nodemon",
     "tsc": "rimraf build && tsc -p tsconfig.src.json && tsc-alias -p tsconfig.src.json && rimraf *.tsbuildinfo",
     "build": "npm run tsc"

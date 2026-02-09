@@ -1,4 +1,4 @@
-import { Waves, BedDouble, ShowerHead, Camera, UtensilsCrossed, Check, Clock, Sparkles } from "lucide-react"
+import { Waves, BedDouble, ShowerHead, Camera, UtensilsCrossed, Check, Sparkles } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 interface FeatureCategory {

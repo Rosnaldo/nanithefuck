@@ -1,0 +1,23 @@
+# Stage 1: build
+FROM node:20-alpine AS builder
+WORKDIR /monorepo
+
+COPY package*.json ./
+COPY apps/api/package*.json apps/api/
+COPY packages/shared-types/package*.json packages/shared-types/
+
+COPY packages ./packages
+COPY apps/api ./apps/api
+
+RUN npm install
+RUN npm run build --workspace apps/api
+
+# Stage 2: runtime
+FROM node:20-alpine
+WORKDIR /monorepo/apps/api
+COPY --from=builder /monorepo/apps/api/package*.json ./
+COPY --from=builder /monorepo/apps/api/build ./build
+COPY --from=builder /monorepo/node_modules ./node_modules
+
+EXPOSE 5002
+CMD ["node", "build/index.js"]
