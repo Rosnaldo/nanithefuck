@@ -9,10 +9,6 @@ services:
       - "5173:5173"
     env_file:
       - ./apps/frontend/.env
-    volumes:
-      - .:/monorepo
-      - /monorepo/node_modules
-    working_dir: /monorepo/apps/frontend
     restart: unless-stopped
 
   backend:
@@ -24,10 +20,6 @@ services:
       - "5002:5002"
     env_file:
       - ./apps/api/.env
-    volumes:
-      - .:/monorepo
-      - /monorepo/node_modules
-    working_dir: /monorepo/apps/api
     restart: unless-stopped
     depends_on:
       mongo:
