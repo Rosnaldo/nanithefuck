@@ -2665,7 +2665,7 @@
     "saml.signature.algorithm": "",
     "parRequestUriLifespan": "60",
     "clientSessionMaxLifespan": "0",
-    "frontendUrl": "",
+    "webUrl": "",
     "acr.loa.map": "{}",
     "darkMode": "true"
   },

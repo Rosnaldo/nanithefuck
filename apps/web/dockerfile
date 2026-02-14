@@ -7,8 +7,7 @@ WORKDIR /app
 FROM base AS prepare
 
 RUN npm i -g turbo
-COPY . .
-RUN turbo prune frontend --docker
+COPY ./out ./out
 
 
 FROM base AS builder
@@ -31,12 +30,12 @@ RUN npm install
 COPY --from=prepare /app/out/full/ .
 
 RUN npm run build --filter=@repo/shared-types
-RUN npm run build --workspace apps/frontend
+RUN npm run build --workspace apps/web
 
 
 FROM base AS runner
 
 # Don't run production as root
-COPY --from=builder /app/apps/frontend .
+COPY --from=builder /app/apps/web .
 
 CMD ["npm", "run", "preview"]
