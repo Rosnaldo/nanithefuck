@@ -7,11 +7,11 @@ services:
       - "5173:5173"
     restart: unless-stopped
 
-  backend:
+  api:
     build:
       context: .
       dockerfile: ./apps/api/dockerfile
-    container_name: backend
+    container_name: api
     ports:
       - "5002:5002"
     env_file:
