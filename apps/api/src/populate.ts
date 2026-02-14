@@ -128,39 +128,39 @@ function randomStatus(): "confirmed" | "pending" {
 
 export const populate = async () => {
 
-    const meet = await getMeetingDao().findOne({ name: 'ChacaraMeets' })
-    await getMeetingDao().findOneAndUpdate(meet!._id.toString(), { gallery: media })
-    // await getUserDao().inserir({
-    //     firstName: "Andrey",
-    //     lastName: "Tsuzuki",
-    //     email: "andreytsuzuki@gmail.com",
-    //     avatar: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/avatars/young-brazilian-man-smiling.jpg",
-    //     role: 'admin',
-    // });
-    // const meeting = await getMeetingDao().inserir({
-    //     name: 'ChacaraMeets',
-    //     days: [
-    //         {
-    //             day: new Date(2026, 1, 1),
-    //             start: new Date(2026, 1, 1, 7, 0),
-    //             finish: new Date(2026, 1, 1, 23, 59),
-    //         },
-    //         {
-    //             day: new Date(2026, 2, 1),
-    //             start: new Date(2026, 2, 1, 7, 0),
-    //             finish: new Date(2026, 2, 1, 23, 59),
-    //         },
-    //     ]
-    // })
+    const meeting = await getMeetingDao().inserir({
+        name: 'ChacaraMeets',
+        days: [
+            {
+                day: new Date(2026, 1, 1),
+                start: new Date(2026, 1, 1, 7, 0),
+                finish: new Date(2026, 1, 1, 23, 59),
+            },
+            {
+                day: new Date(2026, 2, 1),
+                start: new Date(2026, 2, 1, 7, 0),
+                finish: new Date(2026, 2, 1, 23, 59),
+            },
+        ]
+    })
+    await getMeetingDao().findOneAndUpdate(meeting!._id.toString(), { gallery: media })
+    await getUserDao().inserir({
+        firstName: "Andrey",
+        lastName: "Tsuzuki",
+        email: "andreytsuzuki@gmail.com",
+        avatar: "https://nanithefuck-32.s3.sa-east-1.amazonaws.com/avatars/young-brazilian-man-smiling.jpg",
+        role: 'admin',
+    });
 
-    // const newMembers = await getUserDao().find({});
+    await getUserDao().inserirBatch(members);
+    const newMembers = await getUserDao().find({});
 
-    // const ids = newMembers.map((m) => m.id)
-    // const participants = ids.map(id => ({
-    //     meetingId: meeting.id,
-    //     userId: id,
-    //     status: randomStatus()
-    // }))
+    const ids = newMembers.map((m) => m.id)
+    const participants = ids.map(id => ({
+        meetingId: meeting.id,
+        userId: id,
+        status: randomStatus()
+    }))
 
-    // await getParticipantModel().insertMany(participants);
+    await getParticipantModel().insertMany(participants);
 }

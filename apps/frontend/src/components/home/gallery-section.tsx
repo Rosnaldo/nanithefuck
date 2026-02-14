@@ -1,9 +1,9 @@
 import { useState, useRef } from "react"
-import axios from 'axios';
 import { X, Play } from "lucide-react"
 import type { IMeeting, IPicture } from "@repo/shared-types";
 import { ApiError } from "@/error/api";
 import { useQuery } from "@tanstack/react-query";
+import { apiBack } from "@/api/backend";
 
 
 function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) {
@@ -44,8 +44,8 @@ export function GallerySection() {
 
     async function fetchMeeting() {
         try {
-            const res = await axios.get(
-                "http://localhost:5002/api/meetings/by-name/", {
+            const res = await apiBack.get(
+                "/api/meetings/by-name", {
                     params: { name: 'ChacaraMeets' }
                 }
             )
@@ -57,7 +57,7 @@ export function GallerySection() {
             const meeting = res.data as IMeeting;
             return meeting;
         } catch (error) {
-            console.log('fetchParticipants: error', error);
+            console.log('Gallery fetchMeeting: error', error);
             throw error;
         }
     }

@@ -1,5 +1,4 @@
 import { useState } from "react"
-import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
 
 import { Users, Search } from "lucide-react"
@@ -7,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { ParticipantStatus, type IMeeting, type IParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
+import { apiBack } from "@/api/backend"
 
 export function ParticipantListSection() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -14,8 +14,8 @@ export function ParticipantListSection() {
 
     async function fetchParticipants() {
         try {
-            const res = await axios.get(
-                "http://localhost:5002/api/meetings/by-name/", {
+            const res = await apiBack.get(
+                "/api/meetings/by-name", {
                     params: { name: 'ChacaraMeets' }
                 }
             )
@@ -25,9 +25,8 @@ export function ParticipantListSection() {
             }
 
             const meeting = res.data as IMeeting;
-
-            const res2 = await axios.get(
-                "http://localhost:5002/api/participants/pagination", {
+            const res2 = await apiBack.get(
+                "/api/participants/pagination", {
                     params: { meetingId: meeting?._id }
                 }
             )
@@ -38,7 +37,7 @@ export function ParticipantListSection() {
 
             return res2.data.data as IParticipant[];
         } catch (error) {
-            console.log('fetchParticipants: error', error);
+            console.log('ParticipantListSection fetchParticipants: error', error);
             throw error;
         }
     }

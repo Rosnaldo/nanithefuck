@@ -44,6 +44,7 @@ export default function ProfileSection() {
 
             return user;
         } catch (error) {
+            console.log('ProfileSection fetchUser: error', error)
             throw error;
         }
     }
@@ -53,8 +54,6 @@ export default function ProfileSection() {
         queryFn: fetchUser
     });
 
-    console.log(user)
-    
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     const validateForm = () => {

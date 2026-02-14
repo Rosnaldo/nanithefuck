@@ -25,10 +25,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         keycloak
         .init({
             redirectUri: window.location.origin + '/main',
-            onLoad: "check-sso",   // ⬅ no forced redirect
-            pkceMethod: "S256",
-            silentCheckSsoRedirectUri:
-            window.location.origin + "/silent-check-sso.html",
+            onLoad: 'login-required',
+            checkLoginIframe: false
         })
         .then((auth) => {
             const parsed = keycloak.tokenParsed;

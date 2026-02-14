@@ -8,7 +8,7 @@ npx shadcn@latest add button
 
 
 ### rebuild image 
-docker compose build --no-cache frontend 
+./build.sh
 
 
 ### clean cache

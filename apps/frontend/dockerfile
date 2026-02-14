@@ -13,6 +13,16 @@ RUN turbo prune frontend --docker
 
 FROM base AS builder
 
+ARG VITE_KEYCLOAK_URL
+ARG VITE_KEYCLOAK_REALM
+ARG VITE_KEYCLOAK_CLIENT_ID
+ARG VITE_BACKEND_URL
+
+ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL
+ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
+ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+
 # First install dependencies (as they change less often)
 COPY --from=prepare /app/out/json/ .
 RUN npm install
@@ -27,9 +37,6 @@ RUN npm run build --workspace apps/frontend
 FROM base AS runner
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 expressjs
-RUN adduser --system --uid 1001 expressjs
-USER expressjs
-COPY --from=builder /app .
+COPY --from=builder /app/apps/frontend .
 
-CMD ["node", "apps/frontend/build/index.js"]
+CMD ["npm", "run", "preview"]

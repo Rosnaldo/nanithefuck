@@ -1,14 +1,10 @@
 
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: ./apps/frontend/dockerfile
+    image: frontend
     container_name: frontend
     ports:
       - "5173:5173"
-    env_file:
-      - ./apps/frontend/.env
     restart: unless-stopped
 
   backend:

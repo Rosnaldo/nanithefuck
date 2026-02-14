@@ -5,7 +5,6 @@ import upload from '#utils/image/multer-upload';
 import { GetUser } from '#middleware/get_user';
 import { authorizeMiddleware } from '#middleware/authorize';
 import { UserRole } from '@repo/shared-types';
-import { keycloakApi } from '#apis/keycloak';
 import { GetKeycloakUser } from '#middleware/get_keycloak_user';
 
 export default (app: Application) => {

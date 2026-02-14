@@ -5,9 +5,3 @@ export const keycloak = new Keycloak({
     realm: import.meta.env.VITE_KEYCLOAK_REALM,
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 });
-
-export function logout() {
-    keycloak.logout({
-        redirectUri: window.location.origin + '/login',
-    });
-}

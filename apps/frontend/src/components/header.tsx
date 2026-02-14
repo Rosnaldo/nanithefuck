@@ -7,7 +7,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { logout } from "@/api/keycloak"
 import { useAuth } from "@/providers/auth-provider"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
@@ -16,7 +15,7 @@ import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 
 export function Header() {
-    const { isAuthenticated, loggedUser } = useAuth();
+    const { isAuthenticated, loggedUser, logout } = useAuth();
     async function fetchUser() {
         try {
             const res = await apiBack.get(
@@ -32,6 +31,7 @@ export function Header() {
             const user = res.data as IUser;
             return user;
         } catch (error) {
+            console.log('Header fetchUser: error', error);
             throw error;
         }
     }
