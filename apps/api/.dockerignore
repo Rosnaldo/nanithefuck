@@ -1,4 +1,6 @@
-node_modules
-data
-build
-.env
+**/build
+**/dist
+**/data
+**/node_modules
+**/.env
+.git

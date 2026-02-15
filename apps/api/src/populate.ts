@@ -1,5 +1,6 @@
 import { getMeetingDao, getUserDao } from "#daos/singleton";
 import { getParticipantModel } from "#models/singleton";
+import { mongooseBootstrap } from "#mongoose_bootstrap";
 import { IUser } from "#schemas/user/types";
 
 const members: Omit<IUser['IParams'], '_id'>[] = [
@@ -164,3 +165,8 @@ export const populate = async () => {
 
     await getParticipantModel().insertMany(participants);
 }
+
+;(async () => {
+    await mongooseBootstrap();
+    await populate();
+})();
