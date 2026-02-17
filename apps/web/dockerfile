@@ -36,6 +36,6 @@ RUN find . -type d -name node_modules -prune -exec rm -rf '{}' +
 FROM base AS runner
 
 COPY --from=builder /app .
-RUN npm ci --omit=dev
+RUN npm ci
 
-CMD ["npm", "run", "preview"]
+CMD ["npm", "run", "preview", "--workspace", "apps/web"]

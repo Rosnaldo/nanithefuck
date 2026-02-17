@@ -6,9 +6,8 @@ npm install -d @types/express --workspace apps/payment
 
 npx shadcn@latest add button
 
-
-### rebuild image 
-./build.sh
+# verify volume content
+docker run --rm -it -v nanithefuck_web_dist:/data alpine sh
 
 
 ### clean cache
