@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { isPast, isToday } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -18,6 +17,7 @@ import MeetingFormModal from '@/components/Meetings/MeetingFormModal';
 import MeetingsTable from '@/components/Meetings/MeetingsTable';
 import DeleteMeetingModal from '@/components/Meetings/DeleteMeetingModal';
 import type { IMeeting } from '@repo/shared-types';
+import { apiBack } from "@/api/backend"
 
 export default function Meetings() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -30,7 +30,7 @@ export default function Meetings() {
 
     const { data: meetings = [], isLoading: loadingMeetings } = useQuery<IMeeting[]>({
         queryKey: ['meetings'],
-        queryFn: () => fetch('/api/meetings/list').then(r => r.json()),
+        queryFn: () => fetch('/meetings/list').then(r => r.json()),
     });
 
     const { data: users = [] } = useQuery({
@@ -40,7 +40,7 @@ export default function Meetings() {
 
     const createMutation = useMutation({
         mutationFn: async (body: Partial<IMeeting>) => {
-            await axios.post('http://localhost:5002/api/meetings/create', body);
+            await apiBack.post('/meetings/create', body);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['meetings'] });
@@ -55,7 +55,7 @@ export default function Meetings() {
 
     const updateMutation = useMutation({
         mutationFn: async ({ _id, body }: { _id: string; body: Partial<IMeeting> }) => {
-            await axios.put('http://localhost:5002/api/meetings/edit', body, {
+            await apiBack.put('/meetings/edit', body, {
                 params: { _id }
             });
         },
@@ -72,7 +72,7 @@ export default function Meetings() {
 
     const deleteMutation = useMutation({
         mutationFn: async (_id?: string) => {
-            await axios.delete(`http://localhost:5002/api/meetings/delete`, {
+            await apiBack.delete(`/meetings/delete`, {
                 params: { _id }                
             });
         },

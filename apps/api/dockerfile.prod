@@ -19,13 +19,16 @@ RUN npm ci
 # copy all files except node_module and builds
 COPY --from=prepare /app/out/full/ .
 RUN npm run build --filter=@repo/shared-types
+RUN npm run build --workspace apps/api
+RUN find . -type d -name node_modules -prune -exec rm -rf '{}' +
 
 
 FROM base AS runner
 
 COPY --from=builder /app .
+RUN npm ci --omit=dev
 
 # RUN apt-get update && apt-get install -y tree
 # RUN tree -L 3
 
-CMD ["npm", "run", "dev", "--workspace", "apps/api"]
+CMD ["node", "apps/api/build/index.js"]

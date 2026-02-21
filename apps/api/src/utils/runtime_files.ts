@@ -27,8 +27,7 @@ export class RuntimeFiles {
     };
 
     private readonly isRuntimeFile = (fileName: string): boolean => {
-        const tsRuntimeEnvs  = ['local', 'test'];
-        const ext = tsRuntimeEnvs .includes(Properties.nodeEnv) ? '.ts' : '.js';
+        const ext = Properties.isRuntime === 'ts' ? '.ts' : '.js';
         return fileName.endsWith(ext) &&
             !fileName.endsWith('.d.ts') &&
             !fileName.endsWith('.map');

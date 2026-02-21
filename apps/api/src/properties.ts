@@ -9,4 +9,5 @@ export default {
     keycloakUri: process.env.KEYCLOAK_URI || 'http://localhost:8080/realms/poc',
     keycloakClientApiId: process.env.KEYCLOAK_CLIENT_API_ID || 'api',
     keycloakClientApiSecret: process.env.KEYCLOAK_CLIENT_API_SECRET,
+    isRuntime: process.env.RUNTIME || 'js',
 };

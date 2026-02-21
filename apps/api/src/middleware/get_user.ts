@@ -17,6 +17,7 @@ export const GetUser = async (req: Request, _res: Response, next: NextFunction) 
     
         return next();
     } catch (error) {
+        console.log('GetUser: Não autorizado')
         return next({ isError: true, message: 'Não autorizado', status: 401 })
     }
 };

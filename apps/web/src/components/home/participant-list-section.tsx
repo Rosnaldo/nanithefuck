@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { ParticipantStatus, type IMeeting, type IParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
+import { toast } from "sonner"
 
 export function ParticipantListSection() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -21,7 +22,7 @@ export function ParticipantListSection() {
             )
             
             if (res.data.isError) {
-                throw new ApiError(res.data.message || "api/meetings/by-name request failed");
+                throw new ApiError(res.data.message || "/api/meetings/by-name request failed");
             }
 
             const meeting = res.data as IMeeting;
@@ -32,12 +33,15 @@ export function ParticipantListSection() {
             )
 
             if (res2.data.isError) {
-                throw new ApiError(res.data.message || "api/participants/by-meeting request failed");
+                throw new ApiError(res.data.message || "/api/participants/by-meeting request failed");
             }
 
             return res2.data.data as IParticipant[];
         } catch (error) {
-            console.log('ParticipantListSection fetchParticipants: error', error);
+            if (error instanceof ApiError) {
+                toast.error(error.message)
+            }
+            console.log('fetchParticipants fetchUser: error', error);
             throw error;
         }
     }

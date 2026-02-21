@@ -9,7 +9,7 @@ import { GetKeycloakUser } from '#middleware/get_keycloak_user';
 
 export default (app: Application) => {
     app.get(
-        '/api/users/list',
+        '/users/list',
         GetKeycloakUser,
         GetUser,
         authorizeMiddleware([UserRole.admin]),
@@ -22,7 +22,7 @@ export default (app: Application) => {
         }
     );
     app.get(
-        '/api/users/by-email',
+        '/users/by-email',
         GetKeycloakUser,
         async (req, res) => {
             const controller = new UserController();
@@ -32,7 +32,7 @@ export default (app: Application) => {
         }
     );
     app.post(
-        '/api/users/create',
+        '/users/create',
         GetKeycloakUser,
         GetUser,
         authorizeMiddleware([UserRole.admin]),
@@ -44,7 +44,7 @@ export default (app: Application) => {
         }
     );
     app.put(
-        '/api/users/edit',
+        '/users/edit',
         GetKeycloakUser,
         GetUser,
         authorizeMiddleware([UserRole.admin, UserRole.member]),
@@ -56,7 +56,7 @@ export default (app: Application) => {
         }
     );
     app.delete(
-        '/api/users/delete',
+        '/users/delete',
         GetKeycloakUser,
         GetUser,
         authorizeMiddleware([UserRole.admin, UserRole.member]),
@@ -68,7 +68,7 @@ export default (app: Application) => {
         }
     );
     app.post(
-        '/api/upload-avatar',
+        '/users/upload-avatar',
         GetKeycloakUser,
         GetUser,
         authorizeMiddleware([UserRole.admin, UserRole.member]),

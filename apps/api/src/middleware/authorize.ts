@@ -8,6 +8,7 @@ export const authorizeMiddleware = (allowList: Array<keyof typeof UserRole> = []
             if (allowList.includes(user.role)) return next();
             return res.status(401).send('Sem permissão');
         }
+        console.log('authorizeMiddleware: Usuario não encontrado')
         return res.status(403).send('authorizeMiddleware: Usuario não encontrado');
     };
 };

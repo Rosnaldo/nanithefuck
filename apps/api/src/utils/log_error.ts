@@ -5,12 +5,12 @@ import { safeObjectify } from './safe_objectify';
 
 export const logError = (error: unknown, endpoint: string): IsError => {
     if (error instanceof BadRequestException) {
-        console.debug(`${endpoint} BadRequestException: ${error.message}}`);
+        console.log(`${endpoint} BadRequestException: ${error.message}}`);
         return { isError: true, status: 200, message: error.message };
     }
 
     if (error instanceof UnauthorizedRequestException) {
-        console.debug(`${endpoint} UnauthorizedRequestException: ${error.message}`);
+        console.log(`${endpoint} UnauthorizedRequestException: ${error.message}`);
         return { isError: true, status: 200, message: error.message };
     }
 

@@ -4,6 +4,7 @@ import type { IMeeting, IPicture } from "@repo/shared-types";
 import { ApiError } from "@/error/api";
 import { useQuery } from "@tanstack/react-query";
 import { apiBack } from "@/api/backend";
+import { toast } from "sonner";
 
 
 function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) {
@@ -51,13 +52,16 @@ export function GallerySection() {
             )
             
             if (res.data.isError) {
-                throw new ApiError(res.data.message || "api/meetings/by-name request failed");
+                throw new ApiError(res.data.message || "/api/meetings/by-name request failed");
             }
 
             const meeting = res.data as IMeeting;
             return meeting;
         } catch (error) {
-            console.log('Gallery fetchMeeting: error', error);
+            if (error instanceof ApiError) {
+                toast.error(error.message)
+            }
+            console.log('GallerySection fetchUser: error', error);
             throw error;
         }
     }

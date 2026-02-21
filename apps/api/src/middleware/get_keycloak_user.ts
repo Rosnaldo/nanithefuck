@@ -21,6 +21,7 @@ export const GetKeycloakUser = async (req: Request, _res: Response, next: NextFu
 
         return next();
     } catch (error) {
+        console.log('GetKeycloakUser: Não autorizado')
         return next({ isError: true, message: 'Não autorizado', status: 401 })
     }
 };

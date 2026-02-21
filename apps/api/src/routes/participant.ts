@@ -3,7 +3,7 @@ import type { Application } from 'express';
 
 export default (app: Application) => {
     app.get(
-        '/api/participants/pagination',
+        '/participants/pagination',
         async (req, res) => {
             const controller = new ParticipantController();
             const mapped = controller.pagination!.mapper(req.query);

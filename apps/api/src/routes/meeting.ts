@@ -3,7 +3,7 @@ import type { Application } from 'express';
 
 export default (app: Application) => {
     app.get(
-        '/api/meetings/list',
+        '/meetings/list',
         async (req, res) => {
             const controller = new MeetingController();
             const params = controller.paginacao!.mapper(req.query);
@@ -12,8 +12,9 @@ export default (app: Application) => {
         }
     );
     app.get(
-        '/api/meetings/by-name',
+        '/meetings/by-name',
         async (req, res) => {
+            console.log('Aqui meetings', req.query)
             const controller = new MeetingController();
             const mapped = controller.byName!.mapper(req.query);
             const either = await controller.byName!.get({ mapped });
@@ -21,7 +22,7 @@ export default (app: Application) => {
         }
     );
     app.post(
-        '/api/meetings/create',
+        '/meetings/create',
         async (req, res) => {
             const controller = new MeetingController();
             const mapped = controller.criacao!.mapper(req.body);
@@ -30,7 +31,7 @@ export default (app: Application) => {
         }
     );
     app.put(
-        '/api/meetings/edit',
+        '/meetings/edit',
         async (req, res) => {
             const controller = new MeetingController();
             const mapped = controller.edit!.mapper({ _id: req.query._id, ...req.body });
@@ -39,7 +40,7 @@ export default (app: Application) => {
         }
     );
     app.delete(
-        '/api/meetings/delete',
+        '/meetings/delete',
         async (req, res) => {
             const controller = new MeetingController();
             const mapped = controller.delete!.mapper(req.query);

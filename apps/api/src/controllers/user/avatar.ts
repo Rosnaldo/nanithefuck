@@ -87,7 +87,7 @@ export class Avatar {
             const user = await this.crud.update(userId, { avatar: url })
             return successData(user);
         } catch (error: unknown) {
-            return logError(error, 'api/upload-avatar');
+            return logError(error, '/users/upload-avatar');
         }
     };
 }

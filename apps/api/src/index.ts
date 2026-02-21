@@ -7,7 +7,6 @@ import Properties from './properties';
 import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';
 import { buildKcMain } from '#keycloak/singleton';
-// import { populate } from '#populate';
 
 const app = express();
 
@@ -17,7 +16,6 @@ export async function initializeServices(): Promise<void> {
     try {
         await buildKcMain();
         await mongooseBootstrap();
-        // await populate();
 
         app.use(cors());
         app.use(express.json());
@@ -30,7 +28,7 @@ export async function initializeServices(): Promise<void> {
         const loadRoutes = new LoadRoutes(app);
         await loadRoutes.synchronous();
 
-        const server = app.listen(Properties.port, () => {
+        const server = app.listen(Number(Properties.port), '0.0.0.0', () => {
             console.log(`Application running on  ${Properties.port}`);
         });
 

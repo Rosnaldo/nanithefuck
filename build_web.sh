@@ -1,5 +1,5 @@
 #!/bin/bash
-# turbo prune web --docker --out-dir apps/web/out
+turbo prune web --docker --out-dir apps/web/out
 docker build \
   -f apps/web/dockerfile \
   -t web --progress=plain \

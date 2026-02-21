@@ -12,6 +12,10 @@ COPY ./apps/web/out ./out
 
 FROM base AS builder
 
+# copy package*.json struture
+COPY --from=prepare /app/out/json/ .
+RUN npm ci
+
 ARG VITE_KEYCLOAK_URL
 ARG VITE_KEYCLOAK_REALM
 ARG VITE_KEYCLOAK_CLIENT_ID
@@ -22,20 +26,14 @@ ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
 ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 
-# copy package*.json struture
-COPY --from=prepare /app/out/json/ .
-RUN npm ci
-
 # copy all files except node_module and builds
 COPY --from=prepare /app/out/full/ .
 RUN npm run build --filter=@repo/shared-types
 RUN npm run build --workspace apps/web
-RUN find . -type d -name node_modules -prune -exec rm -rf '{}' +
 
 
 FROM base AS runner
 
 COPY --from=builder /app .
-RUN npm ci
 
 CMD ["npm", "run", "preview", "--workspace", "apps/web"]

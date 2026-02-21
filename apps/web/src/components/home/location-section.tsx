@@ -14,10 +14,6 @@ export function LocationSection() {
                 <MapPin className="w-4 h-4" />
                 <span>Localização</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Como Chegar</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-                A chácara fica em uma região tranquila e de fácil acesso. Confira o mapa e as instruções abaixo.
-            </p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">

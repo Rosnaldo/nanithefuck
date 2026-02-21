@@ -44,7 +44,10 @@ export default function ProfileSection() {
 
             return user;
         } catch (error) {
-            console.log('ProfileSection fetchUser: error', error)
+            if (error instanceof ApiError) {
+                toast.error(error.message)
+            }
+            console.log('ProfileSection fetchUser: error', error);
             throw error;
         }
     }
@@ -115,7 +118,7 @@ export default function ProfileSection() {
         formData.append("image", file);
 
         try {
-            const res = await apiBack.post("/api/upload-avatar", formData);
+            const res = await apiBack.post("/api/users/upload-avatar", formData);
     
             if (res.data.isError) {
                 toast.error(res.data.message)

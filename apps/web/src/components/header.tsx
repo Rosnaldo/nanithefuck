@@ -13,11 +13,22 @@ import { useQuery } from "@tanstack/react-query"
 import type { IUser } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
+import { toast } from "sonner"
 
 export function Header() {
     const { isAuthenticated, loggedUser, logout } = useAuth();
     async function fetchUser() {
         try {
+            const res3 = await apiBack.get(
+                "/api/health", {
+                }
+            )
+            console.log('api/health', res3.data)
+
+            if (res3.data.isError) {
+                throw new ApiError(res3.data.message);
+            }
+
             const res = await apiBack.get(
                 "/api/users/by-email", {
                     params: { email: loggedUser.email }
@@ -31,6 +42,9 @@ export function Header() {
             const user = res.data as IUser;
             return user;
         } catch (error) {
+            if (error instanceof ApiError) {
+                toast.error(error.message)
+            }
             console.log('Header fetchUser: error', error);
             throw error;
         }
