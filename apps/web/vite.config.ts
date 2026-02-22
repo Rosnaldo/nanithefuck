@@ -17,7 +17,7 @@ export default defineConfig({
   },
   preview: {
     allowedHosts: [
-        'www.nanithefuck.local'
+        'nanithefuck.local'
     ]
   }
 })

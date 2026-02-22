@@ -6,8 +6,8 @@ export default {
     awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
     awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     awsS3Bucket: process.env.AWS_S3_BUCKET,
-    keycloakUri: process.env.KEYCLOAK_URI || 'http://localhost:8080/realms/poc',
+    keycloakUri: process.env.KEYCLOAK_URI || 'http://localhost:8080',
     keycloakClientApiId: process.env.KEYCLOAK_CLIENT_API_ID || 'api',
-    keycloakClientApiSecret: process.env.KEYCLOAK_CLIENT_API_SECRET,
+    keycloakClientApiSecret: process.env.KEYCLOAK_CLIENT_API_SECRET || 'secret',
     isRuntime: process.env.RUNTIME || 'js',
 };

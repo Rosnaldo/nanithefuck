@@ -14,7 +14,6 @@ export default (app: Application) => {
     app.get(
         '/meetings/by-name',
         async (req, res) => {
-            console.log('Aqui meetings', req.query)
             const controller = new MeetingController();
             const mapped = controller.byName!.mapper(req.query);
             const either = await controller.byName!.get({ mapped });

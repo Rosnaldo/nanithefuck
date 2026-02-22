@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { getUserDao } from '#daos/singleton';
 import { UserUtils } from '#schemas/user/utils';
 
-export const GetUser = async (req: Request, _res: Response, next: NextFunction) => {
+export const GetUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const email = req.userKc.email;
         const user = await getUserDao().findByEmail(email);
@@ -18,6 +18,6 @@ export const GetUser = async (req: Request, _res: Response, next: NextFunction) 
         return next();
     } catch (error) {
         console.log('GetUser: Não autorizado')
-        return next({ isError: true, message: 'Não autorizado', status: 401 })
+        return res.status(403).send({ isError: true, data: {}, message: 'Não autorizado', status: 401 });
     }
 };

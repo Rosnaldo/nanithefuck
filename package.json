@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@react-email/preview-server": "^5.2.8",
+    "eslint": "^9.39.3",
     "nodemon": "^3.1.11",
     "prettier": "^3.6.2",
     "react-email": "5.2.1",
@@ -28,8 +29,11 @@
   ],
   "dependencies": {
     "@react-email/components": "1.0.4",
-    "eslint": "9.39.2",
+    "eslint-plugin-n": "17.24.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
+  },
+  "overrides": {
+    "minimatch": "^10.2.2"
   }
 }
