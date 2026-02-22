@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -7,6 +7,13 @@ import Properties from './properties';
 import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';
 import { buildKcMain } from '#keycloak/singleton';
+
+dotenv.config({ path: '.env' });
+
+dotenv.config({
+  path: `.env.${process.env.API_NODE_ENV}`,
+  override: true
+});
 
 const app = express();
 

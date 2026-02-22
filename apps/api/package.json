@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node build/index.js",
-    "dev": "nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/index.ts",
+    "dev": "API_NODE_ENV=local nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/index.ts",
     "tsc": "rimraf build && tsc -p tsconfig.src.json && tsc-alias -p tsconfig.src.json && rimraf *.tsbuildinfo",
     "build": "npm run tsc",
     "populate": "nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/populate.ts"
@@ -16,6 +16,7 @@
     "@aws-sdk/client-s3": "^3.983.0",
     "@keycloak/keycloak-admin-client": "^26.5.2",
     "@repo/shared-types": "*",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.25",
     "@types/express-serve-static-core": "^4.19.7",
     "@types/multer": "^2.0.0",

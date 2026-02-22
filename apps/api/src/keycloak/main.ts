@@ -3,12 +3,12 @@ import KcAdminClient from '@keycloak/keycloak-admin-client';
 import Properties from '#properties';
 import { ServiceResponseException } from '#exceptions/service_response';
 
-// const originalFetch = global.fetch;
+const originalFetch = global.fetch;
 
-// global.fetch = async (url, options) => {
-//   console.log('[FETCH]', options?.method, url);
-//   return originalFetch(url, options);
-// };
+global.fetch = async (url, options) => {
+  console.log('[FETCH]', options?.method, url);
+  return originalFetch(url, options);
+};
 
 const getKcAdminClient = () => {
     return new KcAdminClient({
@@ -27,6 +27,12 @@ export class KeycloakMain {
     public getKcClientCredentials = async (): Promise<KcAdminClient> => {
         try {
             const clientCredentials = getKcAdminClient();
+
+            console.log('client_credentials', {
+                grantType: 'client_credentials',
+                clientId: Properties.keycloakClientApiId,
+                clientSecret: Properties.keycloakClientApiSecret,
+            })
 
             await clientCredentials.auth({
                 grantType: 'client_credentials',

@@ -4,6 +4,8 @@ turbo run dev --filter=backend
 
 npm install -d @types/express --workspace apps/payment
 
+docker compose -f docker-compose.dev.yml up
+
 npx shadcn@latest add button
 
 # verify volume content
