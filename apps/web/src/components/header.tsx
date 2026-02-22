@@ -19,18 +19,8 @@ export function Header() {
     const { isAuthenticated, loggedUser, logout } = useAuth();
     async function fetchUser() {
         try {
-            const res3 = await apiBack.get(
-                "/api/health", {
-                }
-            )
-            console.log('api/health', res3.data)
-
-            if (res3.data.isError) {
-                throw new ApiError(res3.data.message);
-            }
-
             const res = await apiBack.get(
-                "/api/users/by-email", {
+                "/users/by-email", {
                     params: { email: loggedUser.email }
                 }
             )

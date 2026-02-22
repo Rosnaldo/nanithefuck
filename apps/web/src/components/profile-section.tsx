@@ -26,7 +26,7 @@ export default function ProfileSection() {
     async function fetchUser() {
         try {
             const res = await apiBack.get(
-                "/api/users/by-email", {
+                "/users/by-email", {
                     params: { email: loggedUser.email }
                 }
             )
@@ -84,7 +84,7 @@ export default function ProfileSection() {
 
         try {
             const res = await apiBack.put(
-                "/api/users/edit", {
+                "/users/edit", {
                     _id: user?._id,
                     firstName: formData.firstName,
                     lastName: formData.lastName,
@@ -118,7 +118,7 @@ export default function ProfileSection() {
         formData.append("image", file);
 
         try {
-            const res = await apiBack.post("/api/users/upload-avatar", formData);
+            const res = await apiBack.post("/users/upload-avatar", formData);
     
             if (res.data.isError) {
                 toast.error(res.data.message)

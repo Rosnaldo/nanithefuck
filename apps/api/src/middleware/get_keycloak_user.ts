@@ -26,21 +26,19 @@ export const GetKeycloakUser = async (req: Request, res: Response, next: NextFun
                 },
             });
 
-        console.log('authResponse: !!!!', authResponse)
-
         const user = await client.users.findOne({
             id: authResponse.data.sub,
             realm: 'poc'
         });
 
-        console.log('USER !!!!!', user)
+        req.userKc = {
+            id: authResponse.data.sub,
+            email: user?.email,
+            firstName: user?.firstName,
+            lastName: user?.lastName,
+        };
 
-        // req.userKc = {
-        //     id: authResponse.data.sub,
-        //     email: authResponse.data.email,
-        //     firstName: authResponse.data.given_name,
-        //     lastName: authResponse.data.family_name,
-        // };
+        console.log('req.userKc', req.userKc)
 
         return next();
     } catch (error) {

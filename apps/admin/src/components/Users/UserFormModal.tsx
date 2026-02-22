@@ -32,7 +32,6 @@ export default function UserFormModal({ isOpen, onClose, onSubmit, user, isLoadi
     const isEditing = !!user;
 
     useEffect(() => {
-        console.log('useEffect', user)
         if (user) {
             setFormData({
                 firstName: user?.firstName || '',

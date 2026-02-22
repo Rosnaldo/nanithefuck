@@ -16,24 +16,24 @@ export function ParticipantListSection() {
     async function fetchParticipants() {
         try {
             const res = await apiBack.get(
-                "/api/meetings/by-name", {
+                "/meetings/by-name", {
                     params: { name: 'ChacaraMeets' }
                 }
             )
             
             if (res.data.isError) {
-                throw new ApiError(res.data.message || "/api/meetings/by-name request failed");
+                throw new ApiError(res.data.message || "/meetings/by-name request failed");
             }
 
             const meeting = res.data as IMeeting;
             const res2 = await apiBack.get(
-                "/api/participants/pagination", {
+                "/participants/pagination", {
                     params: { meetingId: meeting?._id }
                 }
             )
 
             if (res2.data.isError) {
-                throw new ApiError(res.data.message || "/api/participants/by-meeting request failed");
+                throw new ApiError(res.data.message || "/participants/by-meeting request failed");
             }
 
             return res2.data.data as IParticipant[];
