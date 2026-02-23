@@ -1,44 +1,67 @@
 import { type Request, type Response, type NextFunction } from 'express';
+import jwt, { JwtHeader, JwtPayload } from 'jsonwebtoken';
+import jwksClient, { JwksClient } from 'jwks-rsa';
 import _ from 'lodash';
 
-import { keycloakApi } from '#apis/keycloak';
 import properties from '#properties';
-import { getKcMain } from '#keycloak/singleton';
+
+function getKey(client: JwksClient, header: JwtHeader): Promise<string> {
+    return new Promise((resolve, reject) => {
+        if (!header.kid) return reject(new Error('No KID found in token header'));
+        client.getSigningKey(header.kid, (err, key) => {
+            if (err) return reject(err);
+            const signingKey = key?.getPublicKey();
+            if (!signingKey) throw new Error('Public key not found for KID');
+            resolve(signingKey);
+        });
+    });
+}
+
+// Função de validação que retorna Promise
+async function resolveToken(key: string, token: string, issuer: string): Promise<JwtPayload> {
+    return new Promise((resolve, reject) => {
+        jwt.verify(
+            token,
+            key,
+                {
+                    issuer,
+                    algorithms: ['RS256'],
+                },
+                (err, decoded) => {
+                    if (err) return reject(err);
+                    resolve(decoded as JwtPayload);
+                }
+            );
+    });
+}
+async function validateToken(token: string): Promise<JwtPayload> {
+    const payload = jwt.decode(token) as JwtPayload;
+    const issuer = payload.iss || '';
+
+    const jclient = jwksClient({
+        jwksUri: `${properties.keycloakUri}/realms/poc/protocol/openid-connect/certs`,
+        cache: true,
+        cacheMaxEntries: 5,
+        cacheMaxAge: 10 * 60 * 1000
+    });
+    const decodedHeader = jwt.decode(token, { complete: true })?.header as JwtHeader;
+    if (!decodedHeader) throw new Error('Invalid token');
+
+    const key = await getKey(jclient, decodedHeader);
+    return await resolveToken(key, token, issuer);
+}
 
 export const GetKeycloakUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.headers.authorization || '';
-
-        const kcMain = getKcMain();
-        const client = await kcMain.getKcClientCredentials();
-
-        const params = new URLSearchParams();
-        params.append("token", token);
-        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-
-        const authResponse = await keycloakApi.post('/protocol/openid-connect/token/introspect',
-            params,
-            {
-                headers,
-                auth: {
-                    username: properties.keycloakClientApiId,
-                    password: properties.keycloakClientApiSecret,
-                },
-            });
-
-        const user = await client.users.findOne({
-            id: authResponse.data.sub,
-            realm: 'poc'
-        });
+        const result = await validateToken(token);
 
         req.userKc = {
-            id: authResponse.data.sub,
-            email: user?.email,
-            firstName: user?.firstName,
-            lastName: user?.lastName,
+            id: result.sub,
+            email: result.email,
+            firstName: result.given_name,
+            lastName: result.family_name,
         };
-
-        console.log('req.userKc', req.userKc)
 
         return next();
     } catch (error) {

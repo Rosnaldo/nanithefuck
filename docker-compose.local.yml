@@ -27,7 +27,7 @@ services:
       - 8080:8080
     env_file :
       - ./apps/authentication/.env
-      - ./apps/authentication/.env.dev
+      - ./apps/authentication/.env.local
     volumes:
       # Themes customizados
       - ./apps/authentication/my-themes:/opt/keycloak/themes
@@ -38,8 +38,6 @@ services:
       "--spi-theme-cache-templates=false",
       "--spi-theme-static-max-age=-1",
       "--http-port=8080", 
-      "--http-enabled=true",
-      "--hostname-strict=false",
       "--hostname-debug=true",
       "--health-enabled=true",
       "--verbose",

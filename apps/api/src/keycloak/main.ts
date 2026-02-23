@@ -27,13 +27,6 @@ export class KeycloakMain {
     public getKcClientCredentials = async (): Promise<KcAdminClient> => {
         try {
             const clientCredentials = getKcAdminClient();
-
-            console.log('client_credentials', {
-                grantType: 'client_credentials',
-                clientId: Properties.keycloakClientApiId,
-                clientSecret: Properties.keycloakClientApiSecret,
-            })
-
             await clientCredentials.auth({
                 grantType: 'client_credentials',
                 clientId: Properties.keycloakClientApiId,

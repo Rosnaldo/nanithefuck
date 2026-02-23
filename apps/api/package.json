@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node build/index.js",
-    "dev": "API_NODE_ENV=local nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/index.ts",
+    "local": "API_NODE_ENV=local nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/index.ts",
+    "dev": "API_NODE_ENV=dev nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/index.ts",
     "tsc": "rimraf build && tsc -p tsconfig.src.json && tsc-alias -p tsconfig.src.json && rimraf *.tsbuildinfo",
     "build": "npm run tsc",
     "populate": "nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/populate.ts"
@@ -24,6 +25,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.16.4",
+    "jsonwebtoken": "^9.0.3",
+    "jwks-rsa": "^3.2.2",
     "lodash": "^4.17.23",
     "mongodb-memory-server": "^11.0.1",
     "mongoose": "^8.19.3",
