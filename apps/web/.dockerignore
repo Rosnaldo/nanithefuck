@@ -2,5 +2,6 @@
 **/dist
 **/data
 **/node_modules
-**/.env
+**/.env.**
 .git
+dockerfile

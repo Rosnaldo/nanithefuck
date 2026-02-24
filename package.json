@@ -34,6 +34,7 @@
     "react-dom": "19.2.3"
   },
   "overrides": {
-    "minimatch": "^10.2.2"
+    "minimatch": "^10.2.2",
+    "glob": "^13.0.6"
   }
 }

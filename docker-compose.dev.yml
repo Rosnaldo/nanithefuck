@@ -19,6 +19,11 @@ services:
     container_name: web
     ports:
       - "5173:5173"
+    volumes:
+      - ./apps/web:/app/apps/web
+      - /app/apps/web/node_modules
+    env_file:
+      - ./apps/web/.env.dev
     restart: unless-stopped
 
   api:
@@ -35,6 +40,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./apps/api:/app/apps/api
+      - /app/apps/api/node_modules
     depends_on:
       mongo:
         condition: service_healthy

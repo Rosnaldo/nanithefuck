@@ -16,16 +16,24 @@ FROM base AS builder
 COPY --from=prepare /app/out/json/ .
 RUN npm ci
 
+ARG VITE_KEYCLOAK_URL
+ARG VITE_KEYCLOAK_REALM
+ARG VITE_KEYCLOAK_CLIENT_ID
+ARG VITE_BACKEND_URL
+
+ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL
+ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
+ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+
 # copy all files except node_module and builds
 COPY --from=prepare /app/out/full/ .
 RUN npm run build --filter=@repo/shared-types
+RUN npm run build --workspace apps/web
 
 
 FROM base AS runner
 
 COPY --from=builder /app .
 
-# RUN apt-get update && apt-get install -y tree
-# RUN tree -L 3
-
-CMD ["npm", "run", "dev", "--workspace", "apps/web"]
+CMD ["npm", "run", "preview", "--workspace", "apps/web"]

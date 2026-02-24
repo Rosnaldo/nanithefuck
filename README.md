@@ -4,7 +4,12 @@ turbo run dev --filter=backend
 
 npm install -d @types/express --workspace apps/payment
 
+
+## start docker-composer
 docker compose -f docker-compose.dev.yml up
+
+## rebuild image and container
+docker compose -f docker-compose.dev.yml up -d --build web
 
 npx shadcn@latest add button
 
