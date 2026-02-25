@@ -18,8 +18,6 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserUtils, type IUser } from '@repo/shared-types';
-import { avatarColors } from '@/lib/avatar_colors';
-import { cn } from '@/lib/utils';
 import { Avatar } from '../Avatar';
 
 interface Props {

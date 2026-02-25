@@ -1,17 +1,8 @@
 import { useState } from 'react';
-import { isPast, isToday } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Plus, Calendar, Clock, Search, Filter } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 import MeetingFormModal from '@/components/Meetings/MeetingFormModal';
 import MeetingsTable from '@/components/Meetings/MeetingsTable';
@@ -23,8 +14,6 @@ export default function Meetings() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedMeeting, setSelectedMeeting] = useState<IMeeting | undefined>(undefined);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
     
     const queryClient = useQueryClient();
 
@@ -113,32 +102,6 @@ export default function Meetings() {
         setSelectedMeeting(undefined);
     };
 
-    const getMeetingStatus = (meeting: IMeeting) => {
-        const now = new Date();
-        const start = new Date(meeting.start);
-        const end = new Date(meeting.finish);
-
-        if (now >= start && now <= end) return 'ongoing';
-        if (isPast(end)) return 'past';
-        if (isToday(start)) return 'today';
-        return 'upcoming';
-    };
-
-    const filteredMeetings = meetings.filter(meeting => {
-        const query = searchQuery.toLowerCase();
-        const matchesSearch = meeting?.name?.toLowerCase().includes(query);
-        const status = getMeetingStatus(meeting);
-        const matchesStatus = statusFilter === 'all' || status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
-
-    const stats = {
-        total: meetings.length,
-        upcoming: meetings.filter(m => getMeetingStatus(m) === 'upcoming' || getMeetingStatus(m) === 'today').length,
-        ongoing: meetings.filter(m => getMeetingStatus(m) === 'ongoing').length,
-        past: meetings.filter(m => getMeetingStatus(m) === 'past').length,
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -169,94 +132,10 @@ export default function Meetings() {
             <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
-            >
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-slate-600" />
-                </div>
-                <div>
-                    <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
-                    <p className="text-sm text-slate-500">Total</p>
-                </div>
-                </div>
-            </div>
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div>
-                    <p className="text-2xl font-bold text-slate-900">{stats.upcoming}</p>
-                    <p className="text-sm text-slate-500">Agendadas</p>
-                </div>
-                </div>
-            </div>
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                    <p className="text-2xl font-bold text-slate-900">{stats.ongoing}</p>
-                    <p className="text-sm text-slate-500">Em andamento</p>
-                </div>
-                </div>
-            </div>
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-slate-600" />
-                </div>
-                <div>
-                    <p className="text-2xl font-bold text-slate-900">{stats.past}</p>
-                    <p className="text-sm text-slate-500">Finalizadas</p>
-                </div>
-                </div>
-            </div>
-            </motion.div>
-
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="flex flex-col sm:flex-row gap-4 mb-6"
-            >
-            <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <Input
-                placeholder="Buscar reunião..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-11 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
-                />
-            </div>
-            <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-slate-500" />
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-48 h-11 rounded-xl border-slate-200">
-                    <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-100">
-                    <SelectItem value="all">Todos Status</SelectItem>
-                    <SelectItem value="ongoing">Em andamento</SelectItem>
-                    <SelectItem value="today">Hoje</SelectItem>
-                    <SelectItem value="upcoming">Agendadas</SelectItem>
-                    <SelectItem value="past">Finalizadas</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
-            </motion.div>
-
-            <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             >
             <MeetingsTable
-                meetings={filteredMeetings}
+                meetings={meetings}
                 users={users}
                 isLoading={loadingMeetings}
                 onEdit={handleEdit}

@@ -1,21 +1,12 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import AdminUsers from './page/Users';
-import Header from './components/Header/Header';
-import { usePageStore } from '@/store/page';
-import Meetings from './page/Meetings';
-import { Toaster } from 'sonner';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-function App() {
-    const queryClient = new QueryClient();
-    const page = usePageStore((state) => state.page);
 
+export default function App() {
     return (
-        <QueryClientProvider client={queryClient}>
-            <Toaster />
-            <Header />
-            {page === 'users' ? <AdminUsers /> : <Meetings />}
-        </QueryClientProvider>
-    );
+        <BrowserRouter basename={import.meta.env.VITE_BASE_PATH}>
+            <Routes>
+                <Route path="/coisa" element={<div>coisa</div>} />
+            </Routes>
+        </BrowserRouter>
+    )
 }
-
-export default App;

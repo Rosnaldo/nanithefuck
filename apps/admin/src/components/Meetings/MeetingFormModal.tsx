@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, Users as UsersIcon, Loader2, FileText } from 'lucide-react';
+import { X, Calendar, Users as UsersIcon, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserUtils, type IMeeting, type IUser } from '@repo/shared-types';
 import { Avatar } from '../Avatar';
@@ -32,8 +31,6 @@ export default function MeetingFormModal({ isOpen, onClose, onSubmit, meeting, u
         if (meeting) {
             setFormData({
                 name: meeting.name || '',
-                start: meeting.start ? new Date(meeting.start) : undefined,
-                finish: meeting.finish ? new Date(meeting.finish) : undefined,
                 participants: meeting.participants || [],
             });
         } else {
@@ -48,8 +45,6 @@ export default function MeetingFormModal({ isOpen, onClose, onSubmit, meeting, u
         e.preventDefault();
         onSubmit({
             ...formData,
-            start: formData.start,
-            finish: formData.finish,
         });
     };
 
@@ -57,7 +52,7 @@ export default function MeetingFormModal({ isOpen, onClose, onSubmit, meeting, u
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const toggleParticipant = (userId: string) => {
+    const toggleParticipant = (_userId: string) => {
         // setFormData(prev => ({
         //     ...prev,
         //     participants: prev?.participants?.includes(userId)
@@ -120,58 +115,6 @@ export default function MeetingFormModal({ isOpen, onClose, onSubmit, meeting, u
                             placeholder="Reunião de planejamento"
                             className="pl-11 h-12 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
                             required
-                        />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="start_time" className="text-sm font-medium text-slate-700">
-                            Início
-                        </Label>
-                        <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <Input
-                                id="start_time"
-                                type="datetime-local"
-                                value={formData.start?.getDate()}
-                                onChange={(e) => handleChange('start_time', e.target.value)}
-                                className="pl-11 h-12 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
-                                required
-                            />
-                        </div>
-                        </div>
-
-                        <div className="space-y-2">
-                        <Label htmlFor="end_time" className="text-sm font-medium text-slate-700">
-                            Término
-                        </Label>
-                        <div className="relative">
-                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <Input
-                                id="end_time"
-                                type="datetime-local"
-                                value={formData.finish?.getDate()}
-                                onChange={(e) => handleChange('end_time', e.target.value)}
-                                className="pl-11 h-12 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
-                                required
-                            />
-                        </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="description" className="text-sm font-medium text-slate-700">
-                        Descrição (opcional)
-                        </Label>
-                        <div className="relative">
-                        <FileText className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-                        <Textarea
-                            id="description"
-                            value={formData.description}
-                            onChange={(e) => handleChange('description', e.target.value)}
-                            placeholder="Adicione detalhes sobre a reunião..."
-                            className="pl-11 min-h-24 rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500"
                         />
                         </div>
                     </div>

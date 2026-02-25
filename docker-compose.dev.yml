@@ -6,6 +6,7 @@ services:
       - "443:443"
     depends_on:
       - api
+      - myadmin
       - web
       - mongo
       - keycloak
@@ -24,6 +25,18 @@ services:
       - /app/apps/web/node_modules
     env_file:
       - ./apps/web/.env.dev
+    restart: unless-stopped
+
+  myadmin:
+    image: myadmin
+    container_name: myadmin
+    ports:
+      - "5174:5174"
+    volumes:
+      - ./apps/admin:/app/apps/admin
+      - /app/apps/admin/node_modules
+    env_file:
+      - ./apps/admin/.env.dev
     restart: unless-stopped
 
   api:

@@ -1,9 +1,6 @@
 import { motion } from 'framer-motion';
-import { format, isPast, isToday } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Pencil, Trash2, MoreHorizontal, Calendar, Clock } from 'lucide-react';
+import { Pencil, Trash2, MoreHorizontal, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,7 +16,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserUtils, type IMeeting, type IUser } from '@repo/shared-types';
+import { type IMeeting, type IUser } from '@repo/shared-types';
 import { Avatar } from '../Avatar';
 
 interface Props {
@@ -31,39 +28,8 @@ interface Props {
 }
 
 export default function MeetingsTable({ meetings, users, isLoading, onEdit, onDelete }: Props) {
-    const userUtils = new UserUtils();
     const getUserById = (userId: string = '') => {
         return users?.find(u => u._id === userId);
-    };
-
-    const getStatusBadge = (start: Date, finish: Date) => {
-        const now = new Date();
-
-        if (now >= start && now <= finish) {
-        return (
-            <Badge className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100">
-            Em andamento
-            </Badge>
-        );
-        } else if (isPast(finish)) {
-        return (
-            <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
-            Finalizada
-            </Badge>
-        );
-        } else if (isToday(start)) {
-        return (
-            <Badge className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100">
-            Hoje
-            </Badge>
-        );
-        } else {
-        return (
-            <Badge className="bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100">
-            Agendada
-            </Badge>
-        );
-        }
     };
 
     if (isLoading) {
@@ -130,20 +96,6 @@ export default function MeetingsTable({ meetings, users, isLoading, onEdit, onDe
                         </div>
                         <div>
                         <p className="font-medium text-slate-900">{meeting.name}</p>
-                        {meeting.description && (
-                            <p className="text-xs text-slate-500 line-clamp-1">{meeting.description}</p>
-                        )}
-                        </div>
-                    </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Clock className="w-3 h-3" />
-                        {format(new Date(meeting.start), "dd/MM 'às' HH:mm", { locale: ptBR })}
-                        </div>
-                        <div className="text-xs text-slate-500">
-                        até {format(new Date(meeting.finish), "HH:mm", { locale: ptBR })}
                         </div>
                     </div>
                     </TableCell>
@@ -161,9 +113,6 @@ export default function MeetingsTable({ meetings, users, isLoading, onEdit, onDe
                         <span className="text-xs text-slate-400">Sem participantes</span>
                         )}
                     </div>
-                    </TableCell>
-                    <TableCell>
-                        {getStatusBadge(meeting?.start, meeting?.finish)}
                     </TableCell>
                     <TableCell className="text-right">
                     <DropdownMenu>
