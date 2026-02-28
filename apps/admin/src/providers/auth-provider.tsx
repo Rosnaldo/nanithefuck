@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         keycloak
         .init({
-            redirectUri: window.location.origin + '/myadmin/' + '/users',
+            redirectUri: window.location.origin + '/myadmin/users',
             onLoad: 'login-required',
             checkLoginIframe: false
         })
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 loggedUser,
                 login: () =>
                     keycloak.login({
-                        redirectUri: window.location.origin + '/myadmin/' + "/users",
+                        redirectUri: window.location.origin + '/myadmin/users',
                     }),
                 logout: () =>
                     keycloak.logout({

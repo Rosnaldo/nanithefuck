@@ -5,15 +5,7 @@ import { defineConfig } from "vite"
 
 export default defineConfig({
   base: "/myadmin/",
-  plugins: [react(), tailwindcss(), {
-      name: "health-check",
-      configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          console.log(req.url)
-          next()
-        });
-      },
-    },],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
