@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-// import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
-import axios from 'axios';
 import { Plus, Users, Search, Filter } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +16,9 @@ import UserFormModal from '@/components/Users/UserFormModal';
 import UsersTable from '@/components/Users/UsersTable';
 import DeleteConfirmModal from '@/components/Users/UserDeleteModal';
 import type { IUser } from '@repo/shared-types';
+import { apiBack } from '@/api/backend';
+import { ApiError } from '@/error/api';
+import { useAuth } from '@/providers/auth-provider';
 
 export default function AdminUsers() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -26,33 +27,52 @@ export default function AdminUsers() {
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
     const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined);
+    const { loggedUser } = useAuth();
     
     const queryClient = useQueryClient();
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
-            const response = await axios.get('http://localhost:5002/api/users/by-email', {
-                params: { email: 'andreytsuzuki@gmail.com' }
-            });
-            const user = response.data;
+            const res = await apiBack.get(
+                "/users/by-email", {
+                    params: { email: loggedUser.email }
+                }
+            )
+            
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
+            const user = res.data;
             setCurrentUser(user);
         };
         fetchCurrentUser();
     }, []);
 
+    const fetchUsersList = async () => {
+        const res = await apiBack.get(
+            "/users/list"
+        )
+        
+        if (res.data.isError) {
+            throw new ApiError(res.data.message);
+        }
+        return res.data.data;
+    };
+
     const { data: users = [], isLoading } = useQuery<IUser[]>({
-        queryKey: ['users'],
-        queryFn: () => axios.get('http://localhost:5002/api/users/list')
-            .then(r => r.data)
-            .then((r) => r.data),
+        queryKey: ['users/list'],
+        queryFn: () => fetchUsersList()
     });
 
     const inviteMutation = useMutation({
         mutationFn: async (body: Partial<IUser>) => {
-            await axios.post('http://localhost:5002/api/users/create', body);
+            await apiBack.post(
+                "/users/create",
+                body,
+            )
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['users/list'] });
             setIsFormOpen(false);
             setSelectedUser(undefined);
             toast.success('Convite enviado com sucesso!');
@@ -64,12 +84,14 @@ export default function AdminUsers() {
 
     const updateMutation = useMutation({
         mutationFn: async ({ _id, body }: { _id: string; body: Partial<IUser> }) => {
-            await axios.put('http://localhost:5002/api/users/edit', body, {
-                params: { _id }
-            });
+            await apiBack.put(
+                "/users/edit", body, {
+                    params: { _id }
+                }
+            )
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['users/list'] });
             setIsFormOpen(false);
             setSelectedUser(undefined);
             toast.success('Usuário atualizado com sucesso!');
@@ -81,12 +103,14 @@ export default function AdminUsers() {
 
     const deleteMutation = useMutation({
         mutationFn: async (_id?: string) => {
-            await axios.delete(`http://localhost:5002/api/users/delete`, {
-                params: { _id }                
-            });
+            await apiBack.put(
+                "/users/delete", {}, {
+                    params: { _id }
+                }
+            )
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['users/list'] });
             setIsDeleteOpen(false);
             setSelectedUser(undefined);
             toast.success('Usuário excluído com sucesso!');

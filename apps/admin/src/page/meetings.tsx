@@ -9,6 +9,7 @@ import MeetingsTable from '@/components/Meetings/MeetingsTable';
 import DeleteMeetingModal from '@/components/Meetings/DeleteMeetingModal';
 import type { IMeeting } from '@repo/shared-types';
 import { apiBack } from "@/api/backend"
+import { ApiError } from '@/error/api';
 
 export default function Meetings() {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -16,15 +17,37 @@ export default function Meetings() {
     const [selectedMeeting, setSelectedMeeting] = useState<IMeeting | undefined>(undefined);
     
     const queryClient = useQueryClient();
+    
+    const fetchMeetingsList = async () => {
+        const res = await apiBack.get(
+            "/meetings/list"
+        )
+        
+        if (res.data.isError) {
+            throw new ApiError(res.data.message);
+        }
+        return res.data.data;
+    };
 
     const { data: meetings = [], isLoading: loadingMeetings } = useQuery<IMeeting[]>({
-        queryKey: ['meetings'],
-        queryFn: () => fetch('/meetings/list').then(r => r.json()),
+        queryKey: ['meetings/list'],
+        queryFn: () => fetchMeetingsList(),
     });
+    
+    const fetchUsersList = async () => {
+        const res = await apiBack.get(
+            "/users/list"
+        )
+        
+        if (res.data.isError) {
+            throw new ApiError(res.data.message);
+        }
+        return res.data;
+    };
 
     const { data: users = [] } = useQuery({
-        queryKey: ['users'],
-        queryFn: () => fetch('/api/users/list').then(r => r.json()),
+        queryKey: ['users/list'],
+        queryFn: () => fetchUsersList(),
     });
 
     const createMutation = useMutation({
@@ -32,7 +55,7 @@ export default function Meetings() {
             await apiBack.post('/meetings/create', body);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['meetings'] });
+            queryClient.invalidateQueries({ queryKey: ['meetings/list'] });
             setIsFormOpen(false);
             setSelectedMeeting(undefined);
             toast.success('Reunião criada com sucesso!');
@@ -49,7 +72,7 @@ export default function Meetings() {
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['meetings'] });
+            queryClient.invalidateQueries({ queryKey: ['meetings/list'] });
             setIsFormOpen(false);
             setSelectedMeeting(undefined);
             toast.success('Reunião atualizada com sucesso!');
@@ -66,7 +89,7 @@ export default function Meetings() {
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['meetings'] });
+            queryClient.invalidateQueries({ queryKey: ['meetings/list'] });
             setIsDeleteOpen(false);
             setSelectedMeeting(undefined);
             toast.success('Reunião excluída com sucesso!');

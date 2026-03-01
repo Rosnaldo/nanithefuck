@@ -11,6 +11,9 @@ docker compose -f docker-compose.dev.yml up
 ## rebuild image and container
 docker compose -f docker-compose.dev.yml up -d --build web
 
+## restart nginx 
+docker compose -f docker-compose.dev.yml exec -it nginx nginx -s reload
+
 npx shadcn@latest add button
 
 # verify volume content

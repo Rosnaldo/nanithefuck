@@ -22,11 +22,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (initialized.current) return; // ⛔ evita múltiplos init
         initialized.current = true;
 
+        // Clear any old cached tokens and session storage
+        // keycloak.clearToken?.(); // clear token if previously set
+        // sessionStorage.clear();   // clear session storage
+        // localStorage.clear();     // clear local storage if used
+
         keycloak
         .init({
             redirectUri: window.location.origin + '/main',
             onLoad: 'login-required',
-            checkLoginIframe: false
+            checkLoginIframe: false,
+            enableLogging: true,
         })
         .then((auth) => {
             const parsed = keycloak.tokenParsed;
@@ -46,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             keycloak.updateToken(30).catch(() => {
                 setIsAuthenticated(false);
                 keycloak.logout({
-                redirectUri: window.location.origin,
+                    redirectUri: window.location.origin,
                 });
             });
         };

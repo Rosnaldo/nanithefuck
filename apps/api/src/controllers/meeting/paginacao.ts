@@ -36,8 +36,13 @@ export class Paginacao {
             const { page, pageSize } = params;
             const query = {};
             const skip = (page - 1) * pageSize;
+            const populate = {
+                populate: [
+                    { path: "participants" },
+                ]
+            };
 
-            const list = await this.crud.find(query, {}, { limit: pageSize, skip });
+            const list = await this.crud.find(query, {}, { limit: pageSize, skip, ...populate });
             const totalRecords = await getMeetingDao().count(query);
 
             return successData(list, {

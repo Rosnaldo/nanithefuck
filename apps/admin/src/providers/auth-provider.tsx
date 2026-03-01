@@ -10,7 +10,7 @@ type AuthContextType = {
     logout: () => void;
 };
 
-const AuthContext = createContext<AuthContextType>(null!);
+const AuthContext = createContext<AuthContextType>  (null!);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initialized = useRef(false); // 🔐 proteção
@@ -22,18 +22,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (initialized.current) return; // ⛔ evita múltiplos init
         initialized.current = true;
 
+        // Clear any old cached tokens and session storage
+        // keycloak.clearToken?.(); // clear token if previously set
+        // sessionStorage.clear();   // clear session storage
+        // localStorage.clear();     // clear local storage if used
+
         keycloak
         .init({
-            redirectUri: window.location.origin + '/myadmin/users',
             onLoad: 'login-required',
-            checkLoginIframe: false
+            checkLoginIframe: false,
+            enableLogging: true,
         })
-        .then((auth) => {
+        .then((authenticated) => {
             const parsed = keycloak.tokenParsed;
             const email = parsed?.email;
             const fullname = parsed?.name;
 
-            setIsAuthenticated(auth);
+            setIsAuthenticated(authenticated);
             setReady(true);
             setLoggedUser({ email, fullname });
         })
@@ -61,7 +66,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 loggedUser,
                 login: () =>
                     keycloak.login({
-                        redirectUri: window.location.origin + '/myadmin/users',
+                        prompt: 'login',
+                        redirectUri: window.location.href,
                     }),
                 logout: () =>
                     keycloak.logout({

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner"
 
 import UsersPage from "./page/users";
@@ -15,17 +15,19 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
                 <Toaster />
-                <Routes>
-                    <Route path="/" element={<Navigate to="/login" replace />} />
-                    <Route path="/login" element={<LoginPage />} />
+                <BrowserRouter basename={import.meta.env.VITE_BASE_PATH}>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/login" replace />} />
+                        <Route path="/login" element={<LoginPage />} />
 
-                    <Route element={<ProtectedRoute />}>
-                        <Route path="/users" element={<UsersPage />} />
-                        <Route path="/meetings" element={<MeetingsPage />} />
-                    </Route>
+                        <Route element={<ProtectedRoute />}>
+                            <Route path="/users" element={<UsersPage />} />
+                            <Route path="/meetings" element={<MeetingsPage />} />
+                        </Route>
 
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </BrowserRouter>
             </AuthProvider>
         </QueryClientProvider>
     )
