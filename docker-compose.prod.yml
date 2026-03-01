@@ -13,8 +13,11 @@ services:
       # Main nginx config
       - ./apps/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./apps/nginx/certs:/etc/nginx/certs:ro
+      - ./apps/web/dist:/etc/nginx/html
+      - ./apps/admin/dist:/etc/nginx/html/myadmin
     networks:
       - frontend
+      - backend
 
   web:
     image: web
@@ -101,16 +104,6 @@ services:
     networks:
       - frontend
       - backend
-
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: mailhog
-    ports:
-      - "1025:1025"   # SMTP
-      - "8025:8025"   # UI
-    restart: unless-stopped
-    networks:
-      - frontend
 
   mongo:
     image: mongo:8.0.14-noble
