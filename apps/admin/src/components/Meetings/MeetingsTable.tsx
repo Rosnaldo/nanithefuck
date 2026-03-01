@@ -28,6 +28,22 @@ interface Props {
 }
 
 export default function MeetingsTable({ meetings, users, isLoading, onEdit, onDelete }: Props) {
+    // const fetchParticipantsList = async () => {
+    //     const res = await apiBack.get(
+    //         "/participants/list"
+    //     )
+        
+    //     if (res.data.isError) {
+    //         throw new ApiError(res.data.message);
+    //     }
+    //     return res.data.data;
+    // };
+
+    // const { data: participants = [], isLoading: loadingParticipants } = useQuery<IParticipant[]>({
+    //     queryKey: ['participants/list'],
+    //     queryFn: () => fetchParticipantsList(),
+    // });
+
     const getUserById = (userId: string = '') => {
         return users?.find(u => u._id === userId);
     };

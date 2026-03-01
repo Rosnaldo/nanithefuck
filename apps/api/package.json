@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1000.0",
+    "@aws-sdk/client-s3": "^3.893.0",
     "@keycloak/keycloak-admin-client": "^26.5.2",
     "@repo/shared-types": "*",
     "@types/dotenv": "^6.1.1",

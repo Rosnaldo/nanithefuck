@@ -55,8 +55,6 @@ export interface IMeeting {
     name: string;
     days: Array<IDay>;
     gallery: Array<IPicture>;
-    participants: Array<IParticipant>;
-    participantIds: string[];
 }
 
 export class UserUtils {

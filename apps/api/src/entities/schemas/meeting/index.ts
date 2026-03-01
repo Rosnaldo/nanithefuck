@@ -1,8 +1,5 @@
 import mongoose from 'mongoose';
-
-import { userCollectionName } from '#const/collection_name_mapping';
 import { IMeeting } from './types';
-import { string } from 'zod';
 
 const { Schema } = mongoose;
 
@@ -24,12 +21,6 @@ export const MeetingSchema = new Schema<IMeeting['ISchema']>(
                 h: { type: Number, required: true },
             }
         ],
-        participantIds: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: userCollectionName,
-            },
-        ],
     },
     {
         strict: false,
@@ -39,6 +30,7 @@ export const MeetingSchema = new Schema<IMeeting['ISchema']>(
         }
     }
 );
+
 
 MeetingSchema.pre(['updateOne', 'findOneAndUpdate', 'updateMany'], function (next) {
     this.setOptions({ returnDocument: 'after', runValidators: true, context: 'query' });

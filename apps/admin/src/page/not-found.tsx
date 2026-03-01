@@ -18,10 +18,6 @@ export default function NotFound() {
 
         {/* Message */}
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Página não encontrada</h2>
-        <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
-          Parece que você se perdeu no caminho para a chácara. Essa página não existe ou foi movida.
-        </p>
-
 
         {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
