@@ -15,7 +15,6 @@ export class MeetingUtils {
             start: makeDateSchema('start'),
             finish: makeDateSchema('finish'),
         })),
-        participantIds: z.array(makeObjectIdSchema('participantIds')),
     });
 
     public readonly toObject = (meeting: IMeeting['IDocument']): IMeeting['IParams'] => {

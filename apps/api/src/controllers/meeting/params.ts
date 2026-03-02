@@ -12,7 +12,6 @@ interface IPaginacao {
 interface ICriacao {
     name: IMeeting['IParams']['name'];
     days: IMeeting['IParams']['days'];
-    participantIds: IMeeting['IParams']['participantIds'];
 }
 
 interface IDelete {
@@ -23,7 +22,6 @@ interface IEdit {
     _id: IMeeting['IParams']['_id'];
     name?: IMeeting['IParams']['name'];
     days?: IMeeting['IParams']['days'];
-    participantIds?: IMeeting['IParams']['participantIds'];
 }
 
 export interface IMeetingController {

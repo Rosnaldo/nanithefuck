@@ -41,9 +41,9 @@ export class Edit {
         try {
             const { mapped } = props;
             const params = this.transform(mapped);
-            const { _id, name, days, participantIds } = params;
+            const { _id, name, days } = params;
 
-            await this.crud.update(_id, { name, days, participantIds });
+            await this.crud.update(_id, { name, days });
             return successData('success');
         } catch (error: unknown) {
             return logError(error, '/meeting/edit');
@@ -55,7 +55,6 @@ export class Edit {
         const partial = this.utils.zodSchema.pick({
             name: true,
             days: true,
-            participantIds: true,
         }).partial();
 
         const schema = z.object({
@@ -71,12 +70,10 @@ export class Edit {
             _id,
             name,
             days,
-            participantIds,
         } = body;
 
         return {
             _id: mapString(_id),
-            participantIds: mapArray(participantIds),
             days,
             ...(name ? { name: toUndefined('name', name) } : {}),
         };

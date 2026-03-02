@@ -54,7 +54,6 @@ export class Criacao {
         const picked = this.utils.zodSchema.pick({
             name: true,
             days: true,
-            participantIds: true,
         });
 
         const schema = z.object({
@@ -68,13 +67,11 @@ export class Criacao {
         const {
             name,
             days,
-            participantIds,
         } = body;
 
         return {
             name: mapString(name),
             days,
-            participantIds: mapArray<string>(participantIds),
         };
     };
 
