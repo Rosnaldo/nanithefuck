@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 export default defineConfig({
-  base: "/myadmin/",
+    cacheDir: 'node_modules/.vite_cache',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 5174,
+    port: 5173,
     allowedHosts: [
       "nanithefuck.local",
       "localhost",

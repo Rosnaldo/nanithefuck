@@ -26,6 +26,8 @@ export interface IUser {
     phone?: string;
     avatar?: string;
     role: keyof typeof UserRole;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface IParticipant {
@@ -35,6 +37,8 @@ export interface IParticipant {
     userId: string;
     user?: IUser;
     status: keyof typeof ParticipantStatus;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface IDay {
@@ -55,6 +59,8 @@ export interface IMeeting {
     name: string;
     days: Array<IDay>;
     gallery: Array<IPicture>;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export class UserUtils {
