@@ -31,24 +31,48 @@ export interface IUser {
 }
 
 export interface IParticipant {
-    _id: string;
-    meetingId: string;
-    meeting?: IMeeting;
     userId: string;
-    user?: IUser;
     status: keyof typeof ParticipantStatus;
-    createdAt: Date;
-    updatedAt: Date;
 }
+
+export const WeekdayName = {
+  sunday: "Domingo",
+  monday: "Segunda-feira",
+  tuesday: "Terca-feira",
+  wednesday: "Quarta-feira",
+  thursday: "Quinta-feira",
+  friday: "Sexta-feira",
+  saturday: "Sábado",
+} as const
+
+export const Weekday = {
+  sunday: "sunday",
+  monday: "monday",
+  tuesday: "tuesday",
+  wednesday: "wednesday",
+  thursday: "thursday",
+  friday: "friday",
+  saturday: "saturday",
+} as const
+
+export const WeekdayArray = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
 export interface IDay {
-    day: Date;
-    start: Date;
-    finish: Date;
+    day: number;
+    start?: string;
+    finish?: string;
+    weekday?: keyof typeof Weekday;
+    date: Date;
+    allDayLong: boolean;
 }
 
+export const PictureType = {
+    video: 'video',
+    image: 'image',
+} as const;
+
 export interface IPicture {
-    type: string;
+    type: keyof typeof PictureType;
     url: string;
     w: number;
     h: number;
@@ -57,8 +81,10 @@ export interface IPicture {
 export interface IMeeting {
     _id: string;
     name: string;
+    slug: string;
     days: Array<IDay>;
     gallery: Array<IPicture>;
+    participants: Array<IParticipant>;
     createdAt: Date;
     updatedAt: Date;
 }

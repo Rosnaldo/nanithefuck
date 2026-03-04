@@ -38,20 +38,18 @@ import { useQuery } from "@tanstack/react-query"
 import { ApiError } from "@/error/api"
 
 const PAGE_SIZE = 30
+const fetchUsersList = async () => {
+    const res = await apiBack.get(
+        "/users/list"
+    )
+    if (res.data.isError) {
+        throw new ApiError(res.data.message);
+    }
+    return res.data.data;
+};
 
 export function UsersTable() {
-    const fetchUsersList = async () => {
-        const res = await apiBack.get(
-            "/users/list"
-        )
-        
-        if (res.data.isError) {
-            throw new ApiError(res.data.message);
-        }
-        return res.data.data;
-    };
-
-    const { data: users = [], isLoading } = useQuery<IUser[]>({
+    const { data: users = [], isLoading, isError, error } = useQuery<IUser[]>({
         queryKey: ['users/list'],
         queryFn: () => fetchUsersList()
     });
@@ -158,6 +156,17 @@ export function UsersTable() {
         }
         return pages
     }
+
+    function Loading() {
+        return <div>Loading...</div>;
+    }
+
+    function ErrorState({ error }: { error: Error }) {
+        return <div style={{ color: "red" }}>{error.message}</div>;
+    }
+
+    if (isLoading) return <Loading />;
+    if (isError) return <ErrorState error={error as Error} />;
 
     return (
         <div className="flex flex-col gap-6">

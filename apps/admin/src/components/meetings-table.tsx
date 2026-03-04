@@ -1,7 +1,4 @@
-"use client"
-
 import { useState, useMemo } from "react"
-import Link from "next/link"
 import { format } from "date-fns"
 import {
   Search,
@@ -11,9 +8,6 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  CalendarDays,
-  ImageIcon,
-  Users,
   Eye,
 } from "lucide-react"
 import {
@@ -24,34 +18,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DeleteMeetingDialog } from "@/components/delete-meeting-dialog"
 import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
-import { useQuery } from "@tanstack/react-query"
-import type { IMeeting, IParticipant } from "@repo/shared-types"
+import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
+import type { IMeeting } from "@repo/shared-types"
 
 const PAGE_SIZE = 30
 const fetchMeetingList = async () => {
     const res = await apiBack.get(
-    "/meetings/list"
+        "/meetings/list"
     )
-    
-    if (res.data.isError) {
-        throw new ApiError(res.data.message);
-    }
-    return res.data.data;
- };
-
-const fetchParticipantList = async (meetingId: string) => {
-    const res = await apiBack.get(
-        "/participants/list", {
-            params: { meetingId }
-        }
-    )
-    
     if (res.data.isError) {
         throw new ApiError(res.data.message);
     }
@@ -59,16 +38,18 @@ const fetchParticipantList = async (meetingId: string) => {
  };
 
 export function MeetingsTable() {
-    const meetingId = ''
-    const { data: meetings = [], isLoading } = useQuery<IMeeting[]>({
-        queryKey: ['meetings/list'],
-        queryFn: () => fetchMeetingList()
+    const results = useQueries<[
+        UseQueryOptions<IMeeting[]>,
+    ]>({
+        queries: [
+            { queryKey: ['meetings/list'], queryFn: fetchMeetingList },
+        ],
     });
 
-    const { data: participants = [], isParticipantsLoading } = useQuery<IParticipant[]>({
-        queryKey: ['participants/list'],
-        queryFn: () => fetchParticipantList(meetingId)
-    });
+    const isLoading = results.some(q => q.isLoading)
+    const isError = results.some(q => q.isError)
+    const firstError = results.find(q => q.isError)?.error
+    const meetings = results[0].data || [];
 
     const [search, setSearch] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
@@ -96,11 +77,6 @@ export function MeetingsTable() {
         startIndex,
         startIndex + PAGE_SIZE
     )
-
-    // Stats
-    const totalCount = meetings.length
-    const totalParticipants = participants.length;
-    const totalPhotos = meetings.reduce((sum, m) => sum + m.gallery.length, 0)
 
     async function handleDelete() {
         if (!deletingMeeting) return
@@ -139,44 +115,19 @@ export function MeetingsTable() {
         return pages
     }
 
+    function Loading() {
+        return <div>Loading...</div>;
+    }
+
+    function ErrorState({ error }: { error: Error }) {
+        return <div style={{ color: "red" }}>{error.message}</div>;
+    }
+
+    if (isLoading) return <Loading />;
+    if (isError) return <ErrorState error={firstError as Error} />;
+
     return (
         <div className="flex flex-col gap-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 rounded-lg border bg-card p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <CalendarDays className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-                <p className="text-sm text-muted-foreground">Total Meetings</p>
-                <p className="text-2xl font-semibold text-card-foreground">
-                {totalCount}
-                </p>
-            </div>
-            </div>
-            <div className="flex items-center gap-3 rounded-lg border bg-card p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Users className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-                <p className="text-sm text-muted-foreground">Total Participantes</p>
-                <p className="text-2xl font-semibold text-card-foreground">
-                {totalParticipants}
-                </p>
-            </div>
-            </div>
-            <div className="flex items-center gap-3 rounded-lg border bg-card p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <ImageIcon className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-                <p className="text-sm text-muted-foreground">Total Fotos</p>
-                <p className="text-2xl font-semibold text-card-foreground">
-                {totalPhotos}
-                </p>
-            </div>
-            </div>
-        </div>
 
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -190,10 +141,10 @@ export function MeetingsTable() {
             />
             </div>
             <Button asChild className="gap-1.5 shrink-0">
-            <Link href="/meetings/new">
+            <a href="/meetings/create">
                 <Plus className="h-4 w-4" />
                 Novo Meeting
-            </Link>
+            </a>
             </Button>
         </div>
 
@@ -203,7 +154,6 @@ export function MeetingsTable() {
             <TableHeader>
                 <TableRow className="hover:bg-transparent">
                 <TableHead>Nome</TableHead>
-                <TableHead className="w-[120px]">Participantes</TableHead>
                 <TableHead className="w-[100px]">Fotos</TableHead>
                 <TableHead className="w-[130px]">Criado em</TableHead>
                 <TableHead className="w-[140px] text-right">Acoes</TableHead>
@@ -223,26 +173,11 @@ export function MeetingsTable() {
                 </TableRow>
                 ) : (
                 paginatedMeetings.map((meeting) => {
-                    const confirmedCount = participants.filter(
-                    (p) => p.status === "confirmed"
-                    ).length
+
                     return (
                     <TableRow key={meeting._id}>
                         <TableCell className="font-medium text-card-foreground">
                         {meeting.name}
-                        </TableCell>
-                        <TableCell>
-                        <div className="flex items-center gap-2">
-                            <span className="text-card-foreground">
-                            {participants.length}
-                            </span>
-                            <Badge
-                            variant="secondary"
-                            className="text-xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                            >
-                            {confirmedCount} conf.
-                            </Badge>
-                        </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                         {meeting.gallery.length}
@@ -253,24 +188,24 @@ export function MeetingsTable() {
                         <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
                             <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                            asChild
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                asChild
                             >
-                            <Link
+                            <a
                                 href={`/meetings/${meeting._id}`}
                                 aria-label={`Ver ${meeting.name}`}
                             >
                                 <Eye className="h-4 w-4" />
-                            </Link>
+                            </a>
                             </Button>
                             <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => openDelete(meeting)}
-                            aria-label={`Deletar ${meeting.name}`}
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                onClick={() => openDelete(meeting)}
+                                aria-label={`Deletar ${meeting.name}`}
                             >
                             <Trash2 className="h-4 w-4" />
                             </Button>

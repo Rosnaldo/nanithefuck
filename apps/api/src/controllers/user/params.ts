@@ -1,5 +1,9 @@
 import { IUser } from "#schemas/user/types";
 
+interface IParticipants {
+    meetingId: string;
+}
+
 interface IPaginacao {
     page: number;
     pageSize: number;
@@ -31,6 +35,7 @@ interface IEdit {
 }
 
 export interface IUserController {
+    IParticipants: IParticipants;
     IPaginacao: IPaginacao;
     ICriacao: ICriacao;
     IByEmail: IByEmail;

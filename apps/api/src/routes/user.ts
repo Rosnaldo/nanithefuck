@@ -22,6 +22,19 @@ export default (app: Application) => {
         }
     );
     app.get(
+        '/users/participants',
+        GetKeycloakUser,
+        GetUser,
+        authorizeMiddleware([UserRole.admin]),
+        async (req, res) => {
+            const { user } = req;
+            const controller = new UserController();
+            const params = controller.participants!.mapper(req.query);
+            const either = await controller.participants!.get({ user, params });
+            return res.status(200).send(either);
+        }
+    );
+    app.get(
         '/users/by-email',
         GetKeycloakUser,
         async (req, res) => {

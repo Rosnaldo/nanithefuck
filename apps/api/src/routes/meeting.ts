@@ -12,11 +12,11 @@ export default (app: Application) => {
         }
     );
     app.get(
-        '/meetings/by-name',
+        '/meetings/by-id',
         async (req, res) => {
             const controller = new MeetingController();
-            const mapped = controller.byName!.mapper(req.query);
-            const either = await controller.byName!.get({ mapped });
+            const mapped = controller.byId!.mapper(req.query);
+            const either = await controller.byId!.get({ mapped });
             return res.status(200).send(either);
         }
     );

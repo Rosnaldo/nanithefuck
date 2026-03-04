@@ -4,11 +4,13 @@ import { Delete } from './delete';
 import { Edit } from './edit';
 import { FindByEmail } from './find_by_email';
 import { Paginacao } from './paginacao';
+import { Participants } from './participants';
 
 export class UserController {
     public readonly classId = Symbol.for('Controller > User');
 
     public readonly paginacao: Paginacao;
+    public readonly participants: Participants;
     public readonly criacao: Criacao;
     public readonly byEmail: FindByEmail;
     public readonly delete: Delete;
@@ -17,6 +19,7 @@ export class UserController {
 
     constructor() {
         this.criacao = Criacao.construir( this.classId);
+        this.participants = Participants.construir(this.classId);
         this.paginacao = Paginacao.construir(this.classId);
         this.byEmail = FindByEmail.construir(this.classId);
         this.delete = Delete.construir(this.classId);

@@ -4,6 +4,7 @@ import { Toaster } from "sonner"
 
 import UsersPage from "./page/users";
 import MeetingsPage from "./page/meetings";
+import MeetingDetail from "./page/meeting-detail";
 import NotFound from "./page/not-found";
 import { ProtectedRoute } from "./protected-route";
 import LoginPage from "./page/login";
@@ -25,6 +26,7 @@ export default function App() {
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/users" element={<UsersPage />} />
                                 <Route path="/meetings" element={<MeetingsPage />} />
+                                <Route path="/meetings/:meetingId" element={<MeetingDetail />} />
                             </Route>
 
                             <Route path="*" element={<NotFound />} />

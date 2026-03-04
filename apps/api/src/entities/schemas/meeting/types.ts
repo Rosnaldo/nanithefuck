@@ -1,13 +1,20 @@
 import { Types, HydratedDocument, Model } from 'mongoose';
 
 import { Query } from 'mongoose';
-import { IMeeting as IMeetingParams, IDay, IPicture } from '@repo/shared-types';
+import { IMeeting as IMeetingParams, IDay, IPicture, ParticipantStatus } from '@repo/shared-types';
+
+interface IParticipantSchema {
+    userId: Types.ObjectId;
+    status: keyof typeof ParticipantStatus;
+}
 
 export interface IMeetingSchema {
     _id: Types.ObjectId;
     name: string;
+    slug: string;
     days: Array<IDay>;
     gallery: Array<IPicture>;
+    participants: Array<IParticipantSchema>;
 }
 
 type IMeetingDocument = HydratedDocument<IMeetingSchema> & { _id: Types.ObjectId } ;

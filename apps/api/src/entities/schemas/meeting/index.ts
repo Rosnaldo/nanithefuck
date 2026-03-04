@@ -1,16 +1,25 @@
 import mongoose from 'mongoose';
 import { IMeeting } from './types';
+import { ParticipantStatus, Weekday } from '@repo/shared-types';
 
 const { Schema } = mongoose;
 
 export const MeetingSchema = new Schema<IMeeting['ISchema']>(
     {
         name: { type: String, required: true },
+        slug: { type: String, required: true },
         days: [
             {
-                day: { type: Date, required: true },
-                start: { type: Date, required: true },
-                finish: { type: Date, required: true },
+                day: { type: Number, required: true },
+                date: { type: Date, required: true },
+                weekday: {
+                    type: String,
+                    enum: Object.keys(Weekday),
+                    required: true,
+                },
+                start: { type: String, required: false },
+                finish: { type: String, required: false },
+                allDayLong: { type: Boolean, required: true, default: false },
             }
         ],
         gallery: [
@@ -21,13 +30,23 @@ export const MeetingSchema = new Schema<IMeeting['ISchema']>(
                 h: { type: Number, required: true },
             }
         ],
+        participants: [
+            {
+                userId: { type: String, required: true },
+                status: {
+                    type: String,
+                    enum: Object.keys(ParticipantStatus),
+                    required: true,
+                },
+            }
+        ],
     },
     {
         strict: false,
         timestamps: {
-            createdAt: 'dataCriacao',
-            updatedAt: 'dataAtualizacao'
-        }
+            createdAt: 'createdAt',
+            updatedAt: 'updatedAt',
+        },
     }
 );
 

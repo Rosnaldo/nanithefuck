@@ -19,8 +19,8 @@ export const UserSchema = new Schema<IUser['ISchema']>(
     {
         strict: false,
         timestamps: {
-            createdAt: 'dataCriacao',
-            updatedAt: 'dataAtualizacao'
+            createdAt: 'createdAt',
+            updatedAt: 'updatedAt',
         }
     }
 );

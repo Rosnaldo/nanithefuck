@@ -1,7 +1,7 @@
 import { IMeeting } from "#schemas/meeting/types";
 
-interface IByName {
-    name: string;
+interface IById {
+    _id: string;
 }
 
 interface IPaginacao {
@@ -26,7 +26,7 @@ interface IEdit {
 
 export interface IMeetingController {
     IPaginacao: IPaginacao;
-    IByName: IByName;
+    IById: IById;
     ICriacao: ICriacao;
     IDelete: IDelete;
     IEdit: IEdit;
