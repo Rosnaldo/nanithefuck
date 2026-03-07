@@ -11,7 +11,12 @@ import { useQueries, useQueryClient, type UseQueryOptions } from "@tanstack/reac
 
 const fetchUsersList = async () => {
     const res = await apiBack.get(
-        "/users/list"
+        "/users/list", {
+            params: {
+                isPagination: false
+            }
+        }
+        
     )
     if (res.data.isError) {
         throw new ApiError(res.data.message);

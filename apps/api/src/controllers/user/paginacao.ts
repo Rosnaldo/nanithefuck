@@ -8,6 +8,7 @@ import { UserCrud } from '#crud/user';
 import { IUserController } from './params';
 import { EitherPaginacao, successData } from '#utils/either_paginacao';
 import { mapNumber } from '#utils/mapper/number';
+import { mapBoolean } from '#utils/mapper/boolean';
 
 type IPaginacao = IUserController['IPaginacao'];
 
@@ -34,11 +35,12 @@ export class Paginacao {
     public readonly get = async (props: Props): Promise<EitherPaginacao<IUser['IParams']>> => {
         try {
             const { params } = props;
-            const { page, pageSize } = params;
+            const { page, pageSize, isPagination } = params;
             const query = {};
             const skip = (page - 1) * pageSize;
+            const paginacao = isPagination ? { limit: pageSize, skip } : {};
 
-            const list = await this.crud.find(query, {}, { limit: pageSize, skip });
+            const list = await this.crud.find(query, {}, { ...paginacao });
             const totalRecords = await getUserDao().count(query);
 
             return successData(list, {
@@ -56,11 +58,13 @@ export class Paginacao {
         const {
             page,
             pageSize,
+            isPagination,
         } = body;
 
         return {
             pageSize: mapNumber(pageSize, 10),
             page: mapNumber(page, 1),
+            isPagination: mapBoolean({ v: isPagination, defaultV: true }),
         };
     };
 }

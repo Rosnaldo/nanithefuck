@@ -7,6 +7,7 @@ interface IParticipants {
 interface IPaginacao {
     page: number;
     pageSize: number;
+    isPagination?: boolean;
 }
 
 interface ICriacao {
