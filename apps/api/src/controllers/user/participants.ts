@@ -7,6 +7,7 @@ import { IUserController } from './params';
 import { EitherList } from '#utils/either_list';
 import { MeetingCrud } from '#crud/meeting';
 import { mapString } from '#utils/mapper/string';
+import { IParticipant, IUserParticipant } from '@repo/shared-types';
 
 type IParticipants = IUserController['IParticipants'];
 
@@ -32,7 +33,7 @@ export class Participants {
         return new Participants();
     }
 
-    public readonly get = async (props: Props): Promise<EitherList<IUser['IParams'][]>> => {
+    public readonly get = async (props: Props): Promise<EitherList<IUserParticipant[]>> => {
         try {
             const { params } = props;
             const { meetingId } = params;
@@ -41,7 +42,13 @@ export class Participants {
             const participantIds = meeting.participants.map((p) => p.userId);
             const list = await this.crud.findByIds(participantIds);
 
-            return list;
+            const participantsDict: Record<string, { value: IParticipant }> =
+                meeting.participants.transformInDict('userId');
+
+            return list.map((l) => ({
+                ...l,
+                status: participantsDict[l._id].value.status,
+            }));
         } catch (error: unknown) {
             return logError(error, '/user/participants');
         }

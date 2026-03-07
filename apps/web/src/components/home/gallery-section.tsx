@@ -46,13 +46,13 @@ export function GallerySection() {
     async function fetchMeeting() {
         try {
             const res = await apiBack.get(
-                "/meetings/by-name", {
-                    params: { name: 'ChacaraMeets' }
+                "/meetings/by-id", {
+                    params: { _id: '69a78eaeca9caba7cbacb964' }
                 }
             )
             
             if (res.data.isError) {
-                throw new ApiError(res.data.message || "/meetings/by-name request failed");
+                throw new ApiError(res.data.message || "/meetings/by-id request failed");
             }
 
             const meeting = res.data as IMeeting;

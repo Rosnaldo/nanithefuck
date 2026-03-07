@@ -3,7 +3,7 @@ import { Types, HydratedDocument, Model } from 'mongoose';
 import { Query } from 'mongoose';
 import { IMeeting as IMeetingParams, IDay, IPicture, ParticipantStatus } from '@repo/shared-types';
 
-interface IParticipantSchema {
+export interface IParticipantSchema {
     userId: Types.ObjectId;
     status: keyof typeof ParticipantStatus;
 }

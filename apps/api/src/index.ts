@@ -10,6 +10,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import Properties from './properties';
+import './extensions/transform_in_dict';
 
 import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';

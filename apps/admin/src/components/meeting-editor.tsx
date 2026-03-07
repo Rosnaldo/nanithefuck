@@ -46,7 +46,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Weekday, WeekdayArray, type IDay, type IMeeting, type IParticipant, type IPicture, type IUser, type PictureType } from "@repo/shared-types"
+import { Weekday, WeekdayAll, type IDay, type IMeeting, type IParticipant, type IPicture, type IUser, type PictureType } from "@repo/shared-types"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
@@ -100,7 +100,7 @@ function clampDecimal(val: string): string {
 }
 
 function getWeekday(date: Date): keyof typeof Weekday {
-    return WeekdayArray[date.getDay()] as keyof typeof Weekday
+    return WeekdayAll[date.getDay()] as keyof typeof Weekday
 }
 
 function formatDateInput(date: Date): string {

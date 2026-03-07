@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Users, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { ParticipantStatus, type IMeeting, type IParticipant } from "@repo/shared-types"
+import { ParticipantStatus, type IMeeting, type IUserParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { toast } from "sonner"
@@ -16,27 +16,16 @@ export function ParticipantListSection() {
     async function fetchParticipants() {
         try {
             const res = await apiBack.get(
-                "/meetings/by-name", {
-                    params: { name: 'ChacaraMeets' }
+                "/users/participants", {
+                    params: { meetingId: '69a78eaeca9caba7cbacb964' }
                 }
             )
-            
+
             if (res.data.isError) {
-                throw new ApiError(res.data.message || "/meetings/by-name request failed");
+                throw new ApiError(res.data.message || "/users/participants request failed");
             }
 
-            const meeting = res.data as IMeeting;
-            const res2 = await apiBack.get(
-                "/participants/pagination", {
-                    params: { meetingId: meeting?._id }
-                }
-            )
-
-            if (res2.data.isError) {
-                throw new ApiError(res.data.message || "/participants/by-meeting request failed");
-            }
-
-            return res2.data.data as IParticipant[];
+            return res.data as IUserParticipant[];
         } catch (error) {
             if (error instanceof ApiError) {
                 toast.error(error.message)
@@ -46,8 +35,8 @@ export function ParticipantListSection() {
         }
     }
 
-    const { data: participants = [], isLoading: isLoading, isError, error } = useQuery<IParticipant[], ApiError>({
-        queryKey: ['participants'],
+    const { data: participants = [], isLoading: isLoading, isError, error } = useQuery<IUserParticipant[], ApiError>({
+        queryKey: ['users/participants'],
         queryFn: fetchParticipants
     });
 
@@ -134,19 +123,19 @@ export function ParticipantListSection() {
                 >
                 <div className="relative mb-3">
                     <img
-                    src={participant?.user?.avatar || "/assets/placeholder.svg"}
-                    alt={participant?.user?.firstName}
+                    src={participant?.avatar || "/assets/placeholder.svg"}
+                    alt={participant?.firstName}
                     className="w-16 h-16 rounded-full object-cover border-2 border-border/50"
                     />
                 </div>
 
                 {/* Name */}
-                <p className="text-sm font-medium text-center line-clamp-1">{participant.user?.firstName}</p>
+                <p className="text-sm font-medium text-center line-clamp-1">{participant?.firstName}</p>
 
                 <span
                     className={cn(
-                    "text-xs font-medium mt-2 px-2 py-0.5 rounded-full",
-                    participant.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400",
+                        "text-xs font-medium mt-2 px-2 py-0.5 rounded-full",
+                        participant.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400",
                     )}
                 >
                     {participant.status === ParticipantStatus.confirmed ? "Confirmado" : "Pendente"}

@@ -20,8 +20,11 @@ interface IDelete {
 
 interface IEdit {
     _id: IMeeting['IParams']['_id'];
-    name?: IMeeting['IParams']['name'];
-    days?: IMeeting['IParams']['days'];
+    name: IMeeting['IParams']['name'];
+    slug: IMeeting['IParams']['slug'];
+    days: IMeeting['IParams']['days'];
+    gallery: IMeeting['IParams']['gallery'];
+    participants: IMeeting['IParams']['participants'];
 }
 
 export interface IMeetingController {

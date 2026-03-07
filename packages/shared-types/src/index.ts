@@ -35,6 +35,8 @@ export interface IParticipant {
     status: keyof typeof ParticipantStatus;
 }
 
+export type IUserParticipant = IUser & Omit<IParticipant, 'userId'>
+
 export const WeekdayName = {
   sunday: "Domingo",
   monday: "Segunda-feira",
@@ -55,13 +57,22 @@ export const Weekday = {
   saturday: "saturday",
 } as const
 
-export const WeekdayArray = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
+export const WeekdayAll = [
+    Weekday.sunday,
+    Weekday.monday,
+    Weekday.tuesday,
+    Weekday.wednesday,
+    Weekday.thursday,
+    Weekday.friday,
+    Weekday.saturday,
+];
 
 export interface IDay {
     day: number;
     start?: string;
     finish?: string;
-    weekday?: keyof typeof Weekday;
+    weekday: keyof typeof Weekday;
     date: Date;
     allDayLong: boolean;
 }
@@ -70,6 +81,11 @@ export const PictureType = {
     video: 'video',
     image: 'image',
 } as const;
+
+export const PictureTypeAll = [
+    PictureType.video,
+    PictureType.image,
+];
 
 export interface IPicture {
     type: keyof typeof PictureType;

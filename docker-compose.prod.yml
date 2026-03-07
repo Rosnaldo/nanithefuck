@@ -103,7 +103,7 @@ services:
     expose:
       - "27017"
     env_file:
-      - ./apps/api/.env
+      - ./apps/api/.env.prod
     volumes:
       - mongodb_data:/data/db
     healthcheck:

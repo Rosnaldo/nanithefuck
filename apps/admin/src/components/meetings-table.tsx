@@ -194,7 +194,7 @@ export function MeetingsTable() {
                                 asChild
                             >
                             <a
-                                href={`/meetings/${meeting._id}`}
+                                href={`/myadmin/meetings/${meeting._id}`}
                                 aria-label={`Ver ${meeting.name}`}
                             >
                                 <Eye className="h-4 w-4" />

@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { MeetingGallery } from "@/components/meeting-gallery"
 import { MeetingParticipants } from "@/components/meeting-participants"
-import type { IMeeting, IPicture, IUser, ParticipantStatus } from "@repo/shared-types"
+import type { IMeeting, IParticipant, IPicture, IUser, ParticipantStatus } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
-import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
+import { useQueries, useQueryClient, type UseQueryOptions } from "@tanstack/react-query"
 
 const fetchUsersList = async () => {
     const res = await apiBack.get(
@@ -33,6 +33,7 @@ const fetchMeetingById = (meetingId?: string) => async () => {
 
 export default function MeetingDetail() {
     const { meetingId } = useParams<{ meetingId: string }>()
+    const queryClient = useQueryClient()
     const results = useQueries<[
         UseQueryOptions<IMeeting>,
         UseQueryOptions<IUser[]>,
@@ -73,6 +74,12 @@ export default function MeetingDetail() {
                 params: { _id: data._id }
             }
         )
+
+        const resetUsersList = () => {
+            queryClient.setQueryData(['meetings/by-id'], []); // clear cached data
+            queryClient.invalidateQueries(({ queryKey: ['meetings/by-id'] })); // trigger refetch
+        };
+        resetUsersList();
     }
 
     function handleAddItem(item: IPicture) {
@@ -91,13 +98,14 @@ export default function MeetingDetail() {
         updateMeeting(data)
     }
 
-    function handleAddParticipant(userId: string) {
+    function handleAddParticipants(userIds: string[]) {
         const data = {
             ...meeting,
-            participants: [
-                ...meeting!.participants || [],
-                { userId, status: "pending" as keyof typeof ParticipantStatus },
-            ],
+            ...meeting!.participants || [],
+            participants: userIds.map((userId) => ({
+                userId,
+                status: "pending" as keyof typeof ParticipantStatus ,
+            })) as IParticipant[],
         } as IMeeting
         updateMeeting(data)
     }
@@ -107,7 +115,6 @@ export default function MeetingDetail() {
             ...meeting,
             participants: [
                 ...(meeting!.participants || []).filter((p) => p.userId !== userId),
-                { userId, status: "pending" as keyof typeof ParticipantStatus },
             ],
         } as IMeeting
         updateMeeting(data)
@@ -177,10 +184,9 @@ export default function MeetingDetail() {
         {/* Participants Section */}
         <div className="rounded-lg border bg-card p-5">
             <MeetingParticipants
-                meetingId={meetingId || ''}
                 participants={meeting.participants || []}
                 users={users}
-                onAddParticipant={handleAddParticipant}
+                onAddParticipants={handleAddParticipants}
                 onRemoveParticipant={handleRemoveParticipant}
                 onChangeStatus={handleChangeStatus}
             />

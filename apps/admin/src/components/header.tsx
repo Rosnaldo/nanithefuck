@@ -3,8 +3,8 @@ import { useLocation } from "react-router-dom"
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: "/", label: "Usuarios", icon: Users },
-  { href: "/meetings", label: "Meetings", icon: CalendarDays },
+  { href: "/myadmin/users", label: "Usuarios", icon: Users },
+  { href: "/myadmin/meetings", label: "Meetings", icon: CalendarDays },
 ]
 
 export function Header() {

@@ -114,7 +114,7 @@ services:
     ports:
       - 27017:27017
     env_file:
-      - ./apps/api/.env
+      - ./apps/api/.env.dev
     volumes:
       - mongodb_data:/data/db
     healthcheck:
