@@ -9,11 +9,9 @@ export function useStateReset<T extends object>(
     const [state, setState] = useState<T>(initialState);
 
     const resetState = useCallback(() => {
-        console.log('JIJI')
         const scrollPos = window.scrollY;
 
         setState(oldState => {
-            console.log('set')
             if (!transform) return oldState;
 
             const newState = transform(oldState);
