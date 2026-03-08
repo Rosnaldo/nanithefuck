@@ -10,125 +10,177 @@ import { getMeetingDao, getUserDao } from "#daos/singleton";
 import { mongooseBootstrap } from "#mongoose_bootstrap";
 import { IUser } from "#schemas/user/types";
 import { generateMeeting } from 'mock-meetings';
+import { UserBuilder } from '#schemas/user/utils';
+import { IUserAvatar } from '@repo/shared-types';
+import properties from '#properties';
+import { joinUrl } from '#utils/join_url';
 
-const members: Omit<IUser['IParams'], '_id' | 'createdAt' | 'updatedAt'>[] = [
+type UserPick = Pick<IUser['IParams'], 'firstName' | 'lastName' | 'email' | 'role'> & {
+    avatar: Pick<IUserAvatar, 's3Path'>;
+};
+
+const members: UserPick[] = [
+    {
+        firstName: "Andrey",
+        lastName: "Tsuzuki",
+        email: "andreytsuzuki@gmail.com",
+        avatar: {
+            s3Path: "/avatars/local/young-brazilian-man-smiling.jpg"
+        },
+        role: 'admin',
+    },
     {
         firstName: "Lucas",
         lastName: "Silva",
         email: "lucas.silva@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/young-brazilian-man-smiling.jpg",
+        avatar: {
+            s3Path: "/avatars/local/young-brazilian-man-smiling.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Mariana",
         lastName: "Costa",
         email: "mariana.costa@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/young-brazilian-woman-curly-hair.jpg",
+        avatar: {
+            s3Path: "/avatars/local/young-brazilian-woman-curly-hair.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Pedro",
         lastName: "Henrique",
         email: "pedro.henrique@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-man-beard-casual.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-man-beard-casual.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Juliana",
         lastName: "Alves",
         email: "juliana.alves@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-woman-sunglasses-summer.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-woman-sunglasses-summer.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Rafael",
         lastName: "Santos",
         email: "rafael.santos@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/young-man-athletic-brazilian.jpg",
+        avatar: {
+            s3Path: "/avatars/local/young-man-athletic-brazilian.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Camila",
         lastName: "Oliveira",
         email: "camila.oliveira@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-woman-long-hair-smiling.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-woman-long-hair-smiling.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Bruno",
         lastName: "Ferreira",
         email: "bruno.ferreira@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-man-casual-style.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-man-casual-style.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Amanda",
         lastName: "Ribeiro",
         email: "amanda.ribeiro@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-woman-short-hair-modern.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-woman-short-hair-modern.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Thiago",
         lastName: "Mendes",
         email: "thiago.mendes@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-man-glasses-friendly.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-man-glasses-friendly.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Fernanda",
         lastName: "Lima",
         email: "fernanda.lima@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-woman-blonde-beach-style.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-woman-blonde-beach-style.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Gabriel",
         lastName: "Souza",
         email: "gabriel.souza@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-man-tattoo-arm.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-man-tattoo-arm.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Beatriz",
         lastName: "Rocha",
         email: "beatriz.rocha@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-woman-fitness-style.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-woman-fitness-style.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Diego",
         lastName: "Martins",
         email: "diego.martins@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-man-surfer-look.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-man-surfer-look.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Isabela",
         lastName: "Santos",
         email: "isabela.santos@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/brazilian-woman-elegant-style.jpg",
+        avatar: {
+            s3Path: "/avatars/local/brazilian-woman-elegant-style.jpg"
+        },
         role: 'mock',
     },
     {
         firstName: "Matheus",
         lastName: "Lima",
         email: "matheus.lima@exemplo.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/placeholder.svg?height=80&amp;width=80",
+        avatar: {
+            s3Path: "/avatars/local/placeholder.svg?height=80&amp;width=80"
+        },
         role: 'mock',
     },
 ];
 
 export const populate = async () => {
-    await getUserDao().inserir({
-        firstName: "Andrey",
-        lastName: "Tsuzuki",
-        email: "andreytsuzuki@gmail.com",
-        avatar: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/avatars/young-brazilian-man-smiling.jpg",
-        role: 'admin',
+    const newUsers = members.map((m) => {
+        const builder = new UserBuilder({
+            firstName: m.firstName,
+            lastName: m.lastName,
+            email: m.email,
+            role: m.role,
+        });
+        return builder.setAvatar({
+            url: joinUrl(properties.s3Host, m.avatar.s3Path),
+            s3Path: m.avatar.s3Path,
+        }).build();
     });
 
-    await getUserDao().inserirBatch(members);
+    await getUserDao().inserirBatch(newUsers);
     const newMembers = await getUserDao().find({});
 
     const ids = newMembers.map((m) => m.id)

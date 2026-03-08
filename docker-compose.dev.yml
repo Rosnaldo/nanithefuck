@@ -14,6 +14,7 @@ services:
       - ./apps/nginx/dev/certs:/etc/nginx/certs:ro
       - ./apps/web/dist:/etc/nginx/html
       - ./apps/admin/dist:/etc/nginx/html/myadmin
+      - s3_cache:/var/cache/nginx
     networks:
       - frontend
       - backend
@@ -130,6 +131,7 @@ volumes:
   my_postgres_data:
   mongodb_data:
   web_build:
+  s3_cache:
 
 networks:
   frontend:

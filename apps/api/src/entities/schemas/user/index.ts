@@ -1,20 +1,29 @@
 import mongoose from 'mongoose';
 
 import { IUser } from './types';
-import { UserRole, UserRoleAll } from '@repo/shared-types';
+import { IUserAvatar, UserRole, UserRoleAll } from '@repo/shared-types';
 
 const { Schema } = mongoose;
 
+const UserAvatarSchema = new Schema<IUserAvatar>({
+    url: { type: String, required: true },
+    s3Path: { type: String, required: true },
+    s3Host: { type: String, required: true },
+    cdnHost: { type: String, required: false },
+});
+
 export const UserSchema = new Schema<IUser['ISchema']>(
     {
-        firstName: { type: String, required: false },
-        lastName: { type: String, required: false },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        slug: { type: String, required: true },
         email: { type: String, require: false },
         role: {
             type: String,
             enum: UserRoleAll,
             default: UserRole.member,
-        }
+        },
+        avatar: { type: UserAvatarSchema, required: false },
     },
     {
         strict: false,

@@ -8,7 +8,7 @@ import { Either, successData } from '#utils/either';
 import { validateParse, ValidateParseResult } from '#utils/zod/validate_parse';
 import { BadRequestException } from '#exceptions/bad_request';
 import { IUser } from '#schemas/user/types';
-import { UserUtils } from '#schemas/user/utils';
+import { UserBuilder, UserUtils } from '#schemas/user/utils';
 import { mapString } from '#utils/mapper/string';
 import { getKcMain } from '#keycloak/singleton';
 
@@ -43,8 +43,8 @@ export class Criacao {
         try {
             const { mapped } = props;
             const params = this.transform(mapped);
-
-            const user = await this.crud.create(params);
+            const builder = new UserBuilder(params);
+            const user = await this.crud.create(builder.build());
 
             const kcMain = getKcMain();
             const client = await kcMain.getKcClientCredentials();

@@ -8,7 +8,7 @@ import { Either, successData } from '#utils/either';
 import { validateParse, ValidateParseResult } from '#utils/zod/validate_parse';
 import { BadRequestException } from '#exceptions/bad_request';
 import { IMeeting } from '#schemas/meeting/types';
-import { MeetingUtils } from '#schemas/meeting/utils';
+import { MeetingBuilder, MeetingUtils } from '#schemas/meeting/utils';
 import { mapString } from '#utils/mapper/string';
 import { mapArray } from '#utils/mapper/array';
 
@@ -42,7 +42,9 @@ export class Criacao {
             const { mapped } = props;
             const params = this.transform(mapped);
 
-            const meeting = await this.crud.create(params);
+            const builder = new MeetingBuilder(params);
+
+            const meeting = await this.crud.create(builder.build());
             return successData(meeting);
         } catch (error: unknown) {
             return logError(error, '/meeting/create');

@@ -11,12 +11,15 @@ export const MeetingSchema = new Schema<IMeeting['ISchema']>(
         days: [
             {
                 day: { type: Number, required: true },
-                date: { type: Date, required: true },
+                month: { type: Number, required: true },
+                year: { type: Number, required: true },
+                isodate: { type: Date, required: true },
                 weekday: {
                     type: String,
                     enum: Object.keys(Weekday),
                     required: true,
                 },
+                formatted: { type: String, required: true },
                 start: { type: String, required: false },
                 finish: { type: String, required: false },
                 allDayLong: { type: Boolean, required: true, default: false },
@@ -25,6 +28,9 @@ export const MeetingSchema = new Schema<IMeeting['ISchema']>(
         gallery: [
             {
                 type: { type: String, required: true },
+                s3Path: { type: String, required: true },
+                s3Host: { type: String, required: true },
+                cdnHost: { type: String, required: false },
                 url: { type: String, required: true },
                 w: { type: Number, required: true },
                 h: { type: Number, required: true },

@@ -9,7 +9,7 @@ import { Either, successData } from '#utils/either';
 import { validateParse, ValidateParseResult } from '#utils/zod/validate_parse';
 import { BadRequestException } from '#exceptions/bad_request';
 import { IUser } from '#schemas/user/types';
-import { UserUtils } from '#schemas/user/utils';
+import { UserBuilder, UserUtils } from '#schemas/user/utils';
 import { makeObjectIdSchema } from '#utils/zod/valid_objectid_schema';
 import { mapString } from '#utils/mapper/string';
 import { toUndefined } from '#utils/mapper/to_undefined';

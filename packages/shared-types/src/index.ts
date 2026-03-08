@@ -20,13 +20,23 @@ export const UserRoleAll = [
     UserRole.mock,
 ];
 
+export interface IMedia {
+    url: string;
+    s3Path: string;
+    s3Host: string;
+    cdnHost?: string;
+};
+
+export interface IUserAvatar extends IMedia {};
+
 export interface IUser {
     _id: string;
+    slug: string;
     firstName: string;
-    lastName?: string;
+    lastName: string;
     email?: string;
     phone?: string;
-    avatar?: string;
+    avatar?: IUserAvatar;
     role: keyof typeof UserRole;
     createdAt: Date;
     updatedAt: Date;
@@ -72,10 +82,13 @@ export const WeekdayAll = [
 
 export interface IDay {
     day: number;
+    month: number;
+    year: number;
+    formatted: string;
     start?: string;
     finish?: string;
     weekday: keyof typeof Weekday;
-    date: Date;
+    isodate: Date;
     allDayLong: boolean;
 }
 
@@ -89,7 +102,7 @@ export const PictureTypeAll = [
     PictureType.image,
 ];
 
-export interface IPicture {
+export interface IPicture extends IMedia {
     type: keyof typeof PictureType;
     url: string;
     w: number;

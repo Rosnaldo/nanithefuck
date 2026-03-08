@@ -1,15 +1,16 @@
 import { Types, HydratedDocument, Model } from 'mongoose';
 
-import { IUser as IUserParams } from '@repo/shared-types';
+import { IUserAvatar, IUser as IUserParams } from '@repo/shared-types';
 import { Query } from 'mongoose';
 
 export interface IUserSchema {
     _id: Types.ObjectId;
     firstName: string;
-    lastName?: string;
+    lastName: string;
+    slug: string;
     email?: string;
-    role?: string;
-    avatar?: string;
+    role: string;
+    avatar?: IUserAvatar;
 }
 
 type IUserDocument = HydratedDocument<IUserSchema> & { _id: Types.ObjectId } ;
