@@ -9,6 +9,17 @@ import { GetKeycloakUser } from '#middleware/get_keycloak_user';
 
 export default (app: Application) => {
     app.get(
+        '/users/count',
+        GetKeycloakUser,
+        GetUser,
+        authorizeMiddleware([UserRole.admin]),
+        async (req, res) => {
+            const controller = new UserController();
+            const either = await controller.count!.get();
+            return res.status(200).send(either);
+        }
+    );
+    app.get(
         '/users/list',
         GetKeycloakUser,
         GetUser,

@@ -25,6 +25,8 @@ import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import type { IMeeting } from "@repo/shared-types"
+import { toast } from "sonner"
+import { checkErrorByField } from "@/utils/check_error_by_field"
 
 const PAGE_SIZE = 30
 const fetchMeetingList = async () => {
@@ -80,11 +82,22 @@ export function MeetingsTable() {
 
     async function handleDelete() {
         if (!deletingMeeting) return
-        await apiBack.put(
-            "/users/delete", {}, {
-                params: { _id: deletingMeeting._id }
+        try {
+            await apiBack.put(
+                "/meetings/delete", {}, {
+                    params: { _id: deletingMeeting._id }
+                }
+            )
+
+            toast.success("Meeting deletado com sucesso!");
+        } catch (error: unknown) {
+            if (checkErrorByField(error, 'message')) {
+                toast.error(error.message);
+                return;
             }
-        )
+            throw error;
+        }
+
         setDeleteOpen(false)
         setDeletingMeeting(null)
     }

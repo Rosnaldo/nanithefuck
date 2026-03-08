@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { MeetingGallery } from "@/components/meeting-gallery"
 import { MeetingParticipants } from "@/components/meeting-participants"
-import type { IMeeting, IParticipant, IPicture, IUser, ParticipantStatus } from "@repo/shared-types"
+import type { IMeeting, IParticipant, IPicture, IUser, Pagination, ParticipantStatus } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import { useReset } from "@/hooks/use-reset"
+import { toast } from "sonner"
+import { checkErrorByField } from "@/utils/check_error_by_field"
 
 const fetchUsersList = async () => {
     const res = await apiBack.get(
@@ -22,7 +24,7 @@ const fetchUsersList = async () => {
     if (res.data.isError) {
         throw new ApiError(res.data.message);
     }
-    return res.data.data;
+    return res.data;
 };
 
 const fetchMeetingById = (meetingId?: string) => async () => {
@@ -49,7 +51,7 @@ export default function MeetingDetail() {
     );
     const results = useQueries<[
         UseQueryOptions<IMeeting>,
-        UseQueryOptions<IUser[]>,
+        UseQueryOptions<{ data: IUser[], pagination: Pagination }>,
     ]>({
         queries: [
             { queryKey: ['meetings/by-id'], queryFn: fetchMeetingById(meetingId) },
@@ -63,7 +65,8 @@ export default function MeetingDetail() {
     const isError = results.some(q => q.isError)
     const firstError = results.find(q => q.isError)?.error
     const meeting = results[0].data;
-    const users = results[1].data || [];
+    const data = results[1].data;
+    const users = data?.data ?? [];
 
     if (!meeting) {
         return (
@@ -82,11 +85,22 @@ export default function MeetingDetail() {
     }
 
     async function updateMeeting(data: IMeeting) {
-        await apiBack.put(
-            "/meetings/edit", data, {
-                params: { _id: data._id }
+
+        try {
+            await apiBack.put(
+                "/meetings/edit", data, {
+                    params: { _id: data._id }
+                }
+            )
+
+            toast.success("Meeting editado com sucesso!");
+        } catch (error: unknown) {
+            if (checkErrorByField(error, 'message')) {
+                toast.error(error.message);
+                return;
             }
-        )
+            throw error;
+        }
 
         resetMeeting();
     }

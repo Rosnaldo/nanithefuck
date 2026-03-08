@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import {
   Search,
   Plus,
@@ -34,12 +34,26 @@ import { UserFormDialog } from "@/components/user-form-dialog"
 import { DeleteUserDialog } from "@/components/delete-user-dialog"
 import type { IUser, Pagination, UserRole } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
-import { useQuery } from "@tanstack/react-query"
+import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import { ApiError } from "@/error/api"
 import { useDebounce } from "@/hooks/use-debounce"
+import { toast } from "sonner"
+import { checkErrorByField } from "@/utils/check_error_by_field"
 
 const PAGE_SIZE = 30
-const fetchUsersList = async ({ currentPage, search }: { currentPage: number, search: string }) => {
+
+const fetchUserCount = async () => {
+    const res = await apiBack.get(
+        "/users/count"
+    )
+    if (res.data.isError) {
+        throw new ApiError(res.data.message);
+    }
+
+    return res.data;
+};
+
+const fetchUsersList = ({ currentPage, search }: { currentPage: number, search: string }) => async () => {
     const res = await apiBack.get(
         "/users/list", {
             params: {
@@ -61,16 +75,19 @@ export function UsersTable() {
     const [currentPage, setCurrentPage] = useState(1)
     const debouncedSearch = useDebounce(search, 500);
 
-    const { data, isLoading, isError, error } = useQuery<{ data: IUser[], pagination: Pagination }>({
-        queryKey: ['users/list', currentPage, debouncedSearch],
-        queryFn: () => fetchUsersList({ currentPage, search: debouncedSearch }),
-        placeholderData: {
-            data: [],
-            pagination: {} as Pagination,
-        },
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
+    const results = useQueries<[
+        UseQueryOptions<{ admins: number; members: number; }>,
+        UseQueryOptions<{ data: IUser[], pagination: Pagination }>,
+    ]>({
+        queries: [
+            { queryKey: ['users/count'], queryFn: fetchUserCount },
+            { queryKey: ['users/list', currentPage, debouncedSearch], queryFn: fetchUsersList({ currentPage, search: debouncedSearch }) },
+        ],
     });
+
+    const isLoading = results.some(q => q.isLoading)
+    const isError = results.some(q => q.isError)
+    const firstError = results.find(q => q.isError)?.error
 
     // Dialog states
     const [formOpen, setFormOpen] = useState(false)
@@ -78,6 +95,7 @@ export function UsersTable() {
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deletingUser, setDeletingUser] = useState<IUser | null>(null)
 
+    const data = results[1].data;
     const users = data?.data ?? [];
     const pagination = data?.pagination;
 
@@ -92,27 +110,48 @@ export function UsersTable() {
     const memberCount = users.filter((u) => u.role === "member").length
 
     async function handleSaveUser(userData: Partial<IUser>) {
-        if (userData._id) {
-            await apiBack.put(
-                "/users/edit", userData, {
-                    params: { _id: userData._id }
-                }
-            )
-        } else {
-            await apiBack.post(
-                "/users/create",
-                userData,
-            )
+        try {
+            if (userData._id) {
+                await apiBack.put(
+                    "/users/edit", userData, {
+                        params: { _id: userData._id }
+                    }
+                )
+            } else {
+                await apiBack.post(
+                    "/users/create",
+                    userData,
+                )
+            }
+
+            toast.success("Usuário atualizado com sucesso!");
+        } catch (error: unknown) {
+            if (checkErrorByField(error, 'message')) {
+                toast.error(error.message);
+                return;
+            }
+            throw error;
         }
     }
 
     async function handleDeleteUser() {
         if (!deletingUser) return
-        await apiBack.put(
-            "/users/delete", {}, {
-                params: { _id: deletingUser._id }
+        try {
+            await apiBack.put(
+                "/users/delete", {}, {
+                    params: { _id: deletingUser._id }
+                }
+            )
+
+            toast.success("Usuário deletado com sucesso!");
+        } catch (error: unknown) {
+            if (checkErrorByField(error, 'message')) {
+                toast.error(error.message);
+                return;
             }
-        )
+            throw error;
+        }
+
         setDeleteOpen(false)
         setDeletingUser(null)
     }
@@ -169,7 +208,7 @@ export function UsersTable() {
     }
 
     if (isLoading) return <Loading />;
-    if (isError) return <ErrorState error={error as Error} />;
+    if (isError) return <ErrorState error={firstError as Error} />;
 
     return (
         <div className="flex flex-col gap-6">
@@ -336,71 +375,71 @@ export function UsersTable() {
                 users
                 </p>
                 <div className="flex items-center gap-1">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    disabled={safeCurrentPage === 1}
-                    onClick={() => setCurrentPage(1)}
-                    aria-label="First page"
-                >
-                    <ChevronsLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    disabled={safeCurrentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    aria-label="Previous page"
-                >
-                    <ChevronLeft className="h-4 w-4" />
-                </Button>
-                {getPageNumbers().map((page, idx) =>
-                    page === "ellipsis" ? (
-                    <span
-                        key={`ellipsis-${idx}`}
-                        className="flex h-8 w-8 items-center justify-center text-sm text-muted-foreground"
-                        aria-hidden
-                    >
-                        ...
-                    </span>
-                    ) : (
                     <Button
-                        key={page}
-                        variant={page === safeCurrentPage ? "default" : "outline"}
+                        variant="outline"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => setCurrentPage(page)}
-                        aria-label={`Page ${page}`}
-                        aria-current={page === safeCurrentPage ? "page" : undefined}
+                        disabled={safeCurrentPage === 1}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                     >
-                        {page}
+                        <ChevronsLeft className="h-4 w-4" />
                     </Button>
-                    )
-                )}
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    disabled={safeCurrentPage === totalPages}
-                    onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                    aria-label="Next page"
-                >
-                    <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    disabled={safeCurrentPage === totalPages}
-                    onClick={() => setCurrentPage(totalPages)}
-                    aria-label="Last page"
-                >
-                    <ChevronsRight className="h-4 w-4" />
-                </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        disabled={safeCurrentPage === 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        aria-label="Previous page"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    {getPageNumbers().map((page, idx) =>
+                        page === "ellipsis" ? (
+                        <span
+                            key={`ellipsis-${idx}`}
+                            className="flex h-8 w-8 items-center justify-center text-sm text-muted-foreground"
+                            aria-hidden
+                        >
+                            ...
+                        </span>
+                        ) : (
+                        <Button
+                            key={page}
+                            variant={page === safeCurrentPage ? "default" : "outline"}
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setCurrentPage(page)}
+                            aria-label={`Page ${page}`}
+                            aria-current={page === safeCurrentPage ? "page" : undefined}
+                        >
+                            {page}
+                        </Button>
+                        )
+                    )}
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        disabled={safeCurrentPage === totalPages}
+                        onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        aria-label="Next page"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        disabled={safeCurrentPage === totalPages}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
+                    >
+                        <ChevronsRight className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
             )}

@@ -12,6 +12,9 @@ import { UserUtils } from '#schemas/user/utils';
 export class UserCrud implements ICrud<IUser['IParams']> {
     public readonly utils = new UserUtils();
 
+    public readonly count = async (data: FilterQuery<IUser['IParams']> = {}, options: QueryOptions<IUser['IParams']> = {}): Promise<number> => {
+        return await getUserDao().count(data);
+    };
     public readonly find = async (data: FilterQuery<IUser['IParams']>, projection: ProjectionType<IUser['IParams']> = {}, options: QueryOptions<IUser['IParams']> = {}): Promise<Array<IUser['IParams']>> => {
         const users = await getUserDao().find(data, projection, options);
         return users.map((u) => this.utils.toObject(u));
