@@ -5,6 +5,7 @@ interface IParticipants {
 }
 
 interface IPaginacao {
+    search?: string;
     page: number;
     pageSize: number;
     isPagination?: boolean;

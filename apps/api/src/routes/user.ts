@@ -52,6 +52,7 @@ export default (app: Application) => {
         async (req, res) => {
             const controller = new UserController();
             const mapped = controller.criacao!.mapper(req.body);
+            console.log('create')
             const either = await controller.criacao!.exec({ mapped });
             return res.status(200).send(either);
         }

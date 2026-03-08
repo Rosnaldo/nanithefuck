@@ -34,7 +34,7 @@ export async function initializeServices(): Promise<void> {
         app.get('/health', (req, res) => res.sendStatus(200));
     
         const loadRoutes = new LoadRoutes(app);
-        await loadRoutes.synchronous();
+        await loadRoutes.fireAndForget();
 
         const server = app.listen(Number(Properties.port), '0.0.0.0', () => {
             console.log(`Application running on  ${Properties.port}`);

@@ -11,11 +11,13 @@ export const ParticipantStatusAll = [
 export const UserRole = {
     admin: 'admin',
     member: 'member',
+    mock: 'mock',
 } as const;
 
 export const UserRoleAll = [
     UserRole.admin,
     UserRole.member,
+    UserRole.mock,
 ];
 
 export interface IUser {
@@ -103,6 +105,13 @@ export interface IMeeting {
     participants: Array<IParticipant>;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface Pagination {
+    currentPage: number;
+    totalPages: number;
+    totalRecords: number;
+    size: number;
 }
 
 export class UserUtils {

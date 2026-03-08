@@ -32,30 +32,45 @@ import {
 } from "@/components/ui/select"
 import { UserFormDialog } from "@/components/user-form-dialog"
 import { DeleteUserDialog } from "@/components/delete-user-dialog"
-import type { IUser, UserRole } from "@repo/shared-types"
+import type { IUser, Pagination, UserRole } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
 import { useQuery } from "@tanstack/react-query"
 import { ApiError } from "@/error/api"
+import { useDebounce } from "@/hooks/use-debounce"
 
 const PAGE_SIZE = 30
-const fetchUsersList = async () => {
+const fetchUsersList = async ({ currentPage, search }: { currentPage: number, search: string }) => {
     const res = await apiBack.get(
-        "/users/list"
+        "/users/list", {
+            params: {
+                page: currentPage,
+                search,
+            }
+        }
     )
     if (res.data.isError) {
         throw new ApiError(res.data.message);
     }
-    return res.data.data;
+
+    return res.data;
 };
 
 export function UsersTable() {
-    const { data: users = [], isLoading, isError, error } = useQuery<IUser[]>({
-        queryKey: ['users/list'],
-        queryFn: () => fetchUsersList()
-    });
     const [search, setSearch] = useState("")
     const [roleFilter, setRoleFilter] = useState<"all" | keyof typeof UserRole>("all")
     const [currentPage, setCurrentPage] = useState(1)
+    const debouncedSearch = useDebounce(search, 500);
+
+    const { data, isLoading, isError, error } = useQuery<{ data: IUser[], pagination: Pagination }>({
+        queryKey: ['users/list', currentPage, debouncedSearch],
+        queryFn: () => fetchUsersList({ currentPage, search: debouncedSearch }),
+        placeholderData: {
+            data: [],
+            pagination: {} as Pagination,
+        },
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    });
 
     // Dialog states
     const [formOpen, setFormOpen] = useState(false)
@@ -63,28 +78,16 @@ export function UsersTable() {
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deletingUser, setDeletingUser] = useState<IUser | null>(null)
 
-    // Filtered users
-    const filteredUsers = useMemo(() => {
-        return users.filter((user) => {
-        const matchesSearch =
-            search === "" ||
-            `${user.firstName} ${user.lastName}`
-            .toLowerCase()
-            .includes(search.toLowerCase()) ||
-            user?.email?.toLowerCase().includes(search.toLowerCase())
-        const matchesRole = roleFilter === "all" || user.role === roleFilter
-        return matchesSearch && matchesRole
-        })
-    }, [users, search, roleFilter])
+    const users = data?.data ?? [];
+    const pagination = data?.pagination;
 
     // Pagination
-    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE))
-    const safeCurrentPage = Math.min(currentPage, totalPages)
+    const totalPages = pagination?.totalPages || 0
+    const safeCurrentPage = pagination?.currentPage || 0
     const startIndex = (safeCurrentPage - 1) * PAGE_SIZE
-    const paginatedUsers = filteredUsers.slice(startIndex, startIndex + PAGE_SIZE)
 
     // Stats
-    const totalCount = users.length
+    const totalCount = pagination?.totalRecords
     const adminCount = users.filter((u) => u.role === "admin").length
     const memberCount = users.filter((u) => u.role === "member").length
 
@@ -207,10 +210,10 @@ export function UsersTable() {
             <div className="relative flex-1 sm:w-72">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                placeholder="Search by name or email..."
-                value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="pl-9"
+                    placeholder="Search by name or email..."
+                    value={search}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className="pl-9"
                 />
             </div>
             <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
@@ -244,7 +247,7 @@ export function UsersTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {paginatedUsers.length === 0 ? (
+                {users.length === 0 ? (
                 <TableRow>
                     <TableCell
                     colSpan={6}
@@ -256,7 +259,7 @@ export function UsersTable() {
                     </TableCell>
                 </TableRow>
                 ) : (
-                paginatedUsers.map((user) => (
+                users.map((user) => (
                     <TableRow key={user._id}>
                     <TableCell>
                         <Avatar className="h-9 w-9">
@@ -283,7 +286,7 @@ export function UsersTable() {
                             : ""
                         }
                         >
-                        {user.role === "admin" ? "Admin" : "Member"}
+                        {user.role}
                         </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -315,7 +318,7 @@ export function UsersTable() {
             </Table>
 
             {/* Pagination Footer */}
-            {filteredUsers.length > 0 && (
+            {users.length > 0 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t px-4 py-3">
                 <p className="text-sm text-muted-foreground">
                 Showing{" "}
@@ -324,11 +327,11 @@ export function UsersTable() {
                 </span>{" "}
                 to{" "}
                 <span className="font-medium text-foreground">
-                    {Math.min(startIndex + PAGE_SIZE, filteredUsers.length)}
+                    {Math.min(startIndex + PAGE_SIZE, users.length)}
                 </span>{" "}
                 of{" "}
                 <span className="font-medium text-foreground">
-                    {filteredUsers.length}
+                    {users.length}
                 </span>{" "}
                 users
                 </p>

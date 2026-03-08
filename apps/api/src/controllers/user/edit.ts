@@ -61,14 +61,16 @@ export class Edit {
             }
 
             await this.crud.update(_id, { firstName, lastName, email, role });
-            const kcMain = getKcMain();
-            const client = await kcMain.getKcClientCredentials();
-            await client.users.update({
-                id: userKc.id,
-            }, {
-                firstName, 
-                lastName,
-            })
+            if (role !== UserRole.mock) {
+                const kcMain = getKcMain();
+                const client = await kcMain.getKcClientCredentials();
+                await client.users.update({
+                    id: userKc.id,
+                }, {
+                    firstName, 
+                    lastName,
+                })
+            }
 
             return successData('success');
         } catch (error: unknown) {

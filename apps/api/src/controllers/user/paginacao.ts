@@ -9,6 +9,8 @@ import { IUserController } from './params';
 import { EitherPaginacao, successData } from '#utils/either_paginacao';
 import { mapNumber } from '#utils/mapper/number';
 import { mapBoolean } from '#utils/mapper/boolean';
+import { toUndefined } from '#utils/mapper/to_undefined';
+import _ from 'lodash';
 
 type IPaginacao = IUserController['IPaginacao'];
 
@@ -35,8 +37,13 @@ export class Paginacao {
     public readonly get = async (props: Props): Promise<EitherPaginacao<IUser['IParams']>> => {
         try {
             const { params } = props;
-            const { page, pageSize, isPagination } = params;
-            const query = {};
+            const { page, pageSize, isPagination, search } = params;
+            const query = _.isNil(search) ? {} : {
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { email: { $regex: search, $options: "i" } },
+                ],
+            };
             const skip = (page - 1) * pageSize;
             const paginacao = isPagination ? { limit: pageSize, skip } : {};
 
@@ -59,12 +66,14 @@ export class Paginacao {
             page,
             pageSize,
             isPagination,
+            search,
         } = body;
 
         return {
             pageSize: mapNumber(pageSize, 10),
             page: mapNumber(page, 1),
             isPagination: mapBoolean({ v: isPagination, defaultV: true }),
+            ...(search ? { search: toUndefined('search', search) } : {}),
         };
     };
 }

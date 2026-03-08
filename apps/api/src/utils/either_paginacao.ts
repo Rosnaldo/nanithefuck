@@ -1,17 +1,11 @@
 import { PaginateResponse } from '#types/index';
+import { Pagination } from '@repo/shared-types';
 import _ from 'lodash';
 
 export interface IsError {
     isError: true;
     message: string;
     status: number;
-}
-
-interface Pagination {
-    currentPage: number;
-    totalPages: number;
-    totalRecords: number;
-    size: number;
 }
 
 export type IsSuccess<T> = PaginateResponse<T>;

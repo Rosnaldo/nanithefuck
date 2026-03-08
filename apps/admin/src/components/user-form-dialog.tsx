@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import type { IUser, UserRole } from "@repo/shared-types"
+import { UserRole, type IUser } from "@repo/shared-types"
 
 interface UserFormDialogProps {
     open: boolean
@@ -77,7 +77,7 @@ export function UserFormDialog({
         if (!validate()) return
 
         onSave({
-        ...(user ? { id: user._id } : {}),
+        ...(user ? { _id: user._id } : {}),
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
@@ -241,18 +241,20 @@ export function UserFormDialog({
             </div>
 
             {/* Role */}
-            <div className="flex flex-col gap-1.5">
-                <Label htmlFor="role">Role</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as keyof typeof UserRole)}>
-                <SelectTrigger id="role">
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="member">Member</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
+            {role !== UserRole.mock && (
+                <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="role">Role</Label>
+                    <Select value={role} onValueChange={(v) => setRole(v as keyof typeof UserRole)}>
+                    <SelectTrigger id="role">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                    </Select>
+                </div>
+            )}
 
             <DialogFooter className="pt-2">
                 <Button
