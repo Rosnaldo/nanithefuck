@@ -12,7 +12,6 @@ import { useAuth } from "@/providers/auth-provider"
 import { ApiError } from "@/error/api"
 import type { IUser } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
-import { joinUrl } from "@/lib/utils"
 
 export default function ProfileSection() {
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -174,7 +173,7 @@ export default function ProfileSection() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
-    const avatarUrl = `${joinUrl(import.meta.env.VITE_STATIC_URL, user?.avatar?.s3Path)}?v=${Date.now()}`;
+    const avatarUrl = `${user?.avatar?.url}`;
 
     return (
         <div className="min-h-screen max-h-screen overflow-y-auto relative py-8">

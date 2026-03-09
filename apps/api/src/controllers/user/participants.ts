@@ -6,13 +6,15 @@ import { UserCrud } from '#crud/user';
 import { IUserController } from './params';
 import { EitherList } from '#utils/either_list';
 import { MeetingCrud } from '#crud/meeting';
-import { mapString } from '#utils/mapper/string';
-import { IParticipant, IUserParticipant } from '@repo/shared-types';
+import type { IParticipant, IUserParticipant } from '@repo/shared-types';
+import { toUndefined } from '#utils/mapper/to_undefined';
+import _ from 'lodash';
+import { BadRequestException } from '#exceptions/bad_request';
 
-type IParticipants = IUserController['IParticipants'];
+type IMeetingParticipants = IUserController['IParticipants'];
 
 interface Props {
-    params: IParticipants;
+    params: IMeetingParticipants;
     user: IUser['IParams'];
 }
 
@@ -36,9 +38,18 @@ export class Participants {
     public readonly get = async (props: Props): Promise<EitherList<IUserParticipant[]>> => {
         try {
             const { params } = props;
-            const { meetingId } = params;
+            const { meetingId, slug } = params;
 
-            const meeting = await this.crudMeeting.findById(meetingId);
+            const query = {
+                ...(_.isNil(meetingId)) ? {} : { _id: meetingId },
+                ...(_.isNil(slug)) ? {} : { slug },
+            };
+
+            const meeting = await this.crudMeeting.findOne(query);
+            if (_.isNil(meeting)) {
+                throw new BadRequestException('Meeting not found')
+            }
+
             const participantIds = meeting.participants.map((p) => p.userId);
             const list = await this.crud.findByIds(participantIds);
 
@@ -54,13 +65,15 @@ export class Participants {
         }
     };
 
-    public readonly mapper = (body: Request['body']): IParticipants => {
+    public readonly mapper = (body: Request['body']): IMeetingParticipants => {
         const {
             meetingId,
+            slug,
         } = body;
 
         return {
-            meetingId: mapString(meetingId),
+            ...(meetingId ? { meetingId: toUndefined('meetingId', meetingId) } : {}),
+            ...(slug ? { slug: toUndefined('slug', slug) } : {}),
         };
     };
 }

@@ -5,7 +5,7 @@ const isAuthenticated = (): boolean => false
 
 export function PublicRoute({ children }: { children: React.ReactElement }) {
     if (isAuthenticated()) {
-        return <Navigate to="/main" replace />;
+        return <Navigate to="/" replace />;
     }
     return children;
 }

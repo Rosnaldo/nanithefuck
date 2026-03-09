@@ -17,6 +17,15 @@ export default (app: Application) => {
         }
     );
     app.get(
+        '/meetings/by-slug',
+        async (req, res) => {
+            const controller = new MeetingController();
+            const mapped = controller.bySlug!.mapper(req.query);
+            const either = await controller.bySlug!.get({ mapped });
+            return res.status(200).send(either);
+        }
+    );
+    app.get(
         '/meetings/by-id',
         async (req, res) => {
             const controller = new MeetingController();

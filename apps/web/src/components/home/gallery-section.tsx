@@ -5,6 +5,7 @@ import { ApiError } from "@/error/api";
 import { useQuery } from "@tanstack/react-query";
 import { apiBack } from "@/api/backend";
 import { toast } from "sonner";
+import { useParams } from "react-router-dom";
 
 
 function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) {
@@ -38,37 +39,37 @@ function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) 
         <div className="absolute top-2 right-2 px-2 py-1 rounded bg-black/60 text-xs font-medium">Vídeo</div>
         </div>
     )
+}
+
+async function fetchMeeting(slug: string) {
+    try {
+        const res = await apiBack.get(
+            "/meetings/by-slug", {
+                params: { slug }
+            }
+        )
+        
+        if (res.data.isError) {
+            throw new ApiError(res.data.message || "/meetings/by-slug request failed");
+        }
+
+        const meeting = res.data as IMeeting;
+        return meeting;
+    } catch (error) {
+        if (error instanceof ApiError) {
+            toast.error(error.message)
+        }
+        throw error;
     }
+}
 
 export function GallerySection() {
+    const { slug = '' } = useParams<{ slug: string }>()
     const [selectedMedia, setSelectedMedia] = useState<IPicture | null>(null)
-
-    async function fetchMeeting() {
-        try {
-            const res = await apiBack.get(
-                "/meetings/by-id", {
-                    params: { _id: '69a78eaeca9caba7cbacb964' }
-                }
-            )
-            
-            if (res.data.isError) {
-                throw new ApiError(res.data.message || "/meetings/by-id request failed");
-            }
-
-            const meeting = res.data as IMeeting;
-            return meeting;
-        } catch (error) {
-            if (error instanceof ApiError) {
-                toast.error(error.message)
-            }
-            console.log('GallerySection fetchUser: error', error);
-            throw error;
-        }
-    }
 
     const { data: meeting, isLoading: isLoading, isError, error } = useQuery<IMeeting, ApiError>({
         queryKey: ['meeting-name'],
-        queryFn: fetchMeeting
+        queryFn: () => fetchMeeting(slug)
     });
 
     function Loading() {

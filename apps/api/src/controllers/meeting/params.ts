@@ -5,6 +5,10 @@ interface IById {
     _id: string;
 }
 
+interface IBySlug {
+    slug: string;
+}
+
 interface IPaginacao {
     page: number;
     pageSize: number;
@@ -37,6 +41,7 @@ interface IUploadGallery {
 export interface IMeetingController {
     IPaginacao: IPaginacao;
     IById: IById;
+    IBySlug: IBySlug;
     ICriacao: ICriacao;
     IDelete: IDelete;
     IEdit: IEdit;

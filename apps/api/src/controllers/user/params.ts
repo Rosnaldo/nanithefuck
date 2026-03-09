@@ -1,7 +1,8 @@
 import { IUser } from "#schemas/user/types";
 
 interface IParticipants {
-    meetingId: string;
+    meetingId?: string;
+    slug?: string;
 }
 
 interface IPaginacao {

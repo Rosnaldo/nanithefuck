@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner"
 
 import HomePage from "./page/home";
+import MeetingPage from "./page/meeting";
 import NotFound from "./page/not-found";
 import { ProtectedRoute } from "./protected-route";
 import LoginPage from "./page/login";
@@ -21,7 +22,8 @@ export default function App() {
 
                     <Route element={<ProtectedRoute />}>
                         <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/main" element={<HomePage />} />
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/meeting/:slug" element={<MeetingPage />} />
                     </Route>
 
                     <Route path="*" element={<NotFound />} />

@@ -8,36 +8,37 @@ import { ParticipantStatus, type IUserParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { toast } from "sonner"
+import { useParams } from "react-router-dom"
+
+async function fetchParticipants(slug: string) {
+    try {
+        const res = await apiBack.get(
+            "/users/participants", {
+                params: { slug }
+            }
+        )
+
+        if (res.data.isError) {
+            throw new ApiError(res.data.message || "/users/participants request failed");
+        }
+
+        return res.data as IUserParticipant[];
+    } catch (error) {
+        if (error instanceof ApiError) {
+            toast.error(error.message)
+        }
+        throw error;
+    }
+}
 
 export function ParticipantListSection() {
+    const { slug = '' } = useParams<{ slug: string }>()
     const [searchTerm, setSearchTerm] = useState("")
     const [filter, setFilter] = useState<"all" | keyof typeof ParticipantStatus>("all")
 
-    async function fetchParticipants() {
-        try {
-            const res = await apiBack.get(
-                "/users/participants", {
-                    params: { meetingId: '69a78eaeca9caba7cbacb964' }
-                }
-            )
-
-            if (res.data.isError) {
-                throw new ApiError(res.data.message || "/users/participants request failed");
-            }
-
-            return res.data as IUserParticipant[];
-        } catch (error) {
-            if (error instanceof ApiError) {
-                toast.error(error.message)
-            }
-            console.log('fetchParticipants fetchUser: error', error);
-            throw error;
-        }
-    }
-
     const { data: participants = [], isLoading: isLoading, isError, error } = useQuery<IUserParticipant[], ApiError>({
         queryKey: ['users/participants'],
-        queryFn: fetchParticipants
+        queryFn: () => fetchParticipants(slug)
     });
 
     function Loading() {
@@ -123,7 +124,7 @@ export function ParticipantListSection() {
                 >
                 <div className="relative mb-3">
                     <img
-                    src={participant?.avatar?.s3Path || "/assets/placeholder.svg"}
+                    src={participant?.avatar?.url || "/assets/placeholder.svg"}
                     alt={participant?.firstName}
                     className="w-16 h-16 rounded-full object-cover border-2 border-border/50"
                     />

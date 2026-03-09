@@ -14,7 +14,6 @@ import type { IUser } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { toast } from "sonner"
-import { joinUrl } from "@/lib/utils"
 
 export function Header() {
     const { isAuthenticated, loggedUser, logout } = useAuth();
@@ -57,7 +56,7 @@ export function Header() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
-    const avatarUrl = `${joinUrl(import.meta.env.VITE_STATIC_URL, user?.avatar?.s3Path)}?v=${Date.now()}`;
+    const avatarUrl = `${user?.avatar?.url}`;
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
@@ -88,7 +87,7 @@ export function Header() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem className="flex items-center gap-2" asChild>
-                            <Link to="/main">
+                            <Link to="/meeting/chacara-meets">
                             <Home className="w-4 h-4" />
                             <span>Evento</span>
                             </Link>

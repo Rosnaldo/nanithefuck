@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         keycloak
         .init({
-            redirectUri: window.location.origin + '/main',
+            redirectUri: window.location.origin + '/',
             onLoad: 'login-required',
             checkLoginIframe: false,
             enableLogging: true,

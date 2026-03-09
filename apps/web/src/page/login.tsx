@@ -10,7 +10,7 @@ export default function LoginPage() {
         if (!isAuthenticated) {
             login(); // 🔁 redirects to Keycloak
         } else {
-            navigate("/main");
+            navigate("/meeting/chacara-meets");
         }
     }, [isAuthenticated, login]);
 
