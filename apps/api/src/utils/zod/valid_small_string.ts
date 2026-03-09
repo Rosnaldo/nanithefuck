@@ -7,6 +7,13 @@ export const makeSmallStringSchema = (field: string): ZodString =>
         .min(1, `${field} deve ter 1 caracter pelo menos`)
         .max(50, `${field} não deve ultrapassar 50 caracteres`);
 
+export const makeStringSchema = (field: string): ZodString =>
+    z
+        .string({ error: () => `${field} e obrigatório` })
+        .trim()
+        .min(1, `${field} deve ter 1 caracter pelo menos`)
+        .max(150, `${field} não deve ultrapassar 150 caracteres`);
+
 export const makeSmallStringOptionalSchema = (field: string): ZodOptional<ZodString> =>
     z
         .string({ error: () => `${field} e obrigatório` })

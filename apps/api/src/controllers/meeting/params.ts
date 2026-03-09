@@ -1,4 +1,5 @@
 import { IMeeting } from "#schemas/meeting/types";
+import { IPicture } from "@repo/shared-types";
 
 interface IById {
     _id: string;
@@ -27,10 +28,17 @@ interface IEdit {
     participants: IMeeting['IParams']['participants'];
 }
 
+interface IUploadGallery {
+    meetingId: string;
+    h: IPicture['h'];
+    w: IPicture['w'];
+}
+
 export interface IMeetingController {
     IPaginacao: IPaginacao;
     IById: IById;
     ICriacao: ICriacao;
     IDelete: IDelete;
     IEdit: IEdit;
+    IUploadGallery: IUploadGallery;
 }

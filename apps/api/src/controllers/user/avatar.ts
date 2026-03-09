@@ -1,4 +1,3 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { logError } from '#utils/log_error';
 import { UserCrud } from '#crud/user';
@@ -12,43 +11,13 @@ import { getUserDao } from '#daos/singleton';
 import _ from 'lodash';
 import { BadRequestException } from '#exceptions/bad_request';
 import { joinUrl } from '#utils/join_url';
+import { uploadToS3 } from '#helpers/s3';
 
 interface Props {
     buffer: Buffer;
     mimetype: string;
     userId: string;
     userSource: IUser['IParams'];
-}
-
-const s3 = new S3Client({
-    region: properties.awsRegion,
-    credentials: {
-        accessKeyId: properties.awsAccessKeyId!,
-        secretAccessKey: properties.awsSecretAccessKey!,
-    },
-});
-
-type UploadParams = {
-    bucket: string;
-    key: string;
-    body: Buffer;
-    contentType?: string;
-};
-
-export async function uploadToS3({
-    bucket,
-    key,
-    body,
-    contentType = "application/octet-stream",
-}: UploadParams): Promise<void> {
-    await s3.send(
-        new PutObjectCommand({
-            Bucket: bucket,
-            Key: key,
-            Body: body,
-            ContentType: contentType,
-        })
-    );
 }
 
 export class Avatar {

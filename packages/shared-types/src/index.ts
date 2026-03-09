@@ -57,7 +57,7 @@ export const WeekdayName = {
   thursday: "Quinta-feira",
   friday: "Sexta-feira",
   saturday: "Sábado",
-} as const
+} as const;
 
 export const Weekday = {
   sunday: "sunday",
@@ -67,8 +67,7 @@ export const Weekday = {
   thursday: "thursday",
   friday: "friday",
   saturday: "saturday",
-} as const
-
+} as const;
 
 export const WeekdayAll = [
     Weekday.sunday,
@@ -104,10 +103,9 @@ export const PictureTypeAll = [
 
 export interface IPicture extends IMedia {
     type: keyof typeof PictureType;
-    url: string;
     w: number;
     h: number;
-}
+};
 
 export interface IMeeting {
     _id: string;
@@ -125,7 +123,7 @@ export interface Pagination {
     totalPages: number;
     totalRecords: number;
     size: number;
-}
+};
 
 export class UserUtils {
     public readonly getFullname = (user?: IUser) => `${user?.firstName} ${user?.lastName}`;
@@ -158,3 +156,9 @@ export class UserUtils {
         return colors[Math.abs(hash) % colors.length];
     };
 };
+
+export type DeepPartial<T> = T extends (infer U)[]
+  ? DeepPartial<U>[] // handle arrays
+  : T extends object
+    ? { [K in keyof T]?: DeepPartial<T[K]> }
+    : T;

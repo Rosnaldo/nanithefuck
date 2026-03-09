@@ -302,7 +302,7 @@ export function UsersTable() {
                     <TableRow key={user._id}>
                     <TableCell>
                         <Avatar className="h-9 w-9">
-                        <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} />
+                        <AvatarImage src={user.avatar?.url} alt={`${user.firstName} ${user.lastName}`} />
                         <AvatarFallback className="text-xs bg-muted text-muted-foreground">
                             {user.firstName.charAt(0)}
                             {user?.lastName?.charAt(0)}
@@ -449,7 +449,7 @@ export function UsersTable() {
         <UserFormDialog
             open={formOpen}
             onOpenChange={setFormOpen}
-            user={editingUser}
+            userEmail={editingUser?.email || ''}
             onSave={handleSaveUser}
         />
         <DeleteUserDialog

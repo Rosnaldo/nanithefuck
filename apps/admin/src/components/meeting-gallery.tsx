@@ -1,23 +1,17 @@
 import { useState, useRef } from "react"
+import { useParams } from "react-router-dom"
 import {
   Plus,
   Trash2,
   ImageIcon,
-  Link as LinkIcon,
   Upload,
   Film,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog"
 import {
   AlertDialog,
@@ -30,12 +24,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import type { IPicture } from "@repo/shared-types"
-
-function getMediaType(url: string): "image" | "video" {
-    const videoExts = [".mp4", ".webm", ".ogg", ".mov", ".avi", ".mkv"]
-    const lower = url.toLowerCase().split("?")[0]
-    return videoExts.some((ext) => lower.endsWith(ext)) ? "video" : "image"
-}
+import { useMeetingGallery, useRefetchMeetingGallery } from "@/hooks/use-meeting"
+import { apiBack } from "@/api/backend"
+import { toast } from "sonner"
 
 function loadImageDimensions(
     url: string
@@ -43,9 +34,9 @@ function loadImageDimensions(
     return new Promise((resolve) => {
         const img = new Image()
         img.onload = () => {
-        const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
-        const d = gcd(img.naturalWidth, img.naturalHeight)
-        resolve({ w: img.naturalWidth / d, h: img.naturalHeight / d })
+            const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
+            const d = gcd(img.naturalWidth, img.naturalHeight)
+            resolve({ w: img.naturalWidth / d, h: img.naturalHeight / d })
         }
         img.onerror = () => resolve({ w: 4, h: 3 })
         img.src = url
@@ -60,11 +51,11 @@ function loadVideoDimensions(
         video.preload = "metadata"
         video.onloadedmetadata = () => {
         const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
-        const d = gcd(video.videoWidth, video.videoHeight)
-        resolve({
-            w: video.videoWidth / d,
-            h: video.videoHeight / d,
-        })
+            const d = gcd(video.videoWidth, video.videoHeight)
+            resolve({
+                w: video.videoWidth / d,
+                h: video.videoHeight / d,
+            })
         }
         video.onerror = () => resolve({ w: 16, h: 9 })
         video.src = url
@@ -72,67 +63,67 @@ function loadVideoDimensions(
 }
 
 interface MeetingGalleryProps {
-    gallery: IPicture[]
-    onAddItem: (item: IPicture) => void
     onRemoveItem: (index: number) => void
 }
 
 export function MeetingGallery({
-    gallery,
-    onAddItem,
     onRemoveItem,
 }: MeetingGalleryProps) {
-    const [addOpen, setAddOpen] = useState(false)
-    const [urlValue, setUrlValue] = useState("")
-    const [urlError, setUrlError] = useState("")
+    const { meetingId = '' } = useParams<{ meetingId: string }>()
+    const { data: gallery = [] } = useMeetingGallery(meetingId);
+    const resetGallery = useRefetchMeetingGallery(meetingId);
+
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null)
     const [previewItem, setPreviewItem] = useState<IPicture | null>(null)
-    const [loading, setLoading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    async function handleAddUrl(e: React.FormEvent) {
-        e.preventDefault()
-        if (!urlValue.trim()) {
-            setUrlError("Insira uma URL")
-            return
-        }
+    async function handleAddItem({ file, h, w }: { file: File, h: number, w: number }) {
         try {
-            new URL(urlValue.trim())
-        } catch {
-            setUrlError("Insira uma URL valida")
-            return
+            const formData = new FormData();
+            formData.append("image", file);
+
+            const res = await apiBack.post("/meetings/gallery/upload", formData, {
+                params: { w, h, meetingId },
+            });
+    
+            if (res.data.isError) {
+                toast.error(res.data.message)
+            } else {
+                toast.success("Avatar salvo com sucesso.")
+                resetGallery();
+            }
+        } catch (error) {
+            toast.error("Ocorreu um erro inesperado. Tente novamente.")
         }
-        setLoading(true)
-        const url = urlValue.trim()
-        const type = getMediaType(url)
-        const dims =
-        type === "video"
-            ? await loadVideoDimensions(url)
-            : await loadImageDimensions(url)
-        onAddItem({ type, url, ...dims })
-        setUrlValue("")
-        setUrlError("")
-        setAddOpen(false)
-        setLoading(false)
     }
 
     async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
-        if (!file) return
+        if (!file?.type.startsWith("image/")) {
+            toast.error("Por favor, selecione uma imagem.")
+            return
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("A imagem deve ter no maximo 5MB.")
+            return
+        }
         const isVideo = file.type.startsWith("video/")
         const isImage = file.type.startsWith("image/")
-        if (!isImage && !isVideo) return
-        if (file.size > 50 * 1024 * 1024) return
+        if (!isImage && !isVideo) {
+            toast.error("Deve ser imagem ou video")
+            return
+        }
 
         const reader = new FileReader()
         reader.onloadend = async () => {
         const dataUrl = reader.result as string
-        const type = isVideo ? "video" : "photo"
-        const dims =
-            type === "video"
-            ? await loadVideoDimensions(dataUrl)
-            : await loadImageDimensions(dataUrl)
-        onAddItem({ type, url: dataUrl, ...dims } as IPicture)
+            const type = isVideo ? "video" : "image"
+            const dims =
+                type === "video"
+                ? await loadVideoDimensions(dataUrl)
+                : await loadImageDimensions(dataUrl)
+            handleAddItem({ file, ...dims })
         }
         reader.readAsDataURL(file)
 
@@ -143,6 +134,7 @@ export function MeetingGallery({
         if (deleteIndex !== null) {
             onRemoveItem(deleteIndex)
             setDeleteIndex(null)
+            resetGallery()
         }
     }
 
@@ -180,18 +172,6 @@ export function MeetingGallery({
                 className="hidden"
                 aria-label="Upload para galeria"
             />
-            <Button
-                size="sm"
-                className="gap-1.5"
-                onClick={() => {
-                    setUrlValue("")
-                    setUrlError("")
-                    setAddOpen(true)
-                }}
-            >
-                <LinkIcon className="h-3.5 w-3.5" />
-                Adicionar URL
-            </Button>
             </div>
         </div>
 
@@ -258,11 +238,7 @@ export function MeetingGallery({
 
             <button
                 type="button"
-                onClick={() => {
-                    setUrlValue("")
-                    setUrlError("")
-                    setAddOpen(true)
-                }}
+                onClick={() => fileInputRef.current?.click()}
                 className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 aria-label="Adicionar item"
             >
@@ -271,68 +247,6 @@ export function MeetingGallery({
             </button>
             </div>
         )}
-
-        {/* Add URL Dialog */}
-        <Dialog open={addOpen} onOpenChange={setAddOpen}>
-            <DialogContent className="sm:max-w-[440px]">
-            <DialogHeader>
-                <DialogTitle>Adicionar por URL</DialogTitle>
-                <DialogDescription>
-                Cole a URL da imagem ou video que deseja adicionar a galeria.
-                </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddUrl} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1.5">
-                <Label htmlFor="media-url">URL</Label>
-                <Input
-                    id="media-url"
-                    value={urlValue}
-                    onChange={(e) => {
-                    setUrlValue(e.target.value)
-                    setUrlError("")
-                    }}
-                    placeholder="https://example.com/photo.jpg"
-                />
-                {urlError && (
-                    <p className="text-xs text-destructive">{urlError}</p>
-                )}
-                </div>
-                {urlValue && !urlError && (
-                <div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
-                    {getMediaType(urlValue) === "video" ? (
-                    <video
-                        src={urlValue}
-                        className="h-full w-full object-cover"
-                        muted
-                        playsInline
-                    />
-                    ) : (
-                    <img
-                        src={urlValue}
-                        alt="Preview"
-                        className="h-full w-full object-cover"
-                        onError={() =>
-                        setUrlError("Nao foi possivel carregar esta URL")
-                        }
-                    />
-                    )}
-                </div>
-                )}
-                <DialogFooter>
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setAddOpen(false)}
-                >
-                    Cancelar
-                </Button>
-                <Button type="submit" disabled={loading}>
-                    {loading ? "Adicionando..." : "Adicionar"}
-                </Button>
-                </DialogFooter>
-            </form>
-            </DialogContent>
-        </Dialog>
 
         {/* Delete Confirm */}
         <AlertDialog

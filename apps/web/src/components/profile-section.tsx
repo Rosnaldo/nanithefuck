@@ -174,7 +174,7 @@ export default function ProfileSection() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
-    const avatarUrl = `${joinUrl(import.meta.env.VITE_STATIC_URL, user?.avatar?.path)}?v=${Date.now()}`;
+    const avatarUrl = `${joinUrl(import.meta.env.VITE_STATIC_URL, user?.avatar?.s3Path)}?v=${Date.now()}`;
 
     return (
         <div className="min-h-screen max-h-screen overflow-y-auto relative py-8">

@@ -119,7 +119,7 @@ function SortedAvailableUsers({ availableUsers, addSearch, selectedToAdd, setSel
                 />
                 <Avatar className="h-8 w-8 shrink-0">
                 <AvatarImage
-                    src={user.avatar}
+                    src={user.avatar?.url}
                     alt={`${user.firstName} ${user.lastName}`}
                 />
                 <AvatarFallback className="text-xs bg-muted text-muted-foreground">

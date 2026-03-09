@@ -57,7 +57,7 @@ export function Header() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
-    const avatarUrl = `${joinUrl(import.meta.env.VITE_STATIC_URL, user?.avatar?.path)}?v=${Date.now()}`;
+    const avatarUrl = `${joinUrl(import.meta.env.VITE_STATIC_URL, user?.avatar?.s3Path)}?v=${Date.now()}`;
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { MeetingGallery } from "@/components/meeting-gallery"
 import { MeetingParticipants } from "@/components/meeting-participants"
-import type { IMeeting, IParticipant, IPicture, IUser, Pagination, ParticipantStatus } from "@repo/shared-types"
+import type { IMeeting, IParticipant, IUser, Pagination, ParticipantStatus } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
@@ -85,7 +85,6 @@ export default function MeetingDetail() {
     }
 
     async function updateMeeting(data: IMeeting) {
-
         try {
             await apiBack.put(
                 "/meetings/edit", data, {
@@ -103,14 +102,6 @@ export default function MeetingDetail() {
         }
 
         resetMeeting();
-    }
-
-    function handleAddItem(item: IPicture) {
-        const data = {
-            ...meeting,
-            gallery: [...meeting?.gallery || [], item],
-        } as IMeeting
-        updateMeeting(data)
     }
 
     function handleRemoveItem(index: number) {
@@ -198,8 +189,6 @@ export default function MeetingDetail() {
         {/* Gallery Section */}
         <div className="rounded-lg border bg-card p-5">
             <MeetingGallery
-                gallery={meeting.gallery || []}
-                onAddItem={handleAddItem}
                 onRemoveItem={handleRemoveItem}
             />
         </div>

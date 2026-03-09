@@ -16,6 +16,7 @@
             "#crud/*": ["crud/*"],
             "#daos/*": ["daos/*"],
             "#exceptions/*": ["exceptions/*"],
+            "#helpers/*": ["helpers/*"],
             "#keycloak/*": ["keycloak/*"],
             "#interactors/*": ["interactors/*"],
             "#middleware/*": ["middleware/*"],

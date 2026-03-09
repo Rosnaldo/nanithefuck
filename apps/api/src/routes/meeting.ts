@@ -1,5 +1,10 @@
 import { MeetingController } from '#controllers/meeting';
+import upload from '#utils/image/multer-upload';
+import { authorizeMiddleware } from '#middleware/authorize';
+import { GetKeycloakUser } from '#middleware/get_keycloak_user';
+import { GetUser } from '#middleware/get_user';
 import type { Application } from 'express';
+import { UserRole } from '@repo/shared-types';
 
 export default (app: Application) => {
     app.get(
@@ -45,6 +50,32 @@ export default (app: Application) => {
             const mapped = controller.delete!.mapper(req.query);
             const either = await controller.delete!.exec({ mapped });
             return res.status(200).send(either);
+        }
+    );
+    app.post(
+        '/meetings/gallery/upload',
+        GetKeycloakUser,
+        GetUser,
+        authorizeMiddleware([UserRole.admin, UserRole.member]),
+        upload.single('image'),
+        async (req, res) => {
+            try {
+                const file = req.file as Express.Multer.File;
+
+                const isImage = file.mimetype.startsWith('image/');
+                const isVideo = file.mimetype.startsWith('video/');
+
+                if (!isImage && !isVideo) {
+                    return res.status(400).json({ error: 'Invalid file type' });
+                }
+
+                const controller = new MeetingController();
+                const mapped = controller.uploadGallery!.mapper(req.query);
+                const either = await controller.uploadGallery!.exec({ file, mapped });
+                return res.status(200).send(either);
+            } catch (err) {
+                res.status(500).json({ error: 'Failed to upload image' });
+            }
         }
     );
 };

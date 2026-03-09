@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Users, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { ParticipantStatus, type IMeeting, type IUserParticipant } from "@repo/shared-types"
+import { ParticipantStatus, type IUserParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { toast } from "sonner"
@@ -123,7 +123,7 @@ export function ParticipantListSection() {
                 >
                 <div className="relative mb-3">
                     <img
-                    src={participant?.avatar || "/assets/placeholder.svg"}
+                    src={participant?.avatar?.s3Path || "/assets/placeholder.svg"}
                     alt={participant?.firstName}
                     className="w-16 h-16 rounded-full object-cover border-2 border-border/50"
                     />

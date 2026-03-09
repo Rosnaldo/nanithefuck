@@ -11,10 +11,8 @@ import { MeetingUtils } from '#schemas/meeting/utils';
 import { makeObjectIdSchema } from '#utils/zod/valid_objectid_schema';
 import { mapString } from '#utils/mapper/string';
 import { toUndefined } from '#utils/mapper/to_undefined';
-import { mapArray } from '#utils/mapper/array';
 import { mapNumber } from '#utils/mapper/number';
 import { mapBoolean } from '#utils/mapper/boolean';
-import { IDay } from '@repo/shared-types';
 
 type IEdit = IMeetingController['IEdit'];
 type Mapped = IEdit
@@ -60,12 +58,18 @@ export class Edit {
             slug: true,
         });
 
-        const gallery = this.utils.zodGallerySchema.pick({
+        const picture = this.utils.zodPictureSchema.pick({
             w: true,
             h: true,
             url: true,
+            s3Host: true,
+            s3Path: true,
             type: true,
         });
+
+        const picturePartial = this.utils.zodPictureSchema.pick({
+            cdnHost: true,
+        }).partial();
 
         const participant = this.utils.zodParticipantSchema.pick({
             userId: true,
@@ -74,7 +78,10 @@ export class Edit {
 
         const day = this.utils.zodDaySchema.pick({
             day: true,
-            date: true,
+            month: true,
+            year: true,
+            formatted: true,
+            isodate: true,
             weekday: true,
             allDayLong: true,
         });
@@ -92,7 +99,8 @@ export class Edit {
                 ...dayPartial.partial,
             })),
             gallery: z.array(z.object({
-                ...gallery.shape
+                ...picture.shape,
+                ...picturePartial.partial,
             })),
             participants: z.array(z.object({
                 ...participant.shape
@@ -116,13 +124,19 @@ export class Edit {
             _id: mapString(_id),
             days: (days || []).map((d: any) => ({
                 day: mapNumber(d.day),
+                month: mapNumber(d.month),
+                year: mapNumber(d.year),
+                formatted: mapString(d.formatted),
                 ...(d.start ? { start: toUndefined('start', d.start) } : {}),
                 ...(d.finish ? { finish: toUndefined('finish', d.finish) } : {}),
                 ...(d.weekday ? { weekday: toUndefined('weekday', d.weekday) } : {}),
-                date: new Date(d.date),
+                isodate: new Date(d.isodate),
                 allDayLong: mapBoolean({ v: d.allDayLong, defaultV: false }),
             })),
             gallery: (gallery || []).map((d: any) => ({
+                ...(d.cdnHost? { cdnHost: toUndefined('cdnHost', d.cdnHost) } : {}),
+                s3Host: mapString(d.s3Host),
+                s3Path: mapString(d.s3Path),
                 type: mapString(d.type),
                 url: mapString(d.url),
                 w: mapNumber(d.w),
@@ -139,9 +153,6 @@ export class Edit {
 
     private readonly validate = (mapped: Mapped): ValidateParseResult => {
         const schema = this.makeZodSchema();
-
-        console.log(mapped)
-
         return validateParse<Mapped>(schema, mapped);
     };
 

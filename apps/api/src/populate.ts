@@ -25,7 +25,7 @@ const members: UserPick[] = [
         lastName: "Tsuzuki",
         email: "andreytsuzuki@gmail.com",
         avatar: {
-            s3Path: "/avatars/local/young-brazilian-man-smiling.jpg"
+            s3Path: "avatars/local/young-brazilian-man-smiling.jpg"
         },
         role: 'admin',
     },
@@ -34,7 +34,7 @@ const members: UserPick[] = [
         lastName: "Silva",
         email: "lucas.silva@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/young-brazilian-man-smiling.jpg"
+            s3Path: "avatars/local/young-brazilian-man-smiling.jpg"
         },
         role: 'mock',
     },
@@ -43,7 +43,7 @@ const members: UserPick[] = [
         lastName: "Costa",
         email: "mariana.costa@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/young-brazilian-woman-curly-hair.jpg"
+            s3Path: "avatars/local/young-brazilian-woman-curly-hair.jpg"
         },
         role: 'mock',
     },
@@ -52,7 +52,7 @@ const members: UserPick[] = [
         lastName: "Henrique",
         email: "pedro.henrique@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-man-beard-casual.jpg"
+            s3Path: "avatars/local/brazilian-man-beard-casual.jpg"
         },
         role: 'mock',
     },
@@ -61,7 +61,7 @@ const members: UserPick[] = [
         lastName: "Alves",
         email: "juliana.alves@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-woman-sunglasses-summer.jpg"
+            s3Path: "avatars/local/brazilian-woman-sunglasses-summer.jpg"
         },
         role: 'mock',
     },
@@ -70,7 +70,7 @@ const members: UserPick[] = [
         lastName: "Santos",
         email: "rafael.santos@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/young-man-athletic-brazilian.jpg"
+            s3Path: "avatars/local/young-man-athletic-brazilian.jpg"
         },
         role: 'mock',
     },
@@ -79,7 +79,7 @@ const members: UserPick[] = [
         lastName: "Oliveira",
         email: "camila.oliveira@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-woman-long-hair-smiling.jpg"
+            s3Path: "avatars/local/brazilian-woman-long-hair-smiling.jpg"
         },
         role: 'mock',
     },
@@ -88,7 +88,7 @@ const members: UserPick[] = [
         lastName: "Ferreira",
         email: "bruno.ferreira@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-man-casual-style.jpg"
+            s3Path: "avatars/local/brazilian-man-casual-style.jpg"
         },
         role: 'mock',
     },
@@ -97,7 +97,7 @@ const members: UserPick[] = [
         lastName: "Ribeiro",
         email: "amanda.ribeiro@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-woman-short-hair-modern.jpg"
+            s3Path: "avatars/local/brazilian-woman-short-hair-modern.jpg"
         },
         role: 'mock',
     },
@@ -106,7 +106,7 @@ const members: UserPick[] = [
         lastName: "Mendes",
         email: "thiago.mendes@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-man-glasses-friendly.jpg"
+            s3Path: "avatars/local/brazilian-man-glasses-friendly.jpg"
         },
         role: 'mock',
     },
@@ -115,7 +115,7 @@ const members: UserPick[] = [
         lastName: "Lima",
         email: "fernanda.lima@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-woman-blonde-beach-style.jpg"
+            s3Path: "avatars/local/brazilian-woman-blonde-beach-style.jpg"
         },
         role: 'mock',
     },
@@ -124,7 +124,7 @@ const members: UserPick[] = [
         lastName: "Souza",
         email: "gabriel.souza@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-man-tattoo-arm.jpg"
+            s3Path: "avatars/local/brazilian-man-tattoo-arm.jpg"
         },
         role: 'mock',
     },
@@ -133,7 +133,7 @@ const members: UserPick[] = [
         lastName: "Rocha",
         email: "beatriz.rocha@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-woman-fitness-style.jpg"
+            s3Path: "avatars/local/brazilian-woman-fitness-style.jpg"
         },
         role: 'mock',
     },
@@ -142,7 +142,7 @@ const members: UserPick[] = [
         lastName: "Martins",
         email: "diego.martins@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-man-surfer-look.jpg"
+            s3Path: "avatars/local/brazilian-man-surfer-look.jpg"
         },
         role: 'mock',
     },
@@ -151,7 +151,7 @@ const members: UserPick[] = [
         lastName: "Santos",
         email: "isabela.santos@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/brazilian-woman-elegant-style.jpg"
+            s3Path: "avatars/local/brazilian-woman-elegant-style.jpg"
         },
         role: 'mock',
     },
@@ -160,33 +160,33 @@ const members: UserPick[] = [
         lastName: "Lima",
         email: "matheus.lima@exemplo.com",
         avatar: {
-            s3Path: "/avatars/local/placeholder.svg?height=80&amp;width=80"
+            s3Path: "avatars/local/placeholder.svg?height=80&amp;width=80"
         },
         role: 'mock',
     },
 ];
 
 export const populate = async () => {
-    const newUsers = members.map((m) => {
-        const builder = new UserBuilder({
-            firstName: m.firstName,
-            lastName: m.lastName,
-            email: m.email,
-            role: m.role,
-        });
-        return builder.setAvatar({
-            url: joinUrl(properties.s3Host, m.avatar.s3Path),
-            s3Path: m.avatar.s3Path,
-        }).build();
+    const promises = members.map(async (m) => {
+        const builder = new UserBuilder();
+        return await builder
+            .setInit({
+                firstName: m.firstName,
+                lastName: m.lastName,
+                email: m.email,
+                role: m.role,
+            })
+            .setAvatar({
+                url: joinUrl(properties.s3Host, m.avatar.s3Path),
+                s3Path: m.avatar.s3Path,
+            }).save();
     });
-
-    await getUserDao().inserirBatch(newUsers);
+    await Promise.all(promises);
     const newMembers = await getUserDao().find({});
 
     const ids = newMembers.map((m) => m.id)
 
-    const meeting = generateMeeting(ids)
-    await getMeetingDao().inserir(meeting)
+    await generateMeeting(ids)
 }
 
 ;(async () => {

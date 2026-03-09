@@ -20,27 +20,59 @@ import {
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserRole, type IUser } from "@repo/shared-types"
+import { toast } from "sonner"
+import { apiBack } from "@/api/backend"
+import { useQuery } from "@tanstack/react-query"
+import { ApiError } from "@/error/api"
 
 interface UserFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    user: IUser | null
+    userEmail: string | null
     onSave: (user: Partial<IUser>) => void
 }
 
 export function UserFormDialog({
     open,
     onOpenChange,
-    user,
+    userEmail,
     onSave,
 }: UserFormDialogProps) {
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
     const [email, setEmail] = useState("")
+    const [avatarUrl, setAvatarUrl] = useState("")
     const [role, setRole] = useState<keyof typeof UserRole>("member")
-    const [avatar, setAvatar] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    async function fetchUser() {
+        try {
+            const res = await apiBack.get(
+                "/users/by-email", {
+                    params: { email: userEmail }
+                }
+            )
+            
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
+
+            const user = res.data as IUser;
+            return user;
+        } catch (error) {
+            if (error instanceof ApiError) {
+                toast.error(error.message)
+            }
+            console.log('ProfileSection fetchUser: error', error);
+            throw error;
+        }
+    }
+
+    const { data: user, isLoading: isLoading, isError, error, refetch } = useQuery<IUser, ApiError>({
+        queryKey: ['user-by-email'],
+        queryFn: fetchUser
+    });
 
     useEffect(() => {
         if (open) {
@@ -49,13 +81,13 @@ export function UserFormDialog({
             setLastName(user?.lastName || '')
             setEmail(user?.email || '')
             setRole(user.role)
-            setAvatar(user?.avatar || '')
+            setAvatarUrl(user.avatar?.url || '')
         } else {
             setFirstName("")
             setLastName("")
             setEmail("")
             setRole("member")
-            setAvatar("")
+            setAvatarUrl('')
         }
         setErrors({})
         }
@@ -77,53 +109,72 @@ export function UserFormDialog({
         if (!validate()) return
 
         onSave({
-        ...(user ? { _id: user._id } : {}),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        email: email.trim(),
-        role,
-        avatar,
+            ...(user ? { _id: user._id } : {}),
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            email: email.trim(),
+            role,
         })
         onOpenChange(false)
     }
 
-    function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0]
-        if (!file) return
-
+    const handleFileChange = async (file: File) => {
         if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({ ...prev, avatar: "Please select an image file" }))
-        return
+            toast.error("Por favor, selecione uma imagem.")
+            return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-            ...prev,
-            avatar: "Image must be under 5MB",
-        }))
-        return
+            toast.error("A imagem deve ter no maximo 5MB.")
+            return
         }
 
-        const reader = new FileReader()
-        reader.onloadend = () => {
-        setAvatar(reader.result as string)
-        setErrors((prev) => {
-            const next = { ...prev }
-            delete next.avatar
-            return next
-        })
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const res = await apiBack.post("/users/upload-avatar", formData);
+    
+            if (res.data.isError) {
+                toast.error(res.data.message)
+            } else {
+                const updated = res.data as IUser;
+                setAvatarUrl(updated?.avatar?.url || '');
+                toast.success("Avatar salvo com sucesso.")
+            }
+        } catch (error) {
+            toast.error("Ocorreu um erro inesperado. Tente novamente.")
+        } finally {
+            await refetch();
         }
-        reader.readAsDataURL(file)
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files && files.length > 0) {
+            handleFileChange(files[0])
+        }
     }
 
     function removeAvatar() {
-        setAvatar("")
+        setAvatarUrl("")
         if (fileInputRef.current) {
-        fileInputRef.current.value = ""
+            fileInputRef.current.value = ""
         }
     }
 
     const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+
+    function Loading() {
+        return <div>Loading...</div>;
+    }
+
+    function ErrorState({ error }: { error: Error }) {
+        return <div style={{ color: "red" }}>{error.message}</div>;
+    }
+
+    if (isLoading) return <Loading />;
+    if (isError) return <ErrorState error={error as Error} />;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -144,19 +195,19 @@ export function UserFormDialog({
             <div className="flex flex-col items-center gap-3">
                 <div className="relative group">
                 <Avatar className="h-20 w-20 border-2">
-                    <AvatarImage src={avatar} alt="User avatar" />
+                    <AvatarImage src={avatarUrl} alt="User avatar" />
                     <AvatarFallback className="text-lg bg-muted text-muted-foreground">
                     {initials || "?"}
                     </AvatarFallback>
                 </Avatar>
-                {avatar && (
+                {avatarUrl && (
                     <button
                     type="button"
                     onClick={removeAvatar}
                     className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-label="Remove avatar"
                     >
-                    <X className="h-3 w-3" />
+                        <X className="h-3 w-3" />
                     </button>
                 )}
                 </div>
@@ -175,21 +226,9 @@ export function UserFormDialog({
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    onChange={handleFileUpload}
+                    onChange={handleInputChange}
                     className="hidden"
                     aria-label="Upload avatar image"
-                />
-                </div>
-                <div className="w-full">
-                <Label htmlFor="avatar-url" className="text-xs text-muted-foreground">
-                    Or paste image URL
-                </Label>
-                <Input
-                    id="avatar-url"
-                    placeholder="https://example.com/avatar.jpg"
-                    value={avatar.startsWith("data:") ? "" : avatar}
-                    onChange={(e) => setAvatar(e.target.value)}
-                    className="mt-1 h-8 text-xs"
                 />
                 </div>
                 {errors.avatar && (

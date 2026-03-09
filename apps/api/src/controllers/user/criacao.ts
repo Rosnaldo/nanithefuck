@@ -2,7 +2,6 @@ import { Request } from 'express';
 import z from 'zod';
 
 import { logError } from '#utils/log_error';
-import { UserCrud } from '#crud/user';
 import { IUserController } from './params';
 import { Either, successData } from '#utils/either';
 import { validateParse, ValidateParseResult } from '#utils/zod/validate_parse';
@@ -24,11 +23,9 @@ interface Props {
 
 export class Criacao {
     public static readonly classId = Symbol.for('Controller > User > Criacao');
-    private readonly crud: UserCrud;
     private readonly utils: UserUtils;
 
     private constructor() {
-        this.crud = new UserCrud();
         this.utils = new UserUtils();
     }
 
@@ -43,8 +40,8 @@ export class Criacao {
         try {
             const { mapped } = props;
             const params = this.transform(mapped);
-            const builder = new UserBuilder(params);
-            const user = await this.crud.create(builder.build());
+            const builder = new UserBuilder();
+            const user = await builder.build(params).save();
 
             const kcMain = getKcMain();
             const client = await kcMain.getKcClientCredentials();

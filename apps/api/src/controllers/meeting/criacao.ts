@@ -2,7 +2,6 @@ import { Request } from 'express';
 import z from 'zod';
 
 import { logError } from '#utils/log_error';
-import { MeetingCrud } from '#crud/meeting';
 import { IMeetingController } from './params';
 import { Either, successData } from '#utils/either';
 import { validateParse, ValidateParseResult } from '#utils/zod/validate_parse';
@@ -10,7 +9,6 @@ import { BadRequestException } from '#exceptions/bad_request';
 import { IMeeting } from '#schemas/meeting/types';
 import { MeetingBuilder, MeetingUtils } from '#schemas/meeting/utils';
 import { mapString } from '#utils/mapper/string';
-import { mapArray } from '#utils/mapper/array';
 
 type ICriacao = IMeetingController['ICriacao'];
 
@@ -22,11 +20,9 @@ interface Props {
 
 export class Criacao {
     public static readonly classId = Symbol.for('Controller > Meeting > Criacao');
-    private readonly crud: MeetingCrud;
     private readonly utils: MeetingUtils;
 
     private constructor() {
-        this.crud = new MeetingCrud();
         this.utils = new MeetingUtils();
     }
 
@@ -42,9 +38,9 @@ export class Criacao {
             const { mapped } = props;
             const params = this.transform(mapped);
 
-            const builder = new MeetingBuilder(params);
+            const builder = new MeetingBuilder();
 
-            const meeting = await this.crud.create(builder.build());
+            const meeting = await builder.build(params).save();
             return successData(meeting);
         } catch (error: unknown) {
             return logError(error, '/meeting/create');

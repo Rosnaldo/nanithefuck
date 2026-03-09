@@ -1,4 +1,5 @@
 import z from 'zod';
+import _ from 'lodash';
 
 import { makeSmallStringSchema } from '#utils/zod/valid_small_string';
 import { makeEmailSchema } from '#utils/zod/valid_email';
@@ -7,10 +8,10 @@ import { IUser } from './types';
 import { cleanMongooseObject } from '#entities/utils/clean_mongoose_doc';
 import { makeEnumSchema } from '#utils/zod/valid_enum';
 import { IUserAvatar, UserRoleAll } from '@repo/shared-types';
-import { joinUrl } from '#utils/join_url';
 import { toSlug } from '#utils/to_slug';
-import _ from 'lodash';
+import { getUserModel } from '#models/singleton';
 import properties from '#properties';
+import { hasNoNilValues } from '#utils/has_no_nil_values';
 
 export class UserUtils {
     public readonly zodSchema = z.object({
@@ -30,36 +31,45 @@ export class UserUtils {
 }
 
 export class UserBuilder {
-    public readonly entity: Partial<IUser['IParams']> = {};
+    public readonly utils = new UserUtils();
+    protected readonly doc: IUser['IDocument'];
 
-    constructor (params: Partial<IUser['IParams']>) {
+    constructor(doc: IUser['IDocument'] | null = null) {
+        const UserModel = getUserModel();
+        if (doc != null) this.doc = doc;
+        else this.doc = new UserModel();
+    }
+
+    public readonly build = (params: Partial<IUser['IParams']>): this => {
         const { firstName, lastName, email, role, avatar } = params;
 
         const init = { firstName, lastName, email, role };
-        if (ensureAllDefined(init)) {
+        if (hasNoNilValues(init)) {
             this.setInit(init);
         }
 
         if (avatar) {
             this.setAvatar(avatar);
         }
-    }
-
-    setInit = (params: Pick<IUser['IParams'], 'firstName' | 'lastName' | 'email' | 'role'>): this => {
-        const { firstName, lastName, email, role } = params;
-        const slug = toSlug(`${firstName}-${lastName}`);
-
-        this.entity.firstName = firstName;
-        this.entity.lastName = lastName;
-        this.entity.slug = slug;
-        this.entity.email = email;
-        this.entity.role = role;
 
         return this;
     };
 
-    setAvatar = ({ s3Path, url }: Pick<IUserAvatar, 's3Path' | 'url'>): this => {
-        this.entity.avatar = {
+    public readonly setInit = (params: Pick<IUser['IParams'], 'firstName' | 'lastName' | 'email' | 'role'>): this => {
+        const { firstName, lastName, email, role } = params;
+        const slug = toSlug(`${firstName}-${lastName}`);
+
+        this.doc.firstName = firstName;
+        this.doc.lastName = lastName;
+        this.doc.slug = slug;
+        this.doc.email = email;
+        this.doc.role = role;
+
+        return this;
+    };
+
+    public readonly setAvatar = ({ s3Path, url }: Pick<IUserAvatar, 's3Path' | 'url'>): this => {
+        this.doc.avatar = {
             s3Host: properties.s3Host,
             cdnHost: properties.cdnHost,
             s3Path,
@@ -68,9 +78,8 @@ export class UserBuilder {
         return this;
     };
 
-    public readonly build = (): Partial<IUser['IParams']> => {
-        return {
-            ...this.entity
-        };
+    public readonly save = async (): Promise<IUser['IParams']> => {
+        await this.doc.save();
+        return this.utils.toObject(this.doc);
     };
 }

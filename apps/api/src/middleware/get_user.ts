@@ -14,7 +14,7 @@ export const GetUser = async (req: Request, res: Response, next: NextFunction) =
     
         const utils = new UserUtils();
         req.user = utils.toObject(user);
-    
+
         return next();
     } catch (error) {
         console.log('GetUser: Não autorizado')

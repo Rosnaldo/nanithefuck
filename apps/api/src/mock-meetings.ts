@@ -4,73 +4,73 @@ import { IMeeting, IParticipant, IPicture, ParticipantStatus } from "@repo/share
 const gallery: IPicture[] = [
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg",
     w: 2,
     h: 2,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/pool-party-clip-1.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/pool-party-clip-1.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/pool-party-clip-1.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/pool-party-clip-1.jpg",
     w: 1,
     h: 1,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/anime-style-bbq-grill-meat-japanese-illustration.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/anime-style-bbq-grill-meat-japanese-illustration.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-bbq-grill-meat-japanese-illustration.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/anime-style-bbq-grill-meat-japanese-illustration.jpg",
     w: 1,
     h: 1,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/bbq-party-clip.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/bbq-party-clip.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/bbq-party-clip.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/bbq-party-clip.jpg",
     w: 1,
     h: 1,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/anime-style-friends-talking-sunset-japanese.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/anime-style-friends-talking-sunset-japanese.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-friends-talking-sunset-japanese.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/anime-style-friends-talking-sunset-japanese.jpg",
     w: 1,
     h: 1,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/anime-style-cocktails-drinks-bar-japanese.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/anime-style-cocktails-drinks-bar-japanese.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-cocktails-drinks-bar-japanese.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/anime-style-cocktails-drinks-bar-japanese.jpg",
     w: 1,
     h: 1,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/dj-party-clip.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/dj-party-clip.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/dj-party-clip.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/dj-party-clip.jpg",
     w: 1,
     h: 1,
   },
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/chacara-meets/gallery/anime-style-night-party-lights-japanese.jpg",
-    host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    path: "meetings/chacara-meets/gallery/anime-style-night-party-lights-japanese.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-night-party-lights-japanese.jpg",
+    s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
+    s3Path: "meetings/local/chacara-meets/gallery/anime-style-night-party-lights-japanese.jpg",
     w: 2,
     h: 1,
   },
 ];
 
-export function generateMeeting(userIds: string[]): Partial<IMeeting> {
+export async function generateMeeting(userIds: string[]): Promise<IMeeting> {
     const name = 'Chacara Meets';
-    const builder = new MeetingBuilder({ name });
+    const builder = new MeetingBuilder();
     const statuses: Array<keyof typeof ParticipantStatus> = ["pending", "confirmed"]
 
     const participantCount = 5
@@ -82,7 +82,8 @@ export function generateMeeting(userIds: string[]): Partial<IMeeting> {
         })
     }
 
-    return builder
+    return await builder
+        .setInit({ name })
         .setParticipants(participants)
         .setDays([
             {
@@ -101,6 +102,6 @@ export function generateMeeting(userIds: string[]): Partial<IMeeting> {
             },
         ])
         .setGallery(gallery)
-        .build()
+        .save()
 }
 
