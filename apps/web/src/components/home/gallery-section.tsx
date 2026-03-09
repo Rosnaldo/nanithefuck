@@ -94,7 +94,7 @@ export function GallerySection() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
             {meeting?.gallery.map((item, index) => (
-                <div key={index} className={`col-span-${item.h} row-span-${item.w} relative rounded-xl overflow-hidden group`}>
+                <div key={index} className={`col-span-${item.w} row-span-${item.h} relative rounded-xl overflow-hidden group`}>
                 {item.type === "video" ? (
                     <VideoThumbnail src={item.url} onClick={() => setSelectedMedia(item)} />
                 ) : (
