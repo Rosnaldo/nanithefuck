@@ -2,10 +2,13 @@ import { connectMain, getMainConnection } from "#db/singleton";
 import { LoadCollections } from "#entities/utils/load_collections";
 import { LoadModels } from "#entities/utils/load_models";
 import { LoadIndexes } from "#indexes/load_indexes";
+import { Migration } from "#migrations/migration";
 import Properties from "#properties";
 
 export const mongooseBootstrap = async ({ testTransaction = false } = {}) => {
     const concistentEnvs = ['prod', 'dev', 'test'];
+
+    const migration = new Migration();
 
     await connectMain({ testTransaction });
     const connection = getMainConnection();
@@ -21,4 +24,6 @@ export const mongooseBootstrap = async ({ testTransaction = false } = {}) => {
     } else {
         void loadIndexes.fireAndForget();
     }
+
+    await migration.runScripts();
 };

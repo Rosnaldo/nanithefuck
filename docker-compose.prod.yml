@@ -11,8 +11,7 @@ services:
     volumes:
       # Main nginx config
       - ./apps/nginx/prod/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./apps/web/dist:/etc/nginx/html
-      - ./apps/admin/dist:/etc/nginx/html/myadmin
+      - ./apps/nginx/prod/certs:/etc/nginx/certs:ro
     networks:
       - frontend
       - backend
@@ -47,7 +46,7 @@ services:
     env_file :
       - ./apps/authentication/.env
     volumes:
-      - my_postgres_data:/var/lib/postgresql/data
+      - prod_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
       interval: 10s
@@ -72,7 +71,7 @@ services:
       - ./apps/authentication/my-themes:/opt/keycloak/themes
       - ./apps/authentication/realm-export.prod.json:/opt/keycloak/data/import/realm-export.json
     command: [
-      "start-dev", 
+      "start", 
       "--spi-theme-cache-themes=false",
       "--spi-theme-cache-templates=false",
       "--spi-theme-static-max-age=-1",
@@ -103,9 +102,9 @@ services:
     expose:
       - "27017"
     env_file:
-      - ./apps/api/.env.prod
+      - ./apps/api/.env.production
     volumes:
-      - mongodb_data:/data/db
+      - prod_mongodb_data:/data/db
     healthcheck:
       test: [ "CMD-SHELL", "mongosh --quiet --authenticationDatabase admin --username $${MONGO_INITDB_ROOT_USERNAME} --password $${MONGO_INITDB_ROOT_PASSWORD} localhost:27017/test --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'" ]
       interval: 30s
@@ -116,8 +115,8 @@ services:
       - backend
 
 volumes:
-  my_postgres_data:
-  mongodb_data:
+  prod_postgres_data:
+  prod_mongodb_data:
 
 networks:
   frontend:

@@ -6,7 +6,7 @@ dotenv.config({
     override: true
 });
 
-import { getMeetingDao, getUserDao } from "#daos/singleton";
+import { getUserDao } from "#daos/singleton";
 import { mongooseBootstrap } from "#mongoose_bootstrap";
 import { IUser } from "#schemas/user/types";
 import { generateMeeting } from 'mock-meetings';
@@ -25,7 +25,7 @@ const members: UserPick[] = [
         lastName: "Tsuzuki",
         email: "andreytsuzuki@gmail.com",
         avatar: {
-            s3Path: "avatars/local/young-brazilian-man-smiling.jpg"
+            s3Path: `avatars/local/young-brazilian-man-smiling.jpg`
         },
         role: 'admin',
     },

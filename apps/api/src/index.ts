@@ -12,8 +12,8 @@ import cors from 'cors';
 import Properties from './properties';
 import './extensions/transform_in_dict';
 
-import { LoadRoutes } from '#routes/config/load_routes';
 import { mongooseBootstrap } from 'mongoose_bootstrap';
+import { routeBootstrap } from 'route_bootstrap';
 import { buildKcMain } from '#keycloak/singleton';
 
 const app = express();
@@ -31,10 +31,7 @@ export async function initializeServices(): Promise<void> {
         app.use(express.json({ limit: '10MB' }));
         app.use(express.urlencoded({ extended: false }));
 
-        app.get('/health', (req, res) => res.sendStatus(200));
-    
-        const loadRoutes = new LoadRoutes(app);
-        await loadRoutes.fireAndForget();
+        await routeBootstrap(app);
 
         const server = app.listen(Number(Properties.port), '0.0.0.0', () => {
             console.log(`Application running on  ${Properties.port}`);
