@@ -12,9 +12,6 @@ Object.defineProperty(Array.prototype, 'transformInDict', {
             return map;
         }, {});
     },
-    enumerable: false,
-    writable: false,
-    configurable: false
 });
 
 export default Array.prototype.transformInDict;

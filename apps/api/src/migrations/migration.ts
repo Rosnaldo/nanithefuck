@@ -10,7 +10,7 @@ export class Migration {
         for await (const script of scripts) {
             const migration = await getMigrationDao().findOne(script);
             if (!migration) {
-                const { migrate } = await import(`./scripts/${script}`);
+                const { migrate } = await import(script);
                 await migrate.run();
                 await getMigrationDao().insert(script);
             }
