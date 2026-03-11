@@ -18,4 +18,4 @@ aws s3 sync apps/admin/$BUILD_DIR s3://$BUCKET_NAME/ \
     --cache-control "no-cache, no-store, must-revalidate"
 
 echo "Deployment completed!"
-echo "Your site should be live at: http://$BUCKET_NAME.s3-website-$REGION.amazonaws.com/admin/index.html"
+echo "Your site should be live at: http://$BUCKET_NAME.s3-website-$REGION.amazonaws.com/index.html"

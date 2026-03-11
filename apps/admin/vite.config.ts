@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   console.log("Backend:", env.VITE_BACKEND_URL)
 
   return {
+    base: env.VITE_CONFIG_BASE,
     plugins: [react(), tailwindcss()],
     cacheDir: 'node_modules/.vite_cache',
     resolve: {

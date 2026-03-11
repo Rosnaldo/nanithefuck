@@ -141,7 +141,9 @@ export function UserFormDialog({
         formData.append("image", file);
 
         try {
-            const res = await apiBack.post("/users/upload-avatar", formData);
+            const res = await apiBack.post("/users/upload-avatar", formData, {
+                params: { userId: editingUser!._id, },
+            });
     
             if (res.data.isError) {
                 mytoast.error(res.data.message)
@@ -187,7 +189,7 @@ export function UserFormDialog({
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Avatar Section */}
-            <div className="flex flex-col items-center gap-3">
+            {editingUser ? <div className="flex flex-col items-center gap-3">
                 <div className="relative group">
                 <Avatar className="h-20 w-20 border-2">
                     <AvatarImage src={avatarUrl} alt="User avatar" />
@@ -230,6 +232,7 @@ export function UserFormDialog({
                 <p className="text-xs text-destructive">{errors.avatar}</p>
                 )}
             </div>
+             : (<></>)}
 
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
