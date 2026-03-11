@@ -104,8 +104,6 @@ export default function MeetingDetail() {
     const participants = participantsQuery.data ?? [];
     const refetchParticipants = participantsQuery.refetch;
 
-    console.log('participants',participants)
-
     if (!meeting) {
         return (
         <div className="flex flex-col items-center justify-center py-20">
@@ -142,7 +140,6 @@ export default function MeetingDetail() {
             }
             throw error;
         }
-        console.log('AJI')
         resetMeeting();
         refetchParticipants();
     };

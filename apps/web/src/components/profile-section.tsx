@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import type React from "react"
 import { useQuery } from "@tanstack/react-query"
 import { User, Upload, Mail } from "lucide-react"
@@ -13,6 +13,28 @@ import type { IUser } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
 import { mytoast } from "./toast"
 
+async function fetchUser(email: string) {
+    try {
+        const res = await apiBack.get(
+            "/users/by-email", {
+                params: { email }
+            }
+        )
+        
+        if (res.data.isError) {
+            throw new ApiError(res.data.message);
+        }
+
+        const user = res.data as IUser;
+        return user;
+    } catch (error) {
+        if (error instanceof ApiError) {
+            mytoast.error(error.message)
+        }
+        throw error;
+    }
+};
+
 export default function ProfileSection() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [isDragging, setIsDragging] = useState(false)
@@ -21,40 +43,22 @@ export default function ProfileSection() {
         firstName: '',
         lastName:'',
         email: '',
-    })
-
-    async function fetchUser() {
-        try {
-            const res = await apiBack.get(
-                "/users/by-email", {
-                    params: { email: loggedUser.email }
-                }
-            )
-            
-            if (res.data.isError) {
-                throw new ApiError(res.data.message);
-            }
-
-            const user = res.data as IUser;
-            setFormData({
-                firstName: user?.firstName || '',
-                lastName: user?.lastName || '',
-                email: user?.email || '',
-            })
-
-            return user;
-        } catch (error) {
-            if (error instanceof ApiError) {
-                mytoast.error(error.message)
-            }
-            throw error;
-        }
-    }
+    });
 
     const { data: user, isLoading: isLoading, isError, error, refetch } = useQuery<IUser, ApiError>({
         queryKey: ['user-by-email'],
-        queryFn: fetchUser
+        queryFn: () => fetchUser(loggedUser.email)
     });
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user?.email || '',
+            });
+        }
+    }, [user])
 
     const [errors, setErrors] = useState<Record<string, string>>({})
 

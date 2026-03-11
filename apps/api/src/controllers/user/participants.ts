@@ -54,7 +54,6 @@ export class Participants {
             const queryRole = {
                 ...(meeting.isActive) ? { role: { $in:  [UserRole.admin, UserRole.member] } } : {}
             };
-            console.log(queryRole)
             const list = await this.crud.find({ _id: { $in: participantIds }, ...queryRole });
 
             const participantsDict: Record<string, { value: IParticipant }> =
