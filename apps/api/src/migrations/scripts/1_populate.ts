@@ -33,7 +33,7 @@ export const migrate = {
 
         const name = 'Chacara Meets';
         return await (new MeetingBuilder())
-            .setInit({ name })
+            .setInit({ name, isActive: false })
             .setParticipants([
                 {
                     userId: user!._id.toString(),

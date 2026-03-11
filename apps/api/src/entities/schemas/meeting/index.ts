@@ -8,6 +8,7 @@ export const MeetingSchema = new Schema<IMeeting['ISchema']>(
     {
         name: { type: String, required: true },
         slug: { type: String, required: true },
+        isActive: { type: Boolean, default: false, required: true },
         days: [
             {
                 day: { type: Number, required: true },

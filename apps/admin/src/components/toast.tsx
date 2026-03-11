@@ -1,4 +1,5 @@
 import { toast as sonnerToast } from 'sonner';
+import { AlertCircleIcon, CheckCircleIcon } from "lucide-react"
 
 export const mytoast = Object.assign(
   (message: string, options?: Parameters<typeof sonnerToast>[1]) => {
@@ -12,16 +13,26 @@ export const mytoast = Object.assign(
   },
   {
     success: (message: string, options?: Parameters<typeof sonnerToast>[1]) =>
-      sonnerToast.success(message, {
+      sonnerToast.success('Success!', {
         ...options,
+        icon: <CheckCircleIcon className="w-5 h-5 text-green-600" />,
+        description: message,
+        classNames: {
+            title: '!text-green-600',
+        },
         cancel: {
             label: 'Cancel',
             onClick: () => {},
         },
       }),
     error: (message: string, options?: Parameters<typeof sonnerToast>[1]) =>
-      sonnerToast.error(message, {
+      sonnerToast.error('Error:', {
         ...options,
+        icon: <AlertCircleIcon className="w-5 h-5 text-red-600" />,
+        description: message,
+        classNames: {
+            title: '!text-red-600',
+        },
         cancel: {
             label: 'Cancel',
             onClick: () => {},

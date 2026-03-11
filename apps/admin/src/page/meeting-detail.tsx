@@ -11,6 +11,21 @@ import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import { useReset } from "@/hooks/use-reset"
 import { checkErrorByField } from "@/utils/check_error_by_field"
 import { mytoast } from "@/components/toast"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+
+export function SwitchDemo({ isActive, handleIsActiveChange }: { isActive: boolean, handleIsActiveChange: (checked: boolean) => void }) {
+  return (
+    <div className="flex items-center space-x-2">
+        <Switch
+            id="airplane-mode"
+            checked={isActive}       // controlled value
+            onCheckedChange={handleIsActiveChange} // event handler
+        />
+        <Label htmlFor="airplane-mode">Activate</Label>
+    </div>
+  )
+};
 
 const fetchUsersList = async () => {
     const res = await apiBack.get(
@@ -58,9 +73,9 @@ export default function MeetingDetail() {
             { queryKey: ['users/list'], queryFn: fetchUsersList },
         ],
     });
-
+    
     const navigate = useNavigate()
-
+    
     const isLoading = results.some(q => q.isLoading)
     const isError = results.some(q => q.isError)
     const firstError = results.find(q => q.isError)?.error
@@ -86,11 +101,15 @@ export default function MeetingDetail() {
 
     async function updateMeeting(data: IMeeting) {
         try {
-            await apiBack.put(
+            const res = await apiBack.put(
                 "/meetings/edit", data, {
                     params: { _id: data._id }
                 }
-            )
+            );
+
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
 
             mytoast.success("Meeting editado com sucesso!");
         } catch (error: unknown) {
@@ -102,6 +121,14 @@ export default function MeetingDetail() {
         }
 
         resetMeeting();
+    }
+
+    function handleIsActiveChange(checked: boolean) {
+        const data = {
+            ...meeting,
+            isActive: checked,
+        } as IMeeting
+        updateMeeting(data)
     }
 
     function handleRemoveItem(index: number) {
@@ -184,6 +211,13 @@ export default function MeetingDetail() {
                 ` e ${videoCount} ${videoCount === 1 ? "video" : "videos"}`}
             </p>
             </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-5">
+            <SwitchDemo
+                isActive={meeting.isActive}
+                handleIsActiveChange={handleIsActiveChange}
+            />
         </div>
 
         {/* Gallery Section */}

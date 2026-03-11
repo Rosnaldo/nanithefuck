@@ -15,6 +15,7 @@ import type { QueryObserverResult, RefetchOptions } from "@tanstack/react-query"
 import { apiBack } from "@/api/backend"
 import { checkErrorByField } from "@/utils/check_error_by_field"
 import { mytoast } from "./toast"
+import { ApiError } from "@/error/api"
 
 interface MeetingCreateFormDialogProps {
     open: boolean
@@ -24,9 +25,13 @@ interface MeetingCreateFormDialogProps {
 
 async function handleSaveMeeting(data: Partial<IMeeting>) {
     try {
-        await apiBack.post(
+        const res = await apiBack.post(
             "/meetings/create", data,
         );
+
+        if (res.data.isError) {
+            throw new ApiError(res.data.message);
+        }
 
         mytoast.success("Meeting criado com sucesso!");
     } catch (error: unknown) {

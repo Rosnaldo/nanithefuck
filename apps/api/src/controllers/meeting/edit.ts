@@ -42,9 +42,9 @@ export class Edit {
         try {
             const { mapped } = props;
             const params = this.transform(mapped);
-            const { _id, name, slug, days, participants, gallery } = params;
+            const { _id, name, slug, isActive, days, participants, gallery } = params;
 
-            await this.crud.update(_id, { name, slug, days, participants, gallery });
+            await this.crud.update(_id, { name, slug, isActive, days, participants, gallery });
             return successData('success');
         } catch (error: unknown) {
             return logError(error, '/meeting/edit');
@@ -56,6 +56,7 @@ export class Edit {
         const meeting = this.utils.zodSchema.pick({
             name: true,
             slug: true,
+            isActive: true,
         });
 
         const picture = this.utils.zodPictureSchema.pick({
@@ -115,10 +116,13 @@ export class Edit {
             _id,
             name,
             slug,
+            isActive,
             days,
             gallery,
             participants,
         } = body;
+
+        console.log('isActive', isActive, mapBoolean(isActive))
 
         return {
             _id: mapString(_id),
@@ -148,6 +152,7 @@ export class Edit {
             })),
             name: mapString(name),
             slug: mapString(slug),
+            isActive: mapBoolean({ v: isActive, defaultV: false }),
         };
     };
 

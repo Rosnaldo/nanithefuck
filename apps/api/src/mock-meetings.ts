@@ -83,7 +83,7 @@ export async function generateMeeting(userIds: string[]): Promise<IMeeting> {
     }
 
     return await builder
-        .setInit({ name })
+        .setInit({ name, isActive: false })
         .setParticipants(participants)
         .setDays([
             {

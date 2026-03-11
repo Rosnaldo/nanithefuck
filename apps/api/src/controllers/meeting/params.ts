@@ -26,6 +26,7 @@ interface IEdit {
     _id: IMeeting['IParams']['_id'];
     name: IMeeting['IParams']['name'];
     slug: IMeeting['IParams']['slug'];
+    isActive: IMeeting['IParams']['isActive'];
     days: IMeeting['IParams']['days'];
     gallery: IMeeting['IParams']['gallery'];
     participants: IMeeting['IParams']['participants'];

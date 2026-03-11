@@ -47,6 +47,7 @@ export class MeetingUtils {
     public readonly zodSchema = z.object({
         name: makeSmallStringSchema('name'),
         slug: makeSmallStringSchema('slug'),
+        isActive: makeBooleanSchema('isActive'),
         days: z.array(this.zodDaySchema),
         gallery: z.array(this.zodPictureSchema),
         participants: z.array(this.zodParticipantSchema),
@@ -78,9 +79,9 @@ export class MeetingBuilder {
     }
 
     public readonly build = (params: Partial<IMeeting['IParams']>): this => {
-        const { name, gallery, days, participants } = params;
+        const { name, isActive, gallery, days, participants } = params;
 
-        const init = { name };
+        const init = { name, isActive };
         if (hasNoNilValues(init)) {
             this.setInit(init);
         }
@@ -100,12 +101,13 @@ export class MeetingBuilder {
         return this;
     };
 
-    public readonly setInit = (params: Pick<IMeeting['IParams'], 'name'>): this => {
-        const { name } = params;
+    public readonly setInit = (params: Pick<IMeeting['IParams'], 'name' | 'isActive'>): this => {
+        const { name, isActive } = params;
         const slug = toSlug(name);
 
         this.doc.name = name;
         this.doc.slug = slug;
+        this.doc.isActive = isActive;
 
         return this;
     };

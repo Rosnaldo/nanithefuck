@@ -111,6 +111,7 @@ export interface IMeeting {
     _id: string;
     name: string;
     slug: string;
+    isActive: boolean;
     days: Array<IDay>;
     gallery: Array<IPicture>;
     participants: Array<IParticipant>;

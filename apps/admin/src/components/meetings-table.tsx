@@ -88,11 +88,14 @@ export function MeetingsTable() {
     async function handleDelete() {
         if (!deletingMeeting) return
         try {
-            await apiBack.delete(
+            const res = await apiBack.delete(
                 "/meetings/delete", {
                     params: { _id: deletingMeeting._id }
                 }
-            )
+            );
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
 
             mytoast.success("Meeting deletado com sucesso!");
         } catch (error: unknown) {

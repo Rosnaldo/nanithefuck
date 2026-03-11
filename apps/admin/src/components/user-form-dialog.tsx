@@ -24,6 +24,7 @@ import { apiBack } from "@/api/backend"
 import { type QueryObserverResult, type RefetchOptions } from "@tanstack/react-query"
 import { checkErrorByField } from "@/utils/check_error_by_field"
 import { mytoast } from "./toast"
+import { ApiError } from "@/error/api"
 
 interface UserFormDialogProps {
     open: boolean
@@ -51,16 +52,22 @@ export function UserFormDialog({
 
     async function handleSaveUser(userData: Partial<IUser>) {
         try {
+            let res;
             if (userData._id) {
-                await apiBack.put(
+                res = await apiBack.put(
                     "/users/edit", userData, {
                         params: { _id: userData._id }
                     }
                 )
             } else {
-                await apiBack.post(
+
+                res = await apiBack.post(
                     "/users/create", userData
                 )
+            }
+
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
             }
 
             refetchUsersList()

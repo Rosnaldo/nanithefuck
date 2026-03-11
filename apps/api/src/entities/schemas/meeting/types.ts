@@ -12,6 +12,7 @@ export interface IMeetingSchema {
     _id: Types.ObjectId;
     name: string;
     slug: string;
+    isActive: boolean;
     days: Array<IDay>;
     gallery: Array<IPicture>;
     participants: Array<IParticipantSchema>;

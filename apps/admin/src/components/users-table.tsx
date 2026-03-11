@@ -114,11 +114,15 @@ export function UsersTable() {
     async function handleDeleteUser() {
         if (!deletingUser) return
         try {
-            await apiBack.delete(
+            const res = await apiBack.delete(
                 "/users/delete", {
                     params: { _id: deletingUser._id }
                 }
-            )
+            );
+
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
 
             mytoast.success("Usuário deletado com sucesso!");
         } catch (error: unknown) {
