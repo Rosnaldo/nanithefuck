@@ -26,7 +26,6 @@ import {
 import type { IPicture } from "@repo/shared-types"
 import { useMeetingGallery, useRefetchMeetingGallery } from "@/hooks/use-meeting"
 import { apiBack } from "@/api/backend"
-import { toast } from "sonner"
 
 function loadImageDimensions(
     url: string
@@ -42,6 +41,7 @@ function loadImageDimensions(
         img.src = url
     })
 }
+import { mytoast } from "./toast"
 
 function loadVideoDimensions(
     url: string
@@ -87,31 +87,31 @@ export function MeetingGallery({
             });
     
             if (res.data.isError) {
-                toast.error(res.data.message)
+                mytoast.error(res.data.message)
             } else {
-                toast.success("Avatar salvo com sucesso.")
+                mytoast.success("Avatar salvo com sucesso.")
                 resetGallery();
             }
         } catch (error) {
-            toast.error("Ocorreu um erro inesperado. Tente novamente.")
+            mytoast.error("Ocorreu um erro inesperado. Tente novamente.")
         }
     }
 
     async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
         if (!file?.type.startsWith("image/")) {
-            toast.error("Por favor, selecione uma imagem.")
+            mytoast.error("Por favor, selecione uma imagem.")
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("A imagem deve ter no maximo 5MB.")
+            mytoast.error("A imagem deve ter no maximo 5MB.")
             return
         }
         const isVideo = file.type.startsWith("video/")
         const isImage = file.type.startsWith("image/")
         if (!isImage && !isVideo) {
-            toast.error("Deve ser imagem ou video")
+            mytoast.error("Deve ser imagem ou video")
             return
         }
 

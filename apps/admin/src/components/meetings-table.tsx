@@ -25,8 +25,9 @@ import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import type { IMeeting } from "@repo/shared-types"
-import { toast } from "sonner"
 import { checkErrorByField } from "@/utils/check_error_by_field"
+import { MeetingCreateFormDialog } from "./meeting-create-form-dialog"
+import { mytoast } from "./toast"
 
 const PAGE_SIZE = 30
 const fetchMeetingList = async () => {
@@ -51,12 +52,16 @@ export function MeetingsTable() {
     const isLoading = results.some(q => q.isLoading)
     const isError = results.some(q => q.isError)
     const firstError = results.find(q => q.isError)?.error
-    const meetings = results[0].data || [];
+
+    const meetingsListQuery = results[0];
+    const meetings = meetingsListQuery.data || [];
+    const refetchMeetingsList = meetingsListQuery.refetch;
 
     const [search, setSearch] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
 
     // Delete dialog state
+    const [createOpen, setCreateOpen] = useState(false)
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deletingMeeting, setDeletingMeeting] = useState<IMeeting | null>(null)
 
@@ -83,16 +88,16 @@ export function MeetingsTable() {
     async function handleDelete() {
         if (!deletingMeeting) return
         try {
-            await apiBack.put(
-                "/meetings/delete", {}, {
+            await apiBack.delete(
+                "/meetings/delete", {
                     params: { _id: deletingMeeting._id }
                 }
             )
 
-            toast.success("Meeting deletado com sucesso!");
+            mytoast.success("Meeting deletado com sucesso!");
         } catch (error: unknown) {
             if (checkErrorByField(error, 'message')) {
-                toast.error(error.message);
+                mytoast.error(error.message);
                 return;
             }
             throw error;
@@ -100,6 +105,7 @@ export function MeetingsTable() {
 
         setDeleteOpen(false)
         setDeletingMeeting(null)
+        refetchMeetingsList()
     }
 
     function openDelete(meeting: IMeeting) {
@@ -141,6 +147,11 @@ export function MeetingsTable() {
 
     return (
         <div className="flex flex-col gap-6">
+        <MeetingCreateFormDialog
+            open={createOpen}
+            openChange={setCreateOpen}
+            refetchMeetingsList={refetchMeetingsList}
+        />
 
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -153,11 +164,11 @@ export function MeetingsTable() {
                 className="pl-9"
             />
             </div>
-            <Button asChild className="gap-1.5 shrink-0">
-            <a href="/meetings/create">
+            <Button onClick={() => setCreateOpen(true)} asChild className="gap-1.5 shrink-0">
+            <div>
                 <Plus className="h-4 w-4" />
                 Novo Meeting
-            </a>
+            </div>
             </Button>
         </div>
 

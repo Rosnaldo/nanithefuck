@@ -20,10 +20,10 @@ import {
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserRole, type IUser, type Pagination } from "@repo/shared-types"
-import { toast } from "sonner"
 import { apiBack } from "@/api/backend"
 import { type QueryObserverResult, type RefetchOptions } from "@tanstack/react-query"
 import { checkErrorByField } from "@/utils/check_error_by_field"
+import { mytoast } from "./toast"
 
 interface UserFormDialogProps {
     open: boolean
@@ -59,16 +59,15 @@ export function UserFormDialog({
                 )
             } else {
                 await apiBack.post(
-                    "/users/create",
-                    userData,
+                    "/users/create", userData
                 )
             }
 
             refetchUsersList()
-            toast.success("Usuário atualizado com sucesso!");
+            mytoast.success("Usuário atualizado com sucesso!");
         } catch (error: unknown) {
             if (checkErrorByField(error, 'message')) {
-                toast.error(error.message);
+                mytoast.error(error.message);
                 return;
             }
             throw error;
@@ -122,12 +121,12 @@ export function UserFormDialog({
 
     const handleFileChange = async (file: File) => {
         if (!file.type.startsWith("image/")) {
-            toast.error("Por favor, selecione uma imagem.")
+            mytoast.error("Por favor, selecione uma imagem.")
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("A imagem deve ter no maximo 5MB.")
+            mytoast.error("A imagem deve ter no maximo 5MB.")
             return
         }
 
@@ -138,14 +137,14 @@ export function UserFormDialog({
             const res = await apiBack.post("/users/upload-avatar", formData);
     
             if (res.data.isError) {
-                toast.error(res.data.message)
+                mytoast.error(res.data.message)
             } else {
                 const updated = res.data as IUser;
                 setAvatarUrl(updated?.avatar?.url || '');
-                toast.success("Avatar salvo com sucesso.")
+                mytoast.success("Avatar salvo com sucesso.")
             }
         } catch (error) {
-            toast.error("Ocorreu um erro inesperado. Tente novamente.")
+            mytoast.error("Ocorreu um erro inesperado. Tente novamente.")
         }
     }
 

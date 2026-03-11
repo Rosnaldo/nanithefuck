@@ -16,7 +16,6 @@ interface IPaginacao {
 
 interface ICriacao {
     name: IMeeting['IParams']['name'];
-    days: IMeeting['IParams']['days'];
 }
 
 interface IDelete {

@@ -51,7 +51,6 @@ export class Criacao {
     public readonly makeZodSchema = () => {
         const picked = this.utils.zodSchema.pick({
             name: true,
-            days: true,
         });
 
         const schema = z.object({
@@ -64,12 +63,10 @@ export class Criacao {
     public readonly mapper = (body: Request['body']): Mapped => {
         const {
             name,
-            days,
         } = body;
 
         return {
             name: mapString(name),
-            days,
         };
     };
 

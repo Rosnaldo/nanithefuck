@@ -37,8 +37,8 @@ import { apiBack } from "@/api/backend"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import { ApiError } from "@/error/api"
 import { useDebounce } from "@/hooks/use-debounce"
-import { toast } from "sonner"
 import { checkErrorByField } from "@/utils/check_error_by_field"
+import { mytoast } from "./toast"
 
 const PAGE_SIZE = 30
 
@@ -120,10 +120,10 @@ export function UsersTable() {
                 }
             )
 
-            toast.success("Usuário deletado com sucesso!");
+            mytoast.success("Usuário deletado com sucesso!");
         } catch (error: unknown) {
             if (checkErrorByField(error, 'message')) {
-                toast.error(error.message);
+                mytoast.error(error.message);
                 return;
             }
             throw error;

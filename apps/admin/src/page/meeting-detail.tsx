@@ -9,8 +9,8 @@ import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
 import { useReset } from "@/hooks/use-reset"
-import { toast } from "sonner"
 import { checkErrorByField } from "@/utils/check_error_by_field"
+import { mytoast } from "@/components/toast"
 
 const fetchUsersList = async () => {
     const res = await apiBack.get(
@@ -92,10 +92,10 @@ export default function MeetingDetail() {
                 }
             )
 
-            toast.success("Meeting editado com sucesso!");
+            mytoast.success("Meeting editado com sucesso!");
         } catch (error: unknown) {
             if (checkErrorByField(error, 'message')) {
-                toast.error(error.message);
+                mytoast.error(error.message);
                 return;
             }
             throw error;
