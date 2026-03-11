@@ -19,24 +19,27 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { UserRole, type IUser } from "@repo/shared-types"
+import { UserRole, type IUser, type Pagination } from "@repo/shared-types"
 import { toast } from "sonner"
 import { apiBack } from "@/api/backend"
-import { useQuery } from "@tanstack/react-query"
-import { ApiError } from "@/error/api"
+import { type QueryObserverResult, type RefetchOptions } from "@tanstack/react-query"
+import { checkErrorByField } from "@/utils/check_error_by_field"
 
 interface UserFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    userEmail: string | null
-    onSave: (user: Partial<IUser>) => void
+    editingUser: IUser | null
+    refetchUsersList: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<{
+        data: IUser[];
+        pagination: Pagination;
+    }, Error>>
 }
 
 export function UserFormDialog({
     open,
     onOpenChange,
-    userEmail,
-    onSave,
+    editingUser,
+    refetchUsersList,
 }: UserFormDialogProps) {
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
@@ -46,52 +49,50 @@ export function UserFormDialog({
     const [errors, setErrors] = useState<Record<string, string>>({})
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    async function fetchUser() {
+    async function handleSaveUser(userData: Partial<IUser>) {
         try {
-            const res = await apiBack.get(
-                "/users/by-email", {
-                    params: { email: userEmail }
-                }
-            )
-            
-            if (res.data.isError) {
-                throw new ApiError(res.data.message);
+            if (userData._id) {
+                await apiBack.put(
+                    "/users/edit", userData, {
+                        params: { _id: userData._id }
+                    }
+                )
+            } else {
+                await apiBack.post(
+                    "/users/create",
+                    userData,
+                )
             }
 
-            const user = res.data as IUser;
-            return user;
-        } catch (error) {
-            if (error instanceof ApiError) {
-                toast.error(error.message)
+            refetchUsersList()
+            toast.success("Usuário atualizado com sucesso!");
+        } catch (error: unknown) {
+            if (checkErrorByField(error, 'message')) {
+                toast.error(error.message);
+                return;
             }
-            console.log('ProfileSection fetchUser: error', error);
             throw error;
         }
     }
 
-    const { data: user, isLoading: isLoading, isError, error, refetch } = useQuery<IUser, ApiError>({
-        queryKey: ['user-by-email'],
-        queryFn: fetchUser
-    });
-
     useEffect(() => {
         if (open) {
-        if (user) {
-            setFirstName(user.firstName)
-            setLastName(user?.lastName || '')
-            setEmail(user?.email || '')
-            setRole(user.role)
-            setAvatarUrl(user.avatar?.url || '')
-        } else {
-            setFirstName("")
-            setLastName("")
-            setEmail("")
-            setRole("member")
-            setAvatarUrl('')
+            if (editingUser) {
+                setFirstName(editingUser.firstName)
+                setLastName(editingUser.lastName)
+                setEmail(editingUser?.email || '')
+                setRole(editingUser.role)
+                setAvatarUrl(editingUser.avatar?.url || '')
+            } else {
+                setFirstName("")
+                setLastName("")
+                setEmail("")
+                setRole("member")
+                setAvatarUrl('')
+            }
+            setErrors({})
         }
-        setErrors({})
-        }
-    }, [open, user])
+    }, [open, editingUser])
 
     function validate() {
         const newErrors: Record<string, string> = {}
@@ -108,14 +109,15 @@ export function UserFormDialog({
         e.preventDefault()
         if (!validate()) return
 
-        onSave({
-            ...(user ? { _id: user._id } : {}),
+        handleSaveUser({
+            ...(editingUser ? { _id: editingUser._id } : {}),
             firstName: firstName.trim(),
             lastName: lastName.trim(),
             email: email.trim(),
             role,
         })
         onOpenChange(false)
+        refetchUsersList()
     }
 
     const handleFileChange = async (file: File) => {
@@ -144,8 +146,6 @@ export function UserFormDialog({
             }
         } catch (error) {
             toast.error("Ocorreu um erro inesperado. Tente novamente.")
-        } finally {
-            await refetch();
         }
     }
 
@@ -163,28 +163,17 @@ export function UserFormDialog({
         }
     }
 
-    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-
-    function Loading() {
-        return <div>Loading...</div>;
-    }
-
-    function ErrorState({ error }: { error: Error }) {
-        return <div style={{ color: "red" }}>{error.message}</div>;
-    }
-
-    if (isLoading) return <Loading />;
-    if (isError) return <ErrorState error={error as Error} />;
+    const initials = `${firstName?.charAt(0)}${lastName?.charAt(0)}`.toUpperCase()
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[480px]">
             <DialogHeader>
             <DialogTitle>
-                {user ? "Edit User" : "Add New User"}
+                {editingUser ? "Edit User" : "Add New User"}
             </DialogTitle>
             <DialogDescription>
-                {user
+                {editingUser
                 ? "Update the user information below."
                 : "Fill in the details to create a new user."}
             </DialogDescription>
@@ -304,7 +293,7 @@ export function UserFormDialog({
                 Cancel
                 </Button>
                 <Button type="submit">
-                {user ? "Save Changes" : "Add User"}
+                {editingUser ? "Save Changes" : "Add User"}
                 </Button>
             </DialogFooter>
             </form>

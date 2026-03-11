@@ -95,9 +95,11 @@ export function UsersTable() {
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deletingUser, setDeletingUser] = useState<IUser | null>(null)
 
+    const usersListQuery = results[1];
     const data = results[1].data;
     const users = data?.data ?? [];
     const pagination = data?.pagination;
+    const refetchUsersList = usersListQuery.refetch;
 
     // Pagination
     const totalPages = pagination?.totalPages || 0
@@ -109,36 +111,11 @@ export function UsersTable() {
     const adminCount = users.filter((u) => u.role === "admin").length
     const memberCount = users.filter((u) => u.role === "member").length
 
-    async function handleSaveUser(userData: Partial<IUser>) {
-        try {
-            if (userData._id) {
-                await apiBack.put(
-                    "/users/edit", userData, {
-                        params: { _id: userData._id }
-                    }
-                )
-            } else {
-                await apiBack.post(
-                    "/users/create",
-                    userData,
-                )
-            }
-
-            toast.success("Usuário atualizado com sucesso!");
-        } catch (error: unknown) {
-            if (checkErrorByField(error, 'message')) {
-                toast.error(error.message);
-                return;
-            }
-            throw error;
-        }
-    }
-
     async function handleDeleteUser() {
         if (!deletingUser) return
         try {
-            await apiBack.put(
-                "/users/delete", {}, {
+            await apiBack.delete(
+                "/users/delete", {
                     params: { _id: deletingUser._id }
                 }
             )
@@ -154,6 +131,7 @@ export function UsersTable() {
 
         setDeleteOpen(false)
         setDeletingUser(null)
+        refetchUsersList()
     }
 
     function openEdit(user: IUser) {
@@ -305,7 +283,7 @@ export function UsersTable() {
                         <AvatarImage src={user.avatar?.url} alt={`${user.firstName} ${user.lastName}`} />
                         <AvatarFallback className="text-xs bg-muted text-muted-foreground">
                             {user.firstName.charAt(0)}
-                            {user?.lastName?.charAt(0)}
+                            {user.lastName.charAt(0)}
                         </AvatarFallback>
                         </Avatar>
                     </TableCell>
@@ -449,8 +427,8 @@ export function UsersTable() {
         <UserFormDialog
             open={formOpen}
             onOpenChange={setFormOpen}
-            userEmail={editingUser?.email || ''}
-            onSave={handleSaveUser}
+            editingUser={editingUser}
+            refetchUsersList={refetchUsersList}
         />
         <DeleteUserDialog
             open={deleteOpen}

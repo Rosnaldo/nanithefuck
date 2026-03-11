@@ -124,7 +124,7 @@ function SortedAvailableUsers({ availableUsers, addSearch, selectedToAdd, setSel
                 />
                 <AvatarFallback className="text-xs bg-muted text-muted-foreground">
                     {user.firstName.charAt(0)}
-                    {user?.lastName?.charAt(0)}
+                    {user.lastName.charAt(0)}
                 </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">

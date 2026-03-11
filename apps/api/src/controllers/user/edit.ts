@@ -26,7 +26,6 @@ type Mapped = Omit<IEdit, 'role'> & {
 interface Props {
     mapped: Mapped;
     userSource: IUser['IParams'];
-    userKc: IUserKc;
 }
 
 export class Edit {
@@ -48,7 +47,7 @@ export class Edit {
 
     public readonly exec = async (props: Props): Promise<Either<string>> => {
         try {
-            const { mapped, userSource, userKc } = props;
+            const { mapped, userSource } = props;
             const params = this.transform(mapped);
             const { _id, firstName, lastName, email, role } = params;
 
@@ -60,16 +59,28 @@ export class Edit {
                 throw new UnauthorizedRequestException('Usuario sem permissão')
             }
 
+            const user = await this.crud.findById(_id);
+            if (_.isNil(user)) {
+                throw new BadRequestException('User not found')
+            }
+
             await this.crud.update(_id, { firstName, lastName, email, role });
             if (role !== UserRole.mock) {
                 const kcMain = getKcMain();
                 const client = await kcMain.getKcClientCredentials();
+                const list = await client.users.find({ email: user.email });
+
+                if (list.length === 0) {
+                    throw new BadRequestException('User not found on keycloak')
+                }
+
+                const userId = list[0]?.id || '';
                 await client.users.update({
-                    id: userKc.id,
+                    id: userId,
                 }, {
                     firstName, 
                     lastName,
-                })
+                });
             }
 
             return successData('success');

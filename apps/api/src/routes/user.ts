@@ -75,7 +75,7 @@ export default (app: Application) => {
         async (req, res) => {
             const controller = new UserController();
             const mapped = controller.edit!.mapper({ ...req.body });
-            const either = await controller.edit!.exec({ mapped, userSource: req.user, userKc: req.userKc });
+            const either = await controller.edit!.exec({ mapped, userSource: req.user });
             return res.status(200).send(either);
         }
     );
@@ -87,7 +87,7 @@ export default (app: Application) => {
         async (req, res) => {
             const controller = new UserController();
             const mapped = controller.delete!.mapper(req.query);
-            const either = await controller.delete!.exec({ mapped, userSource: req.user, userKc: req.userKc });
+            const either = await controller.delete!.exec({ mapped, userSource: req.user });
             return res.status(200).send(either);
         }
     );

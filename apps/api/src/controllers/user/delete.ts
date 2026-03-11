@@ -14,13 +14,13 @@ import { mapString } from '#utils/mapper/string';
 import { UserRole } from '@repo/shared-types';
 import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
 import { getKcMain } from '#keycloak/singleton';
+import _ from 'lodash';
 
 type IDelete = IUserController['IDelete'];
 
 interface Props {
     mapped: IDelete;
     userSource: IUser['IParams'];
-    userKc: IUserKc;
 }
 
 export class Delete {
@@ -42,7 +42,7 @@ export class Delete {
 
     public readonly exec = async (props: Props): Promise<Either<string>> => {
         try {
-            const { mapped, userSource, userKc } = props;
+            const { mapped, userSource } = props;
             const params = this.transform(mapped);
             const { _id } = params;
 
@@ -50,11 +50,20 @@ export class Delete {
                 throw new UnauthorizedRequestException('Usuario sem permissão')
             }
             const user = await this.crud.findById(_id);
+            if (_.isNil(user)) {
+                throw new BadRequestException('User not found')
+            }
             await this.crud.delete(_id);
 
             const kcMain = getKcMain();
             const client = await kcMain.getKcClientCredentials();
-            await client.users.del({ id: userKc.id });
+            const list = await client.users.find({ email: user.email });
+            if (list.length === 0) {
+                throw new BadRequestException('User not found on keycloak')
+            }
+
+            const userId = list[0]?.id || '';
+            await client.users.del({ id: userId });
             return successData('success');
         } catch (error: unknown) {
             return logError(error, '/user/delete');
