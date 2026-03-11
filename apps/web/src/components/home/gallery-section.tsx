@@ -4,8 +4,8 @@ import type { IMeeting, IPicture } from "@repo/shared-types";
 import { ApiError } from "@/error/api";
 import { useQuery } from "@tanstack/react-query";
 import { apiBack } from "@/api/backend";
-import { toast } from "sonner";
 import { useParams } from "react-router-dom";
+import { mytoast } from "../toast";
 
 
 function VideoThumbnail({ src, onClick }: { src: string; onClick: () => void }) {
@@ -57,7 +57,7 @@ async function fetchMeeting(slug: string) {
         return meeting;
     } catch (error) {
         if (error instanceof ApiError) {
-            toast.error(error.message)
+            mytoast.error(error.message)
         }
         throw error;
     }

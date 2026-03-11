@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils"
 import { ParticipantStatus, type IUserParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
-import { toast } from "sonner"
 import { useParams } from "react-router-dom"
+import { mytoast } from "../toast"
 
 async function fetchParticipants(slug: string) {
     try {
@@ -25,7 +25,7 @@ async function fetchParticipants(slug: string) {
         return res.data as IUserParticipant[];
     } catch (error) {
         if (error instanceof ApiError) {
-            toast.error(error.message)
+            mytoast.error(error.message)
         }
         throw error;
     }

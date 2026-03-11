@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query"
 import type { IUser } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
-import { toast } from "sonner"
+import { mytoast } from "./toast"
 
 export function Header() {
     const { isAuthenticated, loggedUser, logout } = useAuth();
@@ -33,9 +33,8 @@ export function Header() {
             return user;
         } catch (error) {
             if (error instanceof ApiError) {
-                toast.error(error.message)
+                mytoast.error(error.message)
             }
-            console.log('Header fetchUser: error', error);
             throw error;
         }
     }

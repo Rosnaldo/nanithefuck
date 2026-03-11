@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from "react"
 import type React from "react"
 import { useQuery } from "@tanstack/react-query"
-import { toast } from "sonner"
 import { User, Upload, Mail } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -12,6 +11,7 @@ import { useAuth } from "@/providers/auth-provider"
 import { ApiError } from "@/error/api"
 import type { IUser } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
+import { mytoast } from "./toast"
 
 export default function ProfileSection() {
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -45,9 +45,8 @@ export default function ProfileSection() {
             return user;
         } catch (error) {
             if (error instanceof ApiError) {
-                toast.error(error.message)
+                mytoast.error(error.message)
             }
-            console.log('ProfileSection fetchUser: error', error);
             throw error;
         }
     }
@@ -78,7 +77,7 @@ export default function ProfileSection() {
         e.preventDefault()
 
         if (!validateForm()) {
-            toast.error("formulario inválido")
+            mytoast.error("formulario inválido")
             return
         }
 
@@ -92,12 +91,12 @@ export default function ProfileSection() {
             )
     
             if (res.data.isError) {
-                toast.error(res.data.message)
+                mytoast.error(res.data.message)
             } else {
-                toast.success("Suas informacoes foram salvas com sucesso.")
+                mytoast.success("Suas informacoes foram salvas com sucesso.")
             }
         } catch (error) {
-            toast.error("Ocorreu um erro inesperado. Tente novamente.")
+            mytoast.error("Ocorreu um erro inesperado. Tente novamente.")
         } finally {
             await refetch();
         }
@@ -105,12 +104,12 @@ export default function ProfileSection() {
 
     const handleFileChange = async (file: File) => {
         if (!file.type.startsWith("image/")) {
-            toast.error("Por favor, selecione uma imagem.")
+            mytoast.error("Por favor, selecione uma imagem.")
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("A imagem deve ter no maximo 5MB.")
+            mytoast.error("A imagem deve ter no maximo 5MB.")
             return
         }
 
@@ -121,12 +120,12 @@ export default function ProfileSection() {
             const res = await apiBack.post("/users/upload-avatar", formData);
     
             if (res.data.isError) {
-                toast.error(res.data.message)
+                mytoast.error(res.data.message)
             } else {
-                toast.success("Avatar salvo com sucesso.")
+                mytoast.success("Avatar salvo com sucesso.")
             }
         } catch (error) {
-            toast.error("Ocorreu um erro inesperado. Tente novamente.")
+            mytoast.error("Ocorreu um erro inesperado. Tente novamente.")
         } finally {
             await refetch();
         }
