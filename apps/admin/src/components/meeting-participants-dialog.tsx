@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog"
 
 import { Checkbox } from "@/components/ui/checkbox"
-import type { IParticipant, IUser, Pagination } from "@repo/shared-types"
+import type { IUser, IUserParticipant, Pagination } from "@repo/shared-types"
 import { useStateReset } from "@/hooks/use-state-reset"
 import _ from "lodash"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
@@ -26,7 +26,7 @@ import { useDebounce } from "@/hooks/use-debounce"
 
 interface MeetingParticipantsProps {
     resetMeeting: () => void
-    participants: IParticipant[]
+    participants: IUserParticipant[]
     onAddParticipants: (userIds: string[]) => void
     addOpen: boolean
     setAddOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -164,7 +164,7 @@ export function MeetingParticipantsDialog({
     const [addSearch, setAddSearch] = useState("")
     const [selectedToAdd, setSelectedToAdd] = useState<Set<string>>(new Set())
 
-    const participantUserIds = new Set(participants.map((p) => p.userId))
+    const participantUserIds = new Set(participants.map((p) => p._id))
     const debouncedSearch = useDebounce(addSearch, 500);
     const results = useQueries<[
         UseQueryOptions<{ data: IUser[], pagination: Pagination }>,

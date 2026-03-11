@@ -83,6 +83,20 @@ export function GallerySection() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
+    const colSpanMap: Record<number, string> = {
+        1: 'col-span-1',
+        2: 'col-span-2',
+        3: 'col-span-3',
+        4: 'col-span-4',
+    };
+
+    const rowSpanMap: Record<number, string> = {
+        1: 'row-span-1',
+        2: 'row-span-2',
+        3: 'row-span-3',
+        4: 'row-span-4',
+    };
+
     return (
         <section id="galeria" className="py-20 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -94,7 +108,7 @@ export function GallerySection() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
             {meeting?.gallery.map((item, index) => (
-                <div key={index} className={`col-span-${item.w} row-span-${item.h} relative rounded-xl overflow-hidden group`}>
+                <div key={index} className={`${colSpanMap[item.w]} ${rowSpanMap[item.h]} relative rounded-xl overflow-hidden group`}>
                 {item.type === "video" ? (
                     <VideoThumbnail src={item.url} onClick={() => setSelectedMedia(item)} />
                 ) : (

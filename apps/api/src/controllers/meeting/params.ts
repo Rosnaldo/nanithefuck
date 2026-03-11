@@ -38,6 +38,11 @@ interface IUploadGallery {
     w: IPicture['w'];
 }
 
+interface IRemoveFromGallery {
+    meetingId: string;
+    s3Path: IPicture['s3Path'];
+}
+
 export interface IMeetingController {
     IPaginacao: IPaginacao;
     IById: IById;
@@ -46,4 +51,5 @@ export interface IMeetingController {
     IDelete: IDelete;
     IEdit: IEdit;
     IUploadGallery: IUploadGallery;
+    IRemoveFromGallery: IRemoveFromGallery;
 }

@@ -6,7 +6,7 @@ import { UserCrud } from '#crud/user';
 import { IUserController } from './params';
 import { EitherList } from '#utils/either_list';
 import { MeetingCrud } from '#crud/meeting';
-import type { IParticipant, IUserParticipant } from '@repo/shared-types';
+import { UserRole, type IParticipant, type IUserParticipant } from '@repo/shared-types';
 import { toUndefined } from '#utils/mapper/to_undefined';
 import _ from 'lodash';
 import { BadRequestException } from '#exceptions/bad_request';
@@ -51,7 +51,11 @@ export class Participants {
             }
 
             const participantIds = meeting.participants.map((p) => p.userId);
-            const list = await this.crud.findByIds(participantIds);
+            const queryRole = {
+                ...(meeting.isActive) ? { role: { $in:  [UserRole.admin, UserRole.member] } } : {}
+            };
+            console.log(queryRole)
+            const list = await this.crud.find({ _id: { $in: participantIds }, ...queryRole });
 
             const participantsDict: Record<string, { value: IParticipant }> =
                 meeting.participants.transformInDict('userId');

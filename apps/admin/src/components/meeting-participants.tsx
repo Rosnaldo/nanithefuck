@@ -35,13 +35,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import type { IParticipant, IUser, ParticipantStatus } from "@repo/shared-types"
+import type { IUser, IUserParticipant, ParticipantStatus } from "@repo/shared-types"
 import { MeetingParticipantsDialog } from "./meeting-participants-dialog"
 import _ from "lodash"
 
 interface MeetingParticipantsProps {
     resetMeeting: () => void
-    participants: IParticipant[]
+    participants: IUserParticipant[]
     users: IUser[]
     onAddParticipants: (userIds: string[]) => void
     onRemoveParticipant: (userId: string) => void
@@ -71,7 +71,7 @@ export function MeetingParticipants({
     // Filter participants
     const filteredParticipants = useMemo(() => {
         return participants.filter((p) => {
-            const user = usersMap.get(p.userId)
+            const user = usersMap.get(p._id)
             if (!user) return false
             const matchesSearch =
                 search === "" ||
@@ -179,11 +179,11 @@ export function MeetingParticipants({
                 </TableRow>
                 ) : (
                 filteredParticipants.map((participant) => {
-                    const user = usersMap.get(participant.userId)
+                    const user = usersMap.get(participant._id)
                     if (!user) return null
 
                     return (
-                    <TableRow key={participant.userId}>
+                    <TableRow key={participant._id}>
                         <TableCell>
                         <Avatar className="h-8 w-8">
                             <AvatarImage
@@ -207,7 +207,7 @@ export function MeetingParticipants({
                             value={participant.status}
                             onValueChange={(v) =>
                             onChangeStatus(
-                                participant.userId,
+                                participant._id,
                                 v as keyof typeof ParticipantStatus
                             )
                             }
@@ -247,7 +247,7 @@ export function MeetingParticipants({
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => setRemovingUserId(participant.userId)}
+                            onClick={() => setRemovingUserId(participant._id)}
                             aria-label={`Remove ${user.firstName} ${user.lastName}`}
                         >
                             <Trash2 className="h-4 w-4" />

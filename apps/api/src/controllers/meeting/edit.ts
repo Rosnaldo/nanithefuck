@@ -122,8 +122,6 @@ export class Edit {
             participants,
         } = body;
 
-        console.log('isActive', isActive, mapBoolean(isActive))
-
         return {
             _id: mapString(_id),
             days: (days || []).map((d: any) => ({

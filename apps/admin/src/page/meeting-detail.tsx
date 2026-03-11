@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { MeetingGallery } from "@/components/meeting-gallery"
 import { MeetingParticipants } from "@/components/meeting-participants"
-import type { IMeeting, IParticipant, IUser, Pagination, ParticipantStatus } from "@repo/shared-types"
+import type { IMeeting, IParticipant, IUser, IUserParticipant, Pagination, ParticipantStatus } from "@repo/shared-types"
 import { apiBack } from "@/api/backend"
 import { ApiError } from "@/error/api"
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query"
@@ -42,6 +42,22 @@ const fetchUsersList = async () => {
     return res.data;
 };
 
+const fetchUserParticipants = async (meetingId?: string) => {
+    const res = await apiBack.get(
+        "/users/participants", {
+            params: {
+                meetingId,
+                isPagination: false
+            }
+        }
+        
+    )
+    if (res.data.isError) {
+        throw new ApiError(res.data.message);
+    }
+    return res.data;
+};
+
 const fetchMeetingById = (meetingId?: string) => async () => {
     const res = await apiBack.get(
         "/meetings/by-id", {
@@ -55,7 +71,7 @@ const fetchMeetingById = (meetingId?: string) => async () => {
  };
 
 export default function MeetingDetail() {
-    const { meetingId } = useParams<{ meetingId: string }>()
+    const { meetingId = '' } = useParams<{ meetingId: string }>()
     const resetMeeting = useReset<IMeeting>('meetings/by-id', (oldData: IMeeting | undefined) =>
         {
             if (!oldData) return {} as IMeeting;
@@ -67,10 +83,12 @@ export default function MeetingDetail() {
     const results = useQueries<[
         UseQueryOptions<IMeeting>,
         UseQueryOptions<{ data: IUser[], pagination: Pagination }>,
+        UseQueryOptions<IUserParticipant[]>,
     ]>({
         queries: [
             { queryKey: ['meetings/by-id'], queryFn: fetchMeetingById(meetingId) },
             { queryKey: ['users/list'], queryFn: fetchUsersList },
+            { queryKey: ['users/participants'], queryFn: () => fetchUserParticipants(meetingId) },
         ],
     });
     
@@ -82,6 +100,11 @@ export default function MeetingDetail() {
     const meeting = results[0].data;
     const data = results[1].data;
     const users = data?.data ?? [];
+    const participantsQuery = results[2];
+    const participants = participantsQuery.data ?? [];
+    const refetchParticipants = participantsQuery.refetch;
+
+    console.log('participants',participants)
 
     if (!meeting) {
         return (
@@ -119,24 +142,44 @@ export default function MeetingDetail() {
             }
             throw error;
         }
+        console.log('AJI')
+        resetMeeting();
+        refetchParticipants();
+    };
+
+    async function removeGalleryFromMeeting(data: { meetingId: string, s3Path: string }) {
+        try {
+            const res = await apiBack.post(
+                "/meetings/gallery/remove", data
+            );
+
+            if (res.data.isError) {
+                throw new ApiError(res.data.message);
+            }
+
+            mytoast.success("Meeting editado com sucesso!");
+        } catch (error: unknown) {
+            if (checkErrorByField(error, 'message')) {
+                mytoast.error(error.message);
+                return;
+            }
+            throw error;
+        }
 
         resetMeeting();
+        refetchParticipants();
     }
 
-    function handleIsActiveChange(checked: boolean) {
+    async function handleIsActiveChange(checked: boolean) {
         const data = {
             ...meeting,
             isActive: checked,
         } as IMeeting
-        updateMeeting(data)
+        await updateMeeting(data)
     }
 
-    function handleRemoveItem(index: number) {
-        const data = {
-            ...meeting,
-            gallery: (meeting?.gallery || []).filter((_, i) => i !== index),
-        } as IMeeting
-        updateMeeting(data)
+    async function handleRemoveItem(s3Path: string) {
+        await removeGalleryFromMeeting({ s3Path, meetingId })
     }
 
     function handleAddParticipants(userIds: string[]) {
@@ -233,7 +276,7 @@ export default function MeetingDetail() {
         <div className="rounded-lg border bg-card p-5">
             <MeetingParticipants
                 resetMeeting={resetMeeting}
-                participants={meeting.participants || []}
+                participants={participants}
                 users={users}
                 onAddParticipants={handleAddParticipants}
                 onRemoveParticipant={handleRemoveParticipant}

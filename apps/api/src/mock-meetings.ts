@@ -4,9 +4,9 @@ import { IMeeting, IParticipant, IPicture, ParticipantStatus } from "@repo/share
 const gallery: IPicture[] = [
   {
     type: "image",
-    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg",
+    url: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/local/chacara-meets/gallery/anime-style-pool-party-friends-summer-japanese.jpg",
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
-    s3Path: "meetings/local/chacara-meets/gallery/anime-style-bbq-party-friends-japanese-illustratio.jpg",
+    s3Path: "meetings/local/chacara-meets/gallery/anime-style-pool-party-friends-summer-japanese.jpg",
     w: 2,
     h: 2,
   },

@@ -63,7 +63,7 @@ function loadVideoDimensions(
 }
 
 interface MeetingGalleryProps {
-    onRemoveItem: (index: number) => void
+    onRemoveItem: (s3Path: string) => Promise<void>
 }
 
 export function MeetingGallery({
@@ -73,7 +73,7 @@ export function MeetingGallery({
     const { data: gallery = [] } = useMeetingGallery(meetingId);
     const resetGallery = useRefetchMeetingGallery(meetingId);
 
-    const [deleteIndex, setDeleteIndex] = useState<number | null>(null)
+    const [deleteS3Path, setDeleteS3Path] = useState<string | null>(null)
     const [previewItem, setPreviewItem] = useState<IPicture | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -89,7 +89,7 @@ export function MeetingGallery({
             if (res.data.isError) {
                 mytoast.error(res.data.message)
             } else {
-                mytoast.success("Avatar salvo com sucesso.")
+                mytoast.success("Galleria salvo com sucesso.")
                 resetGallery();
             }
         } catch (error) {
@@ -130,10 +130,10 @@ export function MeetingGallery({
         if (fileInputRef.current) fileInputRef.current.value = ""
     }
 
-    function confirmDelete() {
-        if (deleteIndex !== null) {
-            onRemoveItem(deleteIndex)
-            setDeleteIndex(null)
+    async function confirmDelete() {
+        if (deleteS3Path !== null) {
+            await onRemoveItem(deleteS3Path)
+            setDeleteS3Path(null)
             resetGallery()
         }
     }
@@ -228,7 +228,7 @@ export function MeetingGallery({
                     variant="destructive"
                     size="icon"
                     className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => setDeleteIndex(index)}
+                    onClick={() => setDeleteS3Path(item.s3Path)}
                     aria-label={`Remover ${item.type === "video" ? "video" : "foto"} ${index + 1}`}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -250,9 +250,9 @@ export function MeetingGallery({
 
         {/* Delete Confirm */}
         <AlertDialog
-            open={deleteIndex !== null}
+            open={deleteS3Path !== null}
             onOpenChange={(open) => {
-            if (!open) setDeleteIndex(null)
+                if (!open) setDeleteS3Path(null)
             }}
         >
             <AlertDialogContent>

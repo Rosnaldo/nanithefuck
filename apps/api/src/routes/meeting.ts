@@ -61,6 +61,15 @@ export default (app: Application) => {
             return res.status(200).send(either);
         }
     );
+     app.post(
+        '/meetings/gallery/remove',
+        async (req, res) => {
+            const controller = new MeetingController();
+            const mapped = controller.removeFromGallery!.mapper({ _id: req.query._id, ...req.body });
+            const either = await controller.removeFromGallery!.exec({ mapped });
+            return res.status(200).send(either);
+        }
+    );
     app.post(
         '/meetings/gallery/upload',
         GetKeycloakUser,

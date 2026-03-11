@@ -1,5 +1,5 @@
 import properties from '#properties';
-import { PutObjectCommand, PutObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, DeleteObjectCommandInput, PutObjectCommand, PutObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 
 type UploadParams = {
     bucket: string;
@@ -28,6 +28,19 @@ export async function uploadToS3({
             Key: key,
             Body: body,
             ContentType: contentType,
+            ACL: 'public-read',
         })
+    );
+}
+
+export async function deleteFromS3({
+    Bucket,
+    Key,
+}: DeleteObjectCommandInput): Promise<PutObjectCommandOutput> {
+    return await s3.send(
+        new DeleteObjectCommand({
+            Bucket,
+            Key,
+        }),
     );
 }
