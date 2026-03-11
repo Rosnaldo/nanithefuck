@@ -58,7 +58,7 @@ export default function ProfileSection() {
                 email: user?.email || '',
             });
         }
-    }, [user])
+    }, [user]);
 
     const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -120,6 +120,7 @@ export default function ProfileSection() {
         const formData = new FormData();
         formData.append("image", file);
 
+        const loadingToast = mytoast('Alterando avatar...');
         try {
             const res = await apiBack.post("/users/upload-avatar", formData);
     
@@ -132,6 +133,7 @@ export default function ProfileSection() {
             mytoast.error("Ocorreu um erro inesperado. Tente novamente.")
         } finally {
             await refetch();
+            mytoast.dismiss(loadingToast);
         }
     }
 

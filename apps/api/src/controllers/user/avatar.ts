@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 
 import { logError } from '#utils/log_error';
 import { UserCrud } from '#crud/user';
@@ -8,7 +10,6 @@ import properties from '#properties';
 import { IUserAvatar, UserRole } from '@repo/shared-types';
 import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
 import { getUserDao } from '#daos/singleton';
-import _ from 'lodash';
 import { BadRequestException } from '#exceptions/bad_request';
 import { joinUrl } from '#utils/join_url';
 import { uploadToS3 } from '#helpers/s3';
@@ -52,9 +53,9 @@ export class Avatar {
                  throw new BadRequestException('Usuario não encontrado')
             }
 
-            const s3Path = `/avatars/${properties.nodeEnv}/${user.slug}/${userId}.jpeg`;
+            const id = uuidv4();
+            const s3Path = `avatars/${properties.nodeEnv}/${user.slug}/${id}.jpeg`;
             const bucket = properties.awsS3Bucket!;
-
             await uploadToS3({
                 bucket,
                 key: s3Path,

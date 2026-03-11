@@ -46,6 +46,10 @@ export const mytoast = Object.assign(
             onClick: () => {},
         },
       }),
+    loading: (message: string, options?: Parameters<typeof sonnerToast>[1]) =>
+      sonnerToast.loading(message, {
+        ...options,
+      }),
     // copy other methods you need
     dismiss: sonnerToast.dismiss,
   }
