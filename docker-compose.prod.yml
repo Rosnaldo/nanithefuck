@@ -9,14 +9,13 @@ services:
       - api
       - mongo
       - keycloak
+      - certbot
     volumes:
       # Main nginx config
       - ./apps/nginx/prod/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./apps/nginx/prod/certs:/etc/nginx/certs:ro
       - certbot_certs:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    depends_on:
-      - certbot
     networks:
       - frontend
       - backend
