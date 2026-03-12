@@ -20,13 +20,13 @@ services:
       - frontend
       - backend
 
-    certbot:
-      image: certbot/certbot
-      container_name: certbot
-      volumes:
-        - certbot_certs:/etc/letsencrypt
-        - certbot_www:/var/www/certbot
-      entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; certbot renew; done'"
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; certbot renew; done'"
 
   api:
     image: api
