@@ -13,9 +13,21 @@ services:
       # Main nginx config
       - ./apps/nginx/prod/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./apps/nginx/prod/certs:/etc/nginx/certs:ro
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    depends_on:
+      - certbot
     networks:
       - frontend
       - backend
+
+    certbot:
+      image: certbot/certbot
+      container_name: certbot
+      volumes:
+        - certbot_certs:/etc/letsencrypt
+        - certbot_www:/var/www/certbot
+      entrypoint: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; certbot renew; done'"
 
   api:
     image: api
@@ -118,6 +130,8 @@ services:
 volumes:
   prod_postgres_data:
   prod_mongodb_data:
+  certbot_certs:
+  certbot_www:
 
 networks:
   frontend:
