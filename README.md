@@ -33,3 +33,39 @@ docker image prune
 
 ### clean all
 docker system prune -a
+
+
+### generate certbots certificate
+#### comment nginx-http (port 80) redirect "return 301 https://$host$request_uri;"
+#### then run nginx-http from docker-compose.prod.yml
+
+#### check listen port 80 from inside the vm
+sudo ss -tulnp
+
+#### check if tcp port 80 is acessable from outside
+nc -vz <public_ip> 80
+nc -vz nanithefuck.com.br 80
+
+#### allow right permissions on certbot folder
+chmod -R 755 ./certbot/www
+
+sudo docker run -it --rm --name certbot_2 \
+  -v "/etc/letsencrypt:/etc/letsencrypt" \
+  -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+  -v "./certbot/www:/var/www/certbot" \
+  certbot/certbot certonly \
+  --webroot \
+  --webroot-path=/var/www/certbot \
+  -d nanithefuck.com.br \
+  -d www.nanithefuck.com.br \
+  --email contato@nanithefuck.com.br \
+  --agree-tos \
+  --no-eff-email
+
+
+#### once certificates are generated successfully config cron certificate renew 
+sudo crontab -e
+
+0 0,12 * * * docker run -it --rm -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" -v "/root/nanithefuck/certbot/www:/var/www/certbot" certbot/certbot renew --quiet
+
+sudo systemctl status cron
