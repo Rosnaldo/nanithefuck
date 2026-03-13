@@ -38,7 +38,7 @@ docker system prune -a
 ### generate certbots certificate
 #### comment nginx-http (port 80) redirect "return 301 https://$host$request_uri;"
 #### then run nginx-http from docker-compose.prod.yml
-
+    
 #### check listen port 80 from inside the vm
 sudo ss -tulnp
 

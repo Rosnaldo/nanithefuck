@@ -9,6 +9,9 @@ REGION="sa-east-1"                     # AWS region of your bucket
 # DEPLOYMENT
 # ===============================
 
+echo "Removing old files from S3 bucket..."
+aws s3 rm s3://$BUCKET_NAME/ --recursive --region $REGION
+
 echo "Starting deployment to S3 bucket: $BUCKET_NAME"
 
 # Optional: force index.html to not be cached
