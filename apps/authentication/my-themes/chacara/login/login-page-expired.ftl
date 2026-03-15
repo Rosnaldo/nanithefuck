@@ -13,7 +13,5 @@
         </svg>
     </div>
 
-    <p id="instruction1" class="instruction">
-        ${msg("pageExpiredMsg1")} <a id="loginRestartLink" href="${url.loginRestartFlowUrl}">${msg("doClickHere")}</a> .<br/>
-    </p>
+    <#include "back-to-login.ftl">
 </@layout.registrationLayout>

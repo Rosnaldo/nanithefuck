@@ -1,6 +1,6 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout>
-        <form id="kc-passwd-update-form" class="${properties.kcFormClass!}  space-y-4" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
+        <form id="kc-passwd-update-form" class="${properties.kcFormClass!} space-y-4" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
             <div class="${properties.kcFormGroupClass!} space-y-2">
                 <div class="${properties.kcLabelWrapperClass!}">
                     <label
@@ -158,6 +158,7 @@
             </div>
         </form>
 
+        <#include "back-to-login.ftl">
 <script>
     (function () {
         const pass = document.getElementById('password-new');

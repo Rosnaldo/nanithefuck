@@ -54,4 +54,7 @@
                 </div>
             </form>
 
+        <#include "back-to-login.ftl">
+
+
 </@layout.registrationLayout>

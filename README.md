@@ -69,3 +69,6 @@ sudo crontab -e
 0 0,12 * * * docker run -it --rm -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" -v "/root/nanithefuck/certbot/www:/var/www/certbot" certbot/certbot renew --quiet
 
 sudo systemctl status cron
+
+
+ssh -L 27017:localhost:27017 root@<ip>
