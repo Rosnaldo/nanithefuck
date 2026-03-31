@@ -8,7 +8,7 @@ dotenv.config({
 
 import { getUserDao } from "#daos/singleton";
 import { IUser } from "#schemas/user/types";
-import { generateMeeting } from 'mock-meetings';
+import { generateMeeting } from '#mock-meetings';
 import { UserBuilder } from '#schemas/user/utils';
 import { IUserAvatar } from '@repo/shared-types';
 import properties from '#properties';

@@ -10,7 +10,15 @@ module.exports = {
     testMatch: ['**/?(*.)+(spec|test).[tj]s'],
     testTimeout: 60000,
     maxWorkers: 5,
-    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-        prefix: '<rootDir>/src/',
-    }),
+    globals: {
+    'ts-jest': {
+            tsconfig: '<rootDir>/tsconfig.base.json'
+        }
+    },
+    moduleNameMapper: {
+        '^src/(.*)$': '<rootDir>/src/$1', // 🔥 ADICIONA ISSO
+        ...pathsToModuleNameMapper(compilerOptions.paths, {
+        prefix: '<rootDir>/'
+        }),
+    }
 };

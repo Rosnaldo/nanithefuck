@@ -12,8 +12,8 @@ import cors from 'cors';
 import Properties from './properties';
 import './extensions/transform_in_dict';
 
-import { mongooseBootstrap } from 'mongoose_bootstrap';
-import { routeBootstrap } from 'route_bootstrap';
+import { mongooseBootstrap } from '#mongoose_bootstrap';
+import { routeBootstrap } from '#route_bootstrap';
 import { buildKcMain } from '#keycloak/singleton';
 
 const app = express();

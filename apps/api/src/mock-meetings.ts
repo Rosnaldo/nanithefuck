@@ -1,9 +1,11 @@
 import properties from "#properties";
 import { MeetingBuilder } from "#schemas/meeting/utils";
 import { IMeeting, IParticipant, IPicture, ParticipantStatus } from "@repo/shared-types"
+import { Types } from "mongoose";
 
 const gallery: IPicture[] = [
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/anime-style-pool-party-friends-summer-japanese.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -12,6 +14,7 @@ const gallery: IPicture[] = [
     h: 2,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/pool-party-clip-1.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -20,6 +23,7 @@ const gallery: IPicture[] = [
     h: 1,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/anime-style-bbq-grill-meat-japanese-illustration.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -28,6 +32,7 @@ const gallery: IPicture[] = [
     h: 1,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/bbq-party-clip.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -36,6 +41,7 @@ const gallery: IPicture[] = [
     h: 1,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/anime-style-friends-talking-sunset-japanese.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -44,6 +50,7 @@ const gallery: IPicture[] = [
     h: 1,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/anime-style-cocktails-drinks-bar-japanese.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -52,6 +59,7 @@ const gallery: IPicture[] = [
     h: 1,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/dj-party-clip.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",
@@ -60,6 +68,7 @@ const gallery: IPicture[] = [
     h: 1,
   },
   {
+    _id: new Types.ObjectId().toString(),
     type: "image",
     url: `https://nanithefuck-34.s3.sa-east-1.amazonaws.com/meetings/${properties.nodeEnv}/chacara-meets/gallery/anime-style-night-party-lights-japanese.jpg`,
     s3Host: "https://nanithefuck-34.s3.sa-east-1.amazonaws.com",

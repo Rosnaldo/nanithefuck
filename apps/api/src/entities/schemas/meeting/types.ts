@@ -1,7 +1,29 @@
 import { Types, HydratedDocument, Model } from 'mongoose';
 
 import { Query } from 'mongoose';
-import { IMeeting as IMeetingParams, IDay, IPicture, ParticipantStatus } from '@repo/shared-types';
+import { IMeeting as IMeetingParams, ParticipantStatus, Weekday } from '@repo/shared-types';
+
+export interface IPictureSchema {
+    type: string;
+    s3Path: string;
+    s3Host: string;
+    cdnHost?: string;
+    url: string;
+    w: number;
+    h: number;
+}
+
+export interface IDaySchema {
+    day: number;
+    month: number;
+    year: number;
+    formatted: string;
+    start?: string;
+    finish?: string;
+    weekday: keyof typeof Weekday;
+    isodate: Date;
+    allDayLong: boolean;
+}
 
 export interface IParticipantSchema {
     userId: Types.ObjectId;
@@ -13,8 +35,8 @@ export interface IMeetingSchema {
     name: string;
     slug: string;
     isActive: boolean;
-    days: Array<IDay>;
-    gallery: Array<IPicture>;
+    days: Array<IDaySchema>;
+    gallery: Array<IPictureSchema>;
     participants: Array<IParticipantSchema>;
 }
 

@@ -9,7 +9,8 @@
     "dev": "API_NODE_ENV=dev nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/index.ts",
     "tsc": "rimraf build && tsc -p tsconfig.src.json && tsc-alias -p tsconfig.src.json && rimraf *.tsbuildinfo",
     "build": "npm run tsc",
-    "populate": "API_NODE_ENV=local nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/populate.ts"
+    "populate": "API_NODE_ENV=local nodemon --exec \"ts-node -r tsconfig-paths/register --project tsconfig.src.json\" src/populate.ts",
+    "test": "RUNTIME=ts API_NODE_ENV=test jest"
   },
   "author": "",
   "license": "ISC",
@@ -20,11 +21,14 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.25",
     "@types/express-serve-static-core": "^4.19.7",
+    "@types/jest": "^30.0.0",
     "@types/multer": "^2.0.0",
     "axios": "^1.13.4",
+    "chance": "^1.1.13",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.16.4",
+    "jest": "^30.3.0",
     "jsonwebtoken": "^9.0.3",
     "jwks-rsa": "^3.2.2",
     "lodash": "^4.17.23",
@@ -33,7 +37,8 @@
     "morgan": "^1.9.1",
     "multer": "^2.0.2",
     "sharp": "^0.34.5",
-    "uuid": "^13.0.0",
+    "ts-jest": "^29.4.6",
+    "uuid": "^8.3.2",
     "zod": "^4.1.13"
   },
   "devDependencies": {

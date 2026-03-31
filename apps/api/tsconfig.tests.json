@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "types": ["jest"],
+    "baseUrl": ".",              // 👈 força resolução
+    "moduleResolution": "node"   // 👈 reforça
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "out"
+  ]
+}

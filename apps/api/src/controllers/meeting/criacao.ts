@@ -37,10 +37,11 @@ export class Criacao {
         try {
             const { mapped } = props;
             const params = this.transform(mapped);
+            const { name } = params;
 
             const builder = new MeetingBuilder();
 
-            const meeting = await builder.build(params).save();
+            const meeting = await builder.setInit({ name, isActive: false }).save();
             return successData(meeting);
         } catch (error: unknown) {
             return logError(error, '/meeting/create');

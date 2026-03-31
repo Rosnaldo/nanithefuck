@@ -21,6 +21,7 @@ export const UserRoleAll = [
 ];
 
 export interface IMedia {
+    _id: string;
     url: string;
     s3Path: string;
     s3Host: string;
@@ -80,6 +81,7 @@ export const WeekdayAll = [
 ];
 
 export interface IDay {
+    _id: string;
     day: number;
     month: number;
     year: number;

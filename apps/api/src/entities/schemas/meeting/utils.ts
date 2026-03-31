@@ -2,7 +2,7 @@ import z from 'zod';
 import { Types } from 'mongoose';
 import { makeSmallStringSchema, makeStringSchema } from '#utils/zod/valid_small_string';
 
-import { IMeeting, IParticipantSchema } from './types';
+import { IDaySchema, IMeeting, IParticipantSchema, IPictureSchema } from './types';
 import { cleanMongooseObject } from '#entities/utils/clean_mongoose_doc';
 import { makeDateSchema } from '#utils/zod/valid_date';
 import { makeEnumSchema } from '#utils/zod/valid_enum';
@@ -12,9 +12,10 @@ import { makeBooleanSchema } from '#utils/zod/valid_boolean';
 import { makeObjectIdSchema } from '#utils/zod/valid_objectid_schema';
 import { makeUrlSchema } from '#utils/zod/valid_url';
 import { toSlug } from '#utils/to_slug';
-import properties from '#properties';
 import { getMeetingModel } from '#models/singleton';
 import { hasNoNilValues } from '#utils/has_no_nil_values';
+import properties from '#properties';
+import { notNil } from '#utils/not_nil';
 
 export class MeetingUtils {
     public readonly zodDaySchema = z.object({
@@ -68,9 +69,40 @@ export class MeetingUtils {
     };
 }
 
+export type IInitBuilder = {
+    _id?: IMeeting['IParams']['_id'];
+    name: IMeeting['IParams']['name'];
+    isActive: IMeeting['IParams']['isActive'];
+}
+
+export type IPicturePickedBuilder = {
+    _id?: IPicture['_id'];
+    type: IPicture['type'];
+    w: IPicture['w'];
+    h: IPicture['h'];
+    url: IPicture['url'];
+    s3Path: IPicture['s3Path'];
+}
+
+export type IDayPickedBuilder = {
+    _id?: IDay['_id'];
+    start?: IDay['start'];
+    finish?: IDay['finish'];
+    allDayLong: IDay['allDayLong'];
+    isodate: IDay['isodate'];
+}
+
+export type IMeetingPickedBuilder = {
+    name: IMeeting['IParams']['name'];
+    isActive: IMeeting['IParams']['isActive'];
+    gallery: IPicturePickedBuilder[];
+    days: IDayPickedBuilder[];
+    participants: IParticipant[];
+}
+
 export class MeetingBuilder {
     public readonly utils = new MeetingUtils();
-    protected readonly doc: IMeeting['IDocument'];
+    public readonly doc: IMeeting['IDocument'];
 
     constructor(doc: IMeeting['IDocument'] | null = null) {
         const MeetingModel = getMeetingModel();
@@ -78,7 +110,7 @@ export class MeetingBuilder {
         else this.doc = new MeetingModel();
     }
 
-    public readonly build = (params: Partial<IMeeting['IParams']>): this => {
+    public readonly build = (params: IMeetingPickedBuilder): this => {
         const { name, isActive, gallery, days, participants } = params;
 
         const init = { name, isActive };
@@ -101,10 +133,13 @@ export class MeetingBuilder {
         return this;
     };
 
-    public readonly setInit = (params: Pick<IMeeting['IParams'], 'name' | 'isActive'>): this => {
-        const { name, isActive } = params;
+    public readonly setInit = (params: IInitBuilder): this => {
+        const { name, isActive, _id } = params;
         const slug = toSlug(name);
 
+        if (notNil(_id)) {
+            this.doc._id = new Types.ObjectId(_id);
+        }
         this.doc.name = name;
         this.doc.slug = slug;
         this.doc.isActive = isActive;
@@ -116,29 +151,31 @@ export class MeetingBuilder {
         this.doc.participants = participants.map((p) => ({
             userId: new Types.ObjectId(p.userId),
             status: p.status,
-        }));
+        } satisfies IParticipantSchema));
         return this;
     };
 
-    public readonly setGallery = (gallery: Pick<IPicture, 'type' | 'w' | 'h' | 'url' | 's3Path'>[]): this => {
+    public readonly setGallery = (gallery: IPicturePickedBuilder[]): this => {
         this.doc.gallery = gallery.map((g) => ({
             ...g,
+            ...(g?._id ? {} : { _id: new Types.ObjectId(g._id) }),
             s3Host: properties.s3Host,
             cdnHost: properties.cdnHost,
-        }));
+        } satisfies IPictureSchema));
         return this;
     };
 
-    public readonly addToGallery = (picture: Pick<IPicture, 'type' | 'w' | 'h' | 'url' | 's3Path'>): this => {
+    public readonly addToGallery = (picture: IPicturePickedBuilder): this => {
         this.doc.gallery?.push({
             ...picture,
+            ...(picture?._id ? {} : { _id: new Types.ObjectId(picture._id) }),
             s3Host: properties.s3Host,
             cdnHost: properties.cdnHost,
-        });
+        } satisfies IPictureSchema);
         return this;
     };
 
-    public readonly setDays = (days: Pick<IDay, 'start' | 'finish' | 'allDayLong' | 'isodate'>[]): this => {
+    public readonly setDays = (days: IDayPickedBuilder[]): this => {
         this.doc.days = days.map(d => {
             const isoDate = new Date(d.isodate);
             const dayNumber = isoDate.getDate();
@@ -155,6 +192,7 @@ export class MeetingBuilder {
             }
 
             return {
+                ...(d?._id ? {} : { _id: new Types.ObjectId(d._id) }),
                 start: d.start,
                 finish: d.finish,
                 isodate: isoDate,
@@ -164,7 +202,7 @@ export class MeetingBuilder {
                 weekday: WeekdayAll[weekdayNumber],
                 formatted: formatDDMMYYYY(isoDate),
                 allDayLong: d.allDayLong,
-            } satisfies IDay
+            } satisfies IDaySchema
         });
         return this;
     };

@@ -9,7 +9,7 @@ export const mongooseBootstrap = async ({ testTransaction = false } = {}) => {
     const concistentEnvs = ['prod', 'dev', 'test'];
 
     const migration = new Migration();
-
+    
     await connectMain({ testTransaction });
     const connection = getMainConnection();
 
