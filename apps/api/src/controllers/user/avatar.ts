@@ -7,12 +7,13 @@ import { Either, successData } from '#utils/either';
 import { IUser } from '#schemas/user/types';
 import { compressToTargetSize } from '#utils/image/compress';
 import properties from '#properties';
-import { IUserAvatar, UserRole } from '@repo/shared-types';
+import { UserRole } from '@repo/shared-types';
 import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
 import { getUserDao } from '#daos/singleton';
 import { BadRequestException } from '#exceptions/bad_request';
 import { joinUrl } from '#utils/join_url';
 import { uploadToS3 } from '#helpers/s3';
+import { UserBuilder } from '#schemas/user/utils';
 
 interface Props {
     buffer: Buffer;
@@ -64,14 +65,13 @@ export class Avatar {
             });
 
             const s3Host = properties.s3Host;
-            const avatar = {
+            const build = new UserBuilder(user);
+            const userUpdated = await build.setAvatar({
                 s3Path,
-                s3Host,
-                cdnHost: '',
                 url: joinUrl(s3Host, s3Path),
-            } satisfies IUserAvatar;
+            }).save();
 
-            const userNew = await this.crud.update(userId, { avatar });
+            const userNew = await this.crud.update(userId, { avatar: userUpdated.avatar });
             return successData(userNew);
         } catch (error: unknown) {
             return logError(error, '/users/upload-avatar');

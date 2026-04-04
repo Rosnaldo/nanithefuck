@@ -17,6 +17,7 @@ import { or } from '#utils/ports';
 import { UserRole } from '@repo/shared-types';
 import { UnauthorizedRequestException } from '#exceptions/unauthorized_request';
 import { getKcMain } from '#keycloak/singleton';
+import { getUserModel } from '#models/singleton';
 
 type IEdit = IUserController['IEdit'];
 type Mapped = Omit<IEdit, 'role'> & {
@@ -59,12 +60,14 @@ export class Edit {
                 throw new UnauthorizedRequestException('Usuario sem permissão')
             }
 
-            const user = await this.crud.findById(_id);
+            const user = await getUserModel().findById(_id);
             if (_.isNil(user)) {
                 throw new BadRequestException('User not found')
             }
 
-            await this.crud.update(_id, { firstName, lastName, email, role });
+            const build = new UserBuilder(user);
+            await build.build({ firstName, lastName, email, role }).save();
+
             if (role !== UserRole.mock) {
                 const kcMain = getKcMain();
                 const client = await kcMain.getKcClientCredentials();

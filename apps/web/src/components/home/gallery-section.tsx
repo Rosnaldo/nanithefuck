@@ -98,14 +98,11 @@ export function GallerySection() {
     };
 
     return (
-        <section id="galeria" className="py-20 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-balance">
-                Galeria
-            </h2>
+        <section id="galeria" className="relative z-10 py-12 px-8 max-w-[1000px] mx-auto">
+            <div className="text-2xl font-bold text-[var(--td)] mb-1.5">
+                <h2>Nossa galeria</h2>
             </div>
-
+        <div className="py-6 mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
             {meeting?.gallery.map((item, index) => (
                 <div key={index} className={`${colSpanMap[item.w]} ${rowSpanMap[item.h]} relative rounded-xl overflow-hidden group`}>

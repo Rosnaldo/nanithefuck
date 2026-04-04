@@ -1,4 +1,4 @@
-import { Clock, Users } from "lucide-react"
+import { Users } from "lucide-react"
 
 const saturdaySchedule = [
     { time: "7:00", title: "Abertura dos portões", description: "Chegada e boas-vindas", icon: Users },
@@ -10,84 +10,102 @@ const sundaySchedule = [
     { time: "17:00", title: "Encerramento", description: "Despedida do fim de semana", icon: Users },
 ]
 
-export function ScheduleSection() {
+function DayCard({
+    label,
+    dayName,
+    date,
+    schedule,
+    accent,
+}: {
+    label: string
+    dayName: string
+    date: string
+    schedule: typeof saturdaySchedule
+    accent: string
+}) {
     return (
-        <section id="cronograma" className="py-20 relative z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[rgba(220,210,195,0.05)] backdrop-blur-[8px] border border-[rgba(160,136,120,0.25)] rounded-2xl p-6">
             {/* Header */}
-            <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm mb-4">
-                    <Clock className="w-4 h-4" />
-                    <span>Cronograma</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Programação do Evento</h2>
-            </div>
-
-            {/* Schedule Grid */}
-            <div className="grid md:grid-cols-2 gap-8">
-            {/* Saturday */}
-            <div className="bg-card/50 border border-border rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                    <span className="text-primary font-bold">SAB</span>
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[rgba(160,136,120,0.15)]">
+                <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-[11px] font-bold tracking-widest"
+                    style={{ background: accent + "22", color: accent }}
+                >
+                    {label}
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold">Sábado</h3>
-                    <p className="text-sm text-muted-foreground">18 de Janeiro</p>
-                </div>
-                </div>
-
-                <div className="space-y-4">
-                {saturdaySchedule.map((item, index) => (
-                    <div key={index} className="flex gap-4 group">
-                    <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                        <item.icon className="w-4 h-4 text-primary" />
-                        </div>
-                        {index < saturdaySchedule.length - 1 && <div className="w-0.5 h-full bg-border mt-2"></div>}
-                    </div>
-                    <div className="pb-6">
-                        <span className="text-xs text-primary font-medium">{item.time}</span>
-                        <h4 className="font-semibold">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                    </div>
-                    </div>
-                ))}
+                    <h3 className="text-[1rem] font-bold text-[var(--td)]">{dayName}</h3>
+                    <p className="text-[12px] text-[var(--tl)]">{date}</p>
                 </div>
             </div>
 
-            {/* Sunday */}
-            <div className="bg-card/50 border border-border rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
-                    <span className="text-accent font-bold">DOM</span>
-                </div>
-                <div>
-                    <h3 className="text-xl font-bold">Domingo</h3>
-                    <p className="text-sm text-muted-foreground">19 de Janeiro</p>
-                </div>
-                </div>
-
-                <div className="space-y-4">
-                {sundaySchedule.map((item, index) => (
-                    <div key={index} className="flex gap-4 group">
-                    <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                        <item.icon className="w-4 h-4 text-accent" />
+            {/* Timeline */}
+            <div className="flex flex-col gap-0">
+                {schedule.map((item, index) => (
+                    <div key={index} className="flex gap-4">
+                        {/* Line + dot */}
+                        <div className="flex flex-col items-center">
+                            <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border"
+                                style={{
+                                    background: accent + "18",
+                                    borderColor: accent + "44",
+                                }}
+                            >
+                                <item.icon size={13} style={{ color: accent }} />
+                            </div>
+                            {index < schedule.length - 1 && (
+                                <div className="w-px flex-1 my-1 bg-[rgba(160,136,120,0.2)]" />
+                            )}
                         </div>
-                        {index < sundaySchedule.length - 1 && <div className="w-0.5 h-full bg-border mt-2"></div>}
-                    </div>
-                    <div className="pb-6">
-                        <span className="text-xs text-accent font-medium">{item.time}</span>
-                        <h4 className="font-semibold">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                    </div>
+
+                        {/* Content */}
+                        <div className={`pb-5 ${index === schedule.length - 1 ? "pb-0" : ""}`}>
+                            <span
+                                className="text-[11px] font-bold tracking-wide"
+                                style={{ color: accent }}
+                            >
+                                {item.time}
+                            </span>
+                            <h4 className="text-[13px] font-bold text-[var(--td)] leading-tight">{item.title}</h4>
+                            <p className="text-[12px] text-[var(--tl)]">{item.description}</p>
+                        </div>
                     </div>
                 ))}
-                </div>
-            </div>
             </div>
         </div>
+    )
+}
+
+export function ScheduleSection() {
+    return (
+        <section id="cronograma" className="py-12 px-8 max-w-[1000px] mx-auto">
+            <div className="text-[11px] font-bold tracking-[0.1em] text-[#7a70b0] uppercase mb-1.5">
+                <h3>Cronograma</h3>
+            </div>
+            <div className="text-2xl font-bold text-[var(--td)] mb-1.5">
+                <h2>Programação do Evento</h2>
+            </div>
+            <div className="text-[14px] text-[var(--tl)] mb-8">
+                Veja o que vai rolar em cada dia.
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+                <DayCard
+                    label="SAB"
+                    dayName="Sábado"
+                    date="18 de Janeiro"
+                    schedule={saturdaySchedule}
+                    accent="#7a9acc"
+                />
+                <DayCard
+                    label="DOM"
+                    dayName="Domingo"
+                    date="19 de Janeiro"
+                    schedule={sundaySchedule}
+                    accent="#9a8acc"
+                />
+            </div>
         </section>
     )
 }

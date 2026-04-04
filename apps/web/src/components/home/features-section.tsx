@@ -11,12 +11,12 @@ const featureCategories: FeatureCategory[] = [
   {
     title: "Piscina e lazer",
     icon: Waves,
-    items: ["1 piscina", "Area de descanso", "Churrasqueira"],
+    items: ["1 piscina", "Área de descanso", "Churrasqueira"],
   },
   {
     title: "Quartos",
     icon: BedDouble,
-    items: ["2 quartos separados", "Masculino e feminino", "Camas disponiveis"],
+    items: ["2 quartos separados", "Masculino e feminino", "Camas disponíveis"],
   },
   {
     title: "Banheiros",
@@ -24,48 +24,55 @@ const featureCategories: FeatureCategory[] = [
     items: ["3 banheiros", "2 chuveiros", "Toalhas inclusas"],
   },
   {
-    title: "Seguranca",
+    title: "Segurança",
     icon: Camera,
-    items: ["Cameras 24 horas", "Portao eletronico", "Equipe no local"],
+    items: ["Câmeras 24 horas", "Portão eletrônico", "Equipe no local"],
   },
   {
-    title: "Alimentacao",
+    title: "Alimentação",
     icon: UtensilsCrossed,
-    items: ["Churrasco incluso", "Bebidas a vontade", "Petiscos variados"],
+    items: ["Churrasco incluso", "Bebidas à vontade", "Petiscos variados"],
   },
 ]
 
 export function FeaturesSection() {
   return (
-    <section id="incluso" className="py-20 relative z-10">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm mb-4">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Incluso no ingresso</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">O que está incluso</h2>
-        </div>
+    <section id="incluso" className="py-12 px-8 max-w-[1000px] mx-auto relative z-10">
+      <div className="text-[11px] font-bold tracking-[0.1em] text-[#7a70b0] uppercase mb-1.5">
+        <h3>Estrutura</h3>
+      </div>
+      <div className="text-2xl font-bold text-[var(--td)] mb-1.5">
+        <h2>O que está incluso</h2>
+      </div>
+      <div className="text-[14px] text-[var(--tl)] mb-8">
+        Tudo que você precisa pra curtir sem preocupação.
+      </div>
 
-        <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl p-6 md:p-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featureCategories.map((category, index) => (
-              <div key={index} className="space-y-3">
-                <div className="flex items-center gap-2 pb-2 border-b border-border/50">
-                  <category.icon className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold text-foreground">{category.title}</h3>
-                </div>
-                <ul className="space-y-2">
-                  {category.items.map((item, itemIndex) => (
-                    <li key={itemIndex} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Check className="w-4 h-4 text-accent flex-shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+      {/* badge */}
+      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-6 border border-[rgba(122,112,176,0.3)] bg-[rgba(122,112,176,0.08)] text-[#7a70b0] text-[11px] font-bold tracking-wide uppercase">
+        <Sparkles size={11} />
+        <span>Incluso no ingresso</span>
+      </div>
+
+      {/* grid card */}
+      <div className="bg-[rgba(220,210,195,0.05)] backdrop-blur-[8px] border border-[rgba(160,136,120,0.25)] rounded-2xl p-6 md:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {featureCategories.map((category, index) => (
+            <div key={index}>
+              <div className="flex items-center gap-2 pb-2 mb-3 border-b border-[rgba(160,136,120,0.18)]">
+                <category.icon size={15} className="text-[#7a9acc] shrink-0" />
+                <h3 className="text-[13px] font-bold text-[var(--td)]">{category.title}</h3>
               </div>
-            ))}
-          </div>
+              <ul className="flex flex-col gap-2">
+                {category.items.map((item, i) => (
+                  <li key={i} className="flex items-center gap-2 text-[12px] text-[var(--tl)]">
+                    <Check size={12} className="text-[#9a8acc] shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </section>

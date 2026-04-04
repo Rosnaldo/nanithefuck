@@ -12,6 +12,7 @@ import { toSlug } from '#utils/to_slug';
 import { getUserModel } from '#models/singleton';
 import properties from '#properties';
 import { hasNoNilValues } from '#utils/has_no_nil_values';
+import { Types } from 'mongoose';
 
 export class UserUtils {
     public readonly zodSchema = z.object({
@@ -70,6 +71,7 @@ export class UserBuilder {
 
     public readonly setAvatar = ({ s3Path, url }: Pick<IUserAvatar, 's3Path' | 'url'>): this => {
         this.doc.avatar = {
+            _id: new Types.ObjectId().toString(),
             s3Host: properties.s3Host,
             cdnHost: properties.cdnHost,
             s3Path,

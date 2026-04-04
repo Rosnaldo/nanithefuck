@@ -128,6 +128,18 @@ export interface Pagination {
     size: number;
 };
 
+export const getInitials = (firstName: string) => {
+    if (firstName) return 'U';
+    return firstName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+};
+
+export const getFullname = (user?: IUser | IUserParticipant) => `${user?.firstName} ${user?.lastName}`;
+
 export class UserUtils {
     public readonly getFullname = (user?: IUser) => `${user?.firstName} ${user?.lastName}`;
 
