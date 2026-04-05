@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { Search } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getFullname, getInitials, ParticipantStatus, type IUserParticipant } from "@repo/shared-types"
+import { getFullname, ParticipantStatus, type IUserParticipant } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { useParams } from "react-router-dom"
@@ -31,18 +31,18 @@ async function fetchParticipants(slug: string) {
     }
 }
 
-const bgs: string[] = [
-  "#dde8f5",
-  "#ece8f5",
-  "#e8f0e0",
-  "#fdf0e8",
-  "#f5e8f0",
-];
+// const bgs: string[] = [
+//   "#dde8f5",
+//   "#ece8f5",
+//   "#e8f0e0",
+//   "#fdf0e8",
+//   "#f5e8f0",
+// ];
 
 export function ParticipantsGrid({ participants }: { participants: IUserParticipant[] }) {
   return (
     <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(118px, 1fr))" }}>
-      {participants.map((participant, i) => (
+      {participants.map((participant) => (
         <div
           key={getFullname(participant)}
           className="bg-[rgba(220,210,195,0.05)] backdrop-blur-sm border border-[rgba(160,136,120,0.25)] rounded-2xl guest-card rounded-xl p-[0.9rem_0.7rem] text-center"

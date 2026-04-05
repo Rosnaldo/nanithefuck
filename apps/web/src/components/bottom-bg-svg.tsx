@@ -27,9 +27,13 @@ export function BottomBgSvg() {
                 )}
 
                 {/* <!-- bambu centro-esq --> */}
-                <rect x="340" y="600" width="8" height="300" rx="4" fill="#9ab87a" opacity=".2"/>
-                <rect x="338" y="660" width="10" height="3" rx="1" fill="#6a9848" opacity=".2"/>
-                <ellipse cx="328" cy="650" rx="18" ry="6" fill="#a0c878" opacity=".18" transform="rotate(-28 328 650)"/>
+                {!isMobile && (
+                    <>
+                        <rect x="340" y="600" width="8" height="300" rx="4" fill="#9ab87a" opacity=".2"/>
+                        <rect x="338" y="660" width="10" height="3" rx="1" fill="#6a9848" opacity=".2"/>
+                        <ellipse cx="328" cy="650" rx="18" ry="6" fill="#a0c878" opacity=".18" transform="rotate(-28 328 650)"/>
+                    </>
+                )}
 
                 {/* <!-- === ELEMENTOS AZUIS === --> */}
                 {/* <!-- bolinha azul topo esq --> */}

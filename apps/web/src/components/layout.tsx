@@ -1,12 +1,9 @@
 
 import { Ticket } from "lucide-react"
-import { AnimeBackground } from "@/components/anime-background"
 
 export default function Layout({ children }: React.PropsWithChildren) {
     return (
         <main className="h-screen max-h-screen w-full  overflow-y-auto kc-scrollbar flex items-center justify-center relative">
-            <AnimeBackground />
-
             <div className="justify-start flex flex-col h-screen w-full mx-4 relative z-10  py-4">
                 {/* Logo */}
                 <div className="flex flex-col items-center mb-8">

@@ -1,13 +1,13 @@
 import { cn } from "@/lib/utils";
 import { getInitials, type IUser, type IUserParticipant } from "@repo/shared-types";
 
-const bgs: string[] = [
-  "#dde8f5",
-  "#ece8f5",
-  "#e8f0e0",
-  "#fdf0e8",
-  "#f5e8f0",
-];
+// const bgs: string[] = [
+//   "#dde8f5",
+//   "#ece8f5",
+//   "#e8f0e0",
+//   "#fdf0e8",
+//   "#f5e8f0",
+// ];
 
 interface IProp {
     user: IUserParticipant | IUser;
