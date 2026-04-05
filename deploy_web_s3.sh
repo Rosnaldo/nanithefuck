@@ -15,11 +15,11 @@ aws s3 rm s3://$BUCKET_NAME/ --recursive --region $REGION
 echo "Starting deployment to S3 bucket: $BUCKET_NAME"
 
 # Optional: force index.html to not be cached
-aws s3 cp $BUILD_DIR/index.html s3://$BUCKET_NAME/ \
+aws s3 cp apps/web/$BUILD_DIR/index.html s3://$BUCKET_NAME/ \
     --region $REGION \
     --cache-control "no-cache, no-store, must-revalidate"
 
-aws s3 sync $BUILD_DIR/assets s3://$BUCKET_NAME/myadmin/assets/ \
+aws s3 sync apps/web/$BUILD_DIR/assets s3://$BUCKET_NAME/assets/ \
     --region $REGION \
     --exact-timestamps \
     --cache-control "no-cache, no-store, must-revalidate" \
