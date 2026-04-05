@@ -14,6 +14,7 @@ import type { IUser } from "@repo/shared-types"
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { mytoast } from "./toast"
+import { Avatar } from "./avatar"
 
 export function Header() {
     const { isAuthenticated, loggedUser, logout } = useAuth();
@@ -55,10 +56,8 @@ export function Header() {
     if (isLoading) return <Loading />;
     if (isError) return <ErrorState error={error as Error} />;
 
-    const avatarUrl = `${user?.avatar?.url}`;
-
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-[rgba(220,210,195,0.05)] backdrop-blur-sm border border-[rgba(160,136,120,0.25)]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                 {/* Logo */}
@@ -67,52 +66,50 @@ export function Header() {
                     <Ticket className="w-8 h-8 text-primary animate-glow" />
                     </div>
                     <span className="text-xl font-bold tracking-tight">
-                    Chácara<span className="text-primary">Meets</span>
+                        Chácara<span className="text-primary">Meets</span>
                     </span>
                 </div>
 
                 <div className="flex items-center gap-4">
                     {isAuthenticated ? (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                            <img
-                                src={avatarUrl}
-                                alt="Avatar"
-                                className="w-8 h-8 rounded-full object-cover border-2 border-primary/50"
-                            />
-                            <span className="hidden sm:inline">{user?.firstName} {user?.lastName}</span>
-                        </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuItem className="flex items-center gap-2" asChild>
-                            <Link to="/meeting/chacara-meets">
-                            <Home className="w-4 h-4" />
-                            <span>Evento</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="flex items-center gap-2" asChild>
-                            <Link to="/profile">
-                                <User className="w-10 h-10" />
-                                <span>Meu Perfil</span>
-                            </Link>
-                        </DropdownMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2">
+                                <Avatar user={user!} className="w-[35px] h-[35px] mb-0" />
+                                <div className="text-sm text-[var(--td)]">
+                                    <h3>{user?.firstName} {user?.lastName}</h3>
+                                </div>
+                            </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56" sideOffset={8} alignOffset={0}>
+                            <DropdownMenuItem className="flex items-center gap-2" asChild>
+                                <Link to="/meeting/chacara-meets">
+                                <Home className="w-4 h-4" />
+                                <span>Evento</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="flex items-center gap-2" asChild>
+                                <Link to="/profile">
+                                    <User className="w-10 h-10" />
+                                    <span>Meu Perfil</span>
+                                </Link>
+                            </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            className="flex items-center gap-2 text-destructive"
-                            onClick={() => logout()}
-                        >
-                            <LogOut className="w-4 h-4" />
-                            <span>Sair</span>
-                        </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="flex items-center gap-2 text-destructive"
+                                onClick={() => logout()}
+                            >
+                                <LogOut className="w-4 h-4" />
+                                <span>Sair</span>
+                            </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     ) : (
-                    <Button size="sm" asChild>
-                        <Link to="/login">Entrar</Link>
-                    </Button>
+                        <Button size="sm" asChild>
+                            <Link to="/login">Entrar</Link>
+                        </Button>
                     )}
                 </div>
                 </div>

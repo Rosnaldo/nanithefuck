@@ -6,7 +6,6 @@ import { User, Upload, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AnimeBackground } from "@/components/anime-background"
 import { useAuth } from "@/providers/auth-provider"
 import { ApiError } from "@/error/api"
 import type { IUser } from "@repo/shared-types"
@@ -181,12 +180,9 @@ export default function ProfileSection() {
     const avatarUrl = `${user?.avatar?.url}`;
 
     return (
-        <div className="min-h-screen max-h-screen overflow-y-auto relative py-8">
-            <AnimeBackground />
+        <div className="h-screen flex flex-col">
+            <main className="relative h-full flex items-center justify-center bg-[#f0ede6]">
 
-            <div className="absolute inset-0 -z-10 fixed">
-                <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
-            </div>
 
             <div className="w-full max-w-lg mx-auto px-4 relative z-10">
                 {/* Perfil Card */}
@@ -298,6 +294,7 @@ export default function ProfileSection() {
 
                 </div>
             </div>
+        </main>
         </div>
     )
 }

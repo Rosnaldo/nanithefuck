@@ -1,11 +1,9 @@
-import { AnimeBackground } from "@/components/anime-background"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
-      <AnimeBackground />
 
       <div className="relative z-10 text-center px-4">
         {/* 404 Number with anime style */}

@@ -9,31 +9,10 @@ h3{font-size:1.2rem}
   --td:#30240c;--tm:#6b5e50;--tl:#a08878;
 }
 
-#bottom {
-  position: relative;
-  width: 100%;
-  height: 100vh;
+[data-radix-popper-content-wrapper] {
+    z-index: 50 !important;
 }
 
-#gallery {
-  position: relative;
-  width: 100%;
-  height: 200vh;
+body {
+    overflow-y: hidden;
 }
-
-#casal {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 50vh;
-}
-
-#casal img {
-  height: 100%;
-  width: auto;
-  display: block;
-}
-
-
-header{background:rgba(255,255,255,.88);backdrop-filter:blur(4px);border-bottom:1px solid rgba(160,136,120,.2);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-

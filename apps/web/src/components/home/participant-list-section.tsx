@@ -7,7 +7,8 @@ import { getFullname, getInitials, ParticipantStatus, type IUserParticipant } fr
 import { ApiError } from "@/error/api"
 import { apiBack } from "@/api/backend"
 import { useParams } from "react-router-dom"
-import { mytoast } from "../../toast"
+import { mytoast } from "../toast"
+import { Avatar } from "../avatar"
 
 async function fetchParticipants(slug: string) {
     try {
@@ -47,20 +48,7 @@ export function ParticipantsGrid({ participants }: { participants: IUserParticip
           className="bg-[rgba(220,210,195,0.05)] backdrop-blur-sm border border-[rgba(160,136,120,0.25)] rounded-2xl guest-card rounded-xl p-[0.9rem_0.7rem] text-center"
         >
             <div className="w-[50px] h-[50px] rounded-full mx-auto mb-2 relative overflow-hidden border-2 border-[rgba(160,136,120,0.2)]">
-                {participant.avatar?.url ? (
-                    <img
-                        src={participant.avatar?.url}
-                        alt={participant.firstName}
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div
-                    className="w-full h-full flex items-center justify-center text-[1.4rem]"
-                    style={{ background: bgs[i % bgs.length] }}
-                    >
-                    {getInitials(participant.firstName)}
-                    </div>
-                )}
+                <Avatar user={participant} />
             </div>
 
 
@@ -118,7 +106,7 @@ export function ParticipantListSection() {
             <div className="text-[14px] text-[var(--tl)]">
                 {confirmedCount} confirmados · {pendingCount} pendentes
             </div>
-            <section className="py-12 px-8 mx-auto">
+            <section className="py-4">
                 <div className="max-w-6xl">
                     {/* Search and filters */}
                     <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-xl">

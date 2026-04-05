@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner"
 
 import HomePage from "./page/home";
-import MeetingPage from "./page/meeting_2";
+import MeetingPage from "./page/meeting";
 import NotFound from "./page/not-found";
 import { ProtectedRoute } from "./protected-route";
 import LoginPage from "./page/login";
