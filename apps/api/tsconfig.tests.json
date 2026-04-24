@@ -1,10 +1,14 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "rootDir": ".",
-    "types": ["jest"],
-    "baseUrl": ".",              // 👈 força resolução
-    "moduleResolution": "node"   // 👈 reforça
+    "composite": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": false,
+    "types": ["jest", "node"]
   },
+  "include": ["src", "tests"],
   "exclude": [
     "node_modules",
     "build",

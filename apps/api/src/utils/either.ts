@@ -6,14 +6,14 @@ export interface IsError {
     status: number;
 }
 
-export type IsSuccess<T> = T & { isError: false; status: number; message: string };
+export type IsSuccess<T> = { isError: false; status: number; message: string; data: T };
 
 export type Either<T> = IsError | IsSuccess<T>;
 
-export const isSuccess = <T>(result: Either<T>): result is IsSuccess<T> => !result;
+export const isSuccess = <T>(result: Either<T>): result is IsSuccess<T> => !result.isError;
 
 export const toResponseData = <T>(data: IsSuccess<T>): T => {
-    return data;
+    return data.data;
 };
 
 const isObjectWithFields = (value: any): boolean => {
@@ -22,7 +22,7 @@ const isObjectWithFields = (value: any): boolean => {
 
 export const successData = <T>(data: T, message: string = 'sucesso'): IsSuccess<T> => {
     return {
-        ...(isObjectWithFields(data) ? data : ({} as T)),
+        data: (isObjectWithFields(data) ? data : ({} as T)),
         message,
         status: 200,
         isError: false

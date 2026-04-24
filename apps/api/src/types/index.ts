@@ -25,7 +25,7 @@ export type ReplaceId<T> = {
 
 export type ReplaceObjectIdWithString<T> = {
   [K in keyof T]:
-    K extends `${string}Id` | 'id'
+    K extends `${string}Id` | '_id'
       ? string | (undefined extends T[K] ? undefined : never)
       : T[K];
 };
@@ -44,6 +44,7 @@ export type MakeOptional<T, K extends keyof T> = {
 export interface PaginateResponse<T> {
     isError: boolean;
     data: T[];
+    message: string;
     pagination: {
         currentPage: number;
         totalPages: number;

@@ -1,8 +1,10 @@
 import { mockMeeting } from '../../entities/schemas/meeting/mock';
-import { MeetingController } from 'src/controllers/meeting';
 import { mongooseBootstrap } from 'src/mongoose_bootstrap';
 import { disconnectMain } from 'src/db/singleton';
 import { IMeeting } from 'src/entities/schemas/meeting/types';
+import { validate } from 'src/validations/meetings/by-slug';
+import { MeetingController } from 'src/controllers/meeting';
+import { isSuccess } from 'src/utils/either';
 
 let meeting: IMeeting['IParams'];
 
@@ -22,7 +24,7 @@ afterAll(async () => {
 });
 
 describe('Controller > Meeting > BySlug', () => {
-    it('get', async () => {
+    it('validate output', async () => {
         const params = {
             slug: meeting.slug,
         };
@@ -30,8 +32,13 @@ describe('Controller > Meeting > BySlug', () => {
         const controller = new MeetingController();
 
         const mapped = controller.bySlug!.mapper(params)
-        const result = await controller.bySlug.get({ mapped });
+        const either = await controller.bySlug.get({ mapped });
 
-        console.log(result)
+        if (isSuccess(either)) {
+            const zodResult = validate(either.data);
+            expect(zodResult.hasError).toBeFalsy();
+        } else {
+            throw new Error('Should not throw error');
+        }
     });
 });

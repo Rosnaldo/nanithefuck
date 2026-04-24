@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
+        "rootDir": "src",
+        "moduleResolution": "node",
         "target": "ES2020",
         "module": "commonjs",
         "lib": ["es2020", "dom"],
         "skipLibCheck": true,
         "outDir": "./build",
         "baseUrl": ".",
+        "ignoreDeprecations": "6.0",
         "resolveJsonModule": true,
-        "moduleResolution": "node",
         "paths": {
+            "src/*": ["src/*"],
             "#apis/*": ["src/apis/*"],
             "#config/*": ["src/config/*"],
             "#const/*": ["src/const/*"],

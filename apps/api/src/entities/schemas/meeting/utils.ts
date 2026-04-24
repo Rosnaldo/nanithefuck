@@ -19,19 +19,21 @@ import { notNil } from '#utils/not_nil';
 
 export class MeetingUtils {
     public readonly zodDaySchema = z.object({
+        _id: makeObjectIdSchema('_id'),
         day: makeNumberSchema('day'),
         month: makeNumberSchema('month'),
         year: makeNumberSchema('year'),
         formatted: makeSmallStringSchema('formatted'),
-        start: makeSmallStringSchema('start'),
-        finish: makeSmallStringSchema('finish'),
+        start: makeSmallStringSchema('start').optional(),
+        finish: makeSmallStringSchema('finish').optional(),
         weekday: makeEnumSchema(WeekdayAll, 'weekday'),
         isodate: makeDateSchema('isodate'),
         allDayLong: makeBooleanSchema('allDayLong'),
     });
 
     public readonly zodPictureSchema = z.object({
-        cdnHost: makeStringSchema('cdnHost'),
+        _id: makeObjectIdSchema('_id'),
+        cdnHost: makeStringSchema('cdnHost').optional(),
         s3Host: makeStringSchema('s3Host'),
         s3Path: makeStringSchema('s3Path'),
         url: makeUrlSchema('url'),
@@ -46,12 +48,15 @@ export class MeetingUtils {
     });
 
     public readonly zodSchema = z.object({
+        _id: makeObjectIdSchema('_id'),
         name: makeSmallStringSchema('name'),
         slug: makeSmallStringSchema('slug'),
         isActive: makeBooleanSchema('isActive'),
         days: z.array(this.zodDaySchema),
         gallery: z.array(this.zodPictureSchema),
         participants: z.array(this.zodParticipantSchema),
+        createdAt: makeDateSchema('createdAt'),
+        updatedAt: makeDateSchema('updatedAt'),
     });
 
     public readonly toObject = (meeting: IMeeting['IDocument']): IMeeting['IParams'] => {
@@ -158,17 +163,17 @@ export class MeetingBuilder {
     public readonly setGallery = (gallery: IPicturePickedBuilder[]): this => {
         this.doc.gallery = gallery.map((g) => ({
             ...g,
-            ...(g?._id ? {} : { _id: new Types.ObjectId(g._id) }),
+            ...(g?._id ? { _id: new Types.ObjectId(g._id) } : { _id: new Types.ObjectId() }),
             s3Host: properties.s3Host,
             cdnHost: properties.cdnHost,
         } satisfies IPictureSchema));
         return this;
     };
 
-    public readonly addToGallery = (picture: IPicturePickedBuilder): this => {
+    public readonly addToGallery = (p: IPicturePickedBuilder): this => {
         this.doc.gallery?.push({
-            ...picture,
-            ...(picture?._id ? {} : { _id: new Types.ObjectId(picture._id) }),
+            ...p,
+            ...(p?._id ? { _id: new Types.ObjectId(p._id) } : { _id: new Types.ObjectId() }),
             s3Host: properties.s3Host,
             cdnHost: properties.cdnHost,
         } satisfies IPictureSchema);
@@ -192,7 +197,7 @@ export class MeetingBuilder {
             }
 
             return {
-                ...(d?._id ? {} : { _id: new Types.ObjectId(d._id) }),
+                ...(d?._id ? { _id: new Types.ObjectId(d._id) } : { _id: new Types.ObjectId() }),
                 start: d.start,
                 finish: d.finish,
                 isodate: isoDate,

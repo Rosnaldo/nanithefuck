@@ -13,7 +13,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const params = controller.paginacao!.mapper(req.query);
             const either = await controller.paginacao!.get({ params });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
     app.get(
@@ -22,7 +25,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const mapped = controller.bySlug!.mapper(req.query);
             const either = await controller.bySlug!.get({ mapped });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
     app.get(
@@ -31,7 +37,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const mapped = controller.byId!.mapper(req.query);
             const either = await controller.byId!.get({ mapped });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
     app.post(
@@ -40,7 +49,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const mapped = controller.criacao!.mapper(req.body);
             const either = await controller.criacao!.exec({ mapped });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
     app.put(
@@ -49,7 +61,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const mapped = controller.edit!.mapper({ _id: req.query._id, ...req.body });
             const either = await controller.edit!.exec({ mapped });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
     app.delete(
@@ -58,7 +73,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const mapped = controller.delete!.mapper(req.query);
             const either = await controller.delete!.exec({ mapped });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
      app.post(
@@ -67,7 +85,10 @@ export default (app: Application) => {
             const controller = new MeetingController();
             const mapped = controller.removeFromGallery!.mapper({ _id: req.query._id, ...req.body });
             const either = await controller.removeFromGallery!.exec({ mapped });
-            return res.status(200).send(either);
+            if (either.isError) {
+                return res.status(400).send(either);
+            }
+            return res.status(200).send(either.data);
         }
     );
     app.post(
@@ -90,7 +111,10 @@ export default (app: Application) => {
                 const controller = new MeetingController();
                 const mapped = controller.uploadGallery!.mapper(req.query);
                 const either = await controller.uploadGallery!.exec({ file, mapped });
-                return res.status(200).send(either);
+                if (either.isError) {
+                    return res.status(400).send(either);
+                }
+                return res.status(200).send(either.data);
             } catch (err) {
                 res.status(500).json({ error: 'Failed to upload image' });
             }

@@ -17,6 +17,7 @@ export const isSuccess = <T>(result: EitherPaginacao<T>): result is IsSuccess<T>
 export const successData = <T>(data: T[], pagination: Pagination): IsSuccess<T> => {
     return {
         data,
+        message: 'success',
         isError: false,
         pagination
     };

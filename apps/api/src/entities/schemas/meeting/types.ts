@@ -1,10 +1,12 @@
 import { Types, HydratedDocument, Model } from 'mongoose';
 
 import { Query } from 'mongoose';
-import { IMeeting as IMeetingParams, ParticipantStatus, Weekday } from '@repo/shared-types';
+import { IMeeting as IMeetingParams, ParticipantStatus, PictureType, Weekday } from '@repo/shared-types';
+import { ReplaceObjectIdWithString } from 'src/types';
 
 export interface IPictureSchema {
-    type: string;
+    _id: Types.ObjectId;
+    type: keyof typeof PictureType;
     s3Path: string;
     s3Host: string;
     cdnHost?: string;
@@ -13,7 +15,10 @@ export interface IPictureSchema {
     h: number;
 }
 
+export type IPictureParams = ReplaceObjectIdWithString<IPictureSchema>;
+
 export interface IDaySchema {
+    _id: Types.ObjectId;
     day: number;
     month: number;
     year: number;
@@ -25,10 +30,14 @@ export interface IDaySchema {
     allDayLong: boolean;
 }
 
+export type IDayParams = ReplaceObjectIdWithString<IDaySchema>;
+
 export interface IParticipantSchema {
     userId: Types.ObjectId;
     status: keyof typeof ParticipantStatus;
 }
+
+export type IParticipantParams = ReplaceObjectIdWithString<IParticipantSchema>;
 
 export interface IMeetingSchema {
     _id: Types.ObjectId;
