@@ -1,74 +1,35 @@
-turbo run build --filter=@repo/shared-types
+<picture>
+  <img src="wireframe.svg" width="50%">
+</picture>
 
-turbo run dev --filter=backend
+## Architecture decisions
+- containerized services. 
+- `keycloak` (manage user authentication, registration and sessions).
+- `API` protected by authentication middleware. 
+- 2 layers of `private networks`. 
+- `nginx` redirects domain access to internal services. 
+- dockerfiles supports three environments: `local`, `development`, and `production`. 
+- frontends are provisioned by `cloudfront`. 
+- special `admin` frontend for easy UI management. 
+- `monorepo` sharing dependencies between multiple modules.
 
-npm install -d @types/express --workspace apps/payment
+<br />
 
+## Development environment
+- the development environment uses a mock domain (`nanithefuck.local`) and supports flexible service execution: each service can run either inside a Docker container or as a local process while still maintaining full communication between components. **Obs: must be config on local machine DNS**
 
-## start docker-composer
-docker compose -f docker-compose.dev.yml up
+<br />
 
-## rebuild image and container
-docker compose -f docker-compose.dev.yml up -d --build web
+## API - backend
+- project lifecycle control. Non blocking dependencies loading for local environment and blocking promises for production environment. 
+- for testing, each test suite uses an in-memory MongoDB instance to ensure realistic query behavior without external dependencies. Entities are generated using customizable mocks with fake data, which can be overridden with specific fields. This approach makes it easy to reproduce very specific scenarios and focus only on the fields that matter. 
+- Tests validate each endpoint’s input and output using Zod schemas, and then assert that the declared TypeScript types are compatible with the runtime data structure. This is important because TypeScript types and actual runtime values are fundamentally different, and both need to be verified. 
 
-## restart nginx 
-docker compose -f docker-compose.dev.yml exec -it nginx nginx -s reload
+<br />
 
-npx shadcn@latest add button
+## Monorepo
+A monorepo was chosen to enable shared packages across multiple projects, making it easier to keep entity structures and types synchronized.
 
-## verify volume content
-docker run --rm -it -v nanithefuck_web_dist:/data alpine sh
+This setup is a key enabler for migrating legacy systems. It allows legacy and modern codebases to coexist within the same repository, while sharing common entities and contracts. 
 
-### clean cache
-docker builder prune
-- build cache
-- imagens não usadas
-- containers parados
-
-docker compose down -v
-- volumes do compose (cache de deps, db, etc.)
-
-### clean dangling images
-docker image prune
-
-### clean all
-docker system prune -a
-
-
-### generate certbots certificate
-#### comment nginx-http (port 80) redirect "return 301 https://$host$request_uri;"
-#### then run nginx-http from docker-compose.prod.yml
-    
-#### check listen port 80 from inside the vm
-sudo ss -tulnp
-
-#### check if tcp port 80 is acessable from outside
-nc -vz <public_ip> 80
-nc -vz nanithefuck.com.br 80
-
-#### allow right permissions on certbot folder
-chmod -R 755 ./certbot/www
-
-sudo docker run -it --rm --name certbot_2 \
-  -v "/etc/letsencrypt:/etc/letsencrypt" \
-  -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
-  -v "./certbot/www:/var/www/certbot" \
-  certbot/certbot certonly \
-  --webroot \
-  --webroot-path=/var/www/certbot \
-  -d nanithefuck.com.br \
-  -d www.nanithefuck.com.br \
-  --email contato@nanithefuck.com.br \
-  --agree-tos \
-  --no-eff-email
-
-
-#### once certificates are generated successfully config cron certificate renew 
-sudo crontab -e
-
-0 0,12 * * * docker run -it --rm -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" -v "/root/nanithefuck/certbot/www:/var/www/certbot" certbot/certbot renew --quiet
-
-sudo systemctl status cron
-
-
-ssh -L 27017:localhost:27017 root@<ip>
+As a result, the system supports incremental or partial migration, where parts of the legacy code can be progressively replaced without breaking compatibility. Shared contracts ensure both old and new implementations remain aligned during the transition, reducing integration risk and improving long-term maintainability. 
