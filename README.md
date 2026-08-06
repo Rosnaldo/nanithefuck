@@ -1,4 +1,4 @@
-# Nanithefuck
+# My Friends
 The project is just a compile setup of everthing I have being learning in the process.
 
 
